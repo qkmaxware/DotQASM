@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+
+    <RuntimeIdentifiers>win-x64;ubuntu-x64</RuntimeIdentifiers>
+    <PublishTrimmed>true</PublishTrimmed>
+
+    <Version>0.0.1</Version>
+    <Copyright>Copyright (c) 2019 Colin Halseth</Copyright>
+    <Description>.QASM command line utility</Description>
+    <Authors>Colin Halseth</Authors>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.6.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenQASM\OpenQASM.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\LICENSE.md" CopyToOutputDirectory="Always" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+  </ItemGroup>
+
+</Project>
