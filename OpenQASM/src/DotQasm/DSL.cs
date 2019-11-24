@@ -14,6 +14,15 @@ public static class DSL {
         return new Complex(0, value.ToDouble(System.Globalization.CultureInfo.InvariantCulture));
     }
 
+    /// <summary>
+    /// Modulus squared magnitude of complex vector
+    /// </summary>
+    /// <param name="value">complex vector</param>
+    /// <returns>squared magnitude</returns>
+    public static double SqrMagnitude(this Complex value) {
+        return value.Real * value.Real + value.Imaginary * value.Imaginary;
+    }
+
 }
 
 }

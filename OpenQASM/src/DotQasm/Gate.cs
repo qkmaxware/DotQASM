@@ -10,6 +10,16 @@ public class Gate {
     public int QubitCount {get;}
     public Complex[,] Matrix {get; protected set;} 
 
+    public static readonly Gate Identity = new Gate(
+        "Identity",
+        "I",
+        1,
+        new Complex[,]{
+            {1, 0},
+            {0, 1}
+        }
+    );
+
     public static readonly Gate Hadamard = new Gate(
         "Hadamard",
         "H",

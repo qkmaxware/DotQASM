@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 
 namespace DotQasm.Backend {
 
+/*
 public class IBMqx2 : IBackend {
     public bool IsAvailable() {
         // http hit is yes
@@ -15,5 +16,6 @@ public class IBMqx2 : IBackend {
         // compile and execute
     }
 }
+*/
 
 }

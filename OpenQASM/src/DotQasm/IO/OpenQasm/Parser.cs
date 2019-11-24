@@ -128,6 +128,25 @@ public class Parser {
     }
 
     /// <summary>
+    /// Parse an OpenQASM include directive
+    /// </summary>
+    /// <returns>include path string if found</returns>
+    public string ParseInclude() {
+        if (!Next(TokenType.INCLUDE)) {
+            return null;
+        } 
+        Inc();
+
+        if (!Next(TokenType.STRING)) {
+            throw new OpenQasmSyntaxException(Current, "Missing include filename");
+        }
+        string filename = Current.Lexeme;
+        Inc();
+        Semicolon();
+        return filename;
+    }
+
+    /// <summary>
     /// Evaluate a classical expression atomic element
     /// </summary>
     /// <returns>double</returns>
@@ -642,10 +661,6 @@ public class Parser {
         var opaque = ParseOpaqueGateDecl();
         if (opaque != null) 
             return opaque;
-        // Try quantum op
-        var op = ParseQuantumOperation();
-        if (op != null) 
-            return op;
         // Try classical if
         var iff = ParseIf();
         if (iff != null)
@@ -654,6 +669,10 @@ public class Parser {
         var barrier = ParseBarrier();
         if (barrier != null)
             return barrier;
+        // Try quantum op
+        var op = ParseQuantumOperation();
+        if (op != null) 
+            return op;
         // Else error
         throw new OpenQasmSyntaxException(Current, "Expecting declaration, quantum operation, or instruction");
     }   
@@ -665,6 +684,12 @@ public class Parser {
     public ProgramContext ParseProgram() {
         ProgramContext ctx = new ProgramContext();
         while (!IsDone) {
+            var inc = ParseInclude();
+            if (inc != null) {
+                // TODO handle include statements
+                continue;
+            }
+
             var stmt = ParseStatement();
             if (stmt != null) {
                 ctx.Statements.Add(stmt);

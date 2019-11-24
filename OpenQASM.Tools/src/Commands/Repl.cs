@@ -2,13 +2,15 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using CommandLine;
+using DotQasm;
+using DotQasm.Backend;
 using DotQasm.IO.OpenQasm;
 
 namespace DotQasm.Tools.Commands {
 
 [Verb("repl", HelpText="Interactive quantum circuit Read-Evaluate-Print-Loop")]
 public class Repl : ICommand {
-    [Option('q', "qubits", Default=5, HelpText="Number of qubits")]
+    [Option('q', "qubits", Default=5, HelpText="Number of qubits", Min = 1, Max=Int32.MaxValue)]
     public int Qubits {get; set;}
 
     public Status Exec() {
@@ -17,6 +19,8 @@ public class Repl : ICommand {
 type 'exit' to quit, 'help' for more information"
         );
         Console.WriteLine();
+
+        Simulator sim = new Simulator(Qubits);
 
         while (true) {
             Console.Write("|0> ");

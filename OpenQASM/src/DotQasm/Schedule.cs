@@ -6,8 +6,8 @@ using System.Collections;
 namespace DotQasm {
 
 [Serializable]
-public class Schedule: IEnumerable<Schedule.Event> {
-    
+public class Schedule/*: IEnumerable<Schedule.Event>*/ {
+    /*
 
     public IEnumerator<Event> GetEnumerator() {
         throw new NotImplementedException();
@@ -16,6 +16,8 @@ public class Schedule: IEnumerable<Schedule.Event> {
     IEnumerator IEnumerable.GetEnumerator() {
         throw new NotImplementedException();
     }
+
+    */
 }
 
 }
