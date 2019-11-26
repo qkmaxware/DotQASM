@@ -16,9 +16,13 @@ public class Verify : ICommand {
     public Status Exec() {
         string contents = null;
         string filename = null;
+        string directory = null;
+        string ext = null;
         try {
             contents = File.ReadAllText(QasmFile);
             filename = Path.GetFileName(QasmFile);
+            directory = Path.GetDirectoryName(QasmFile);
+            ext = Path.GetExtension(QasmFile);
         } catch (Exception ex) {
             Console.WriteLine(ex.Message);
             return Status.Failure;
@@ -33,7 +37,11 @@ public class Verify : ICommand {
 
             // Verify syntatic analysis
             IO.OpenQasm.Parser parser = new IO.OpenQasm.Parser(tokens);
-            parser.ParseFile();
+            parser.IncludeSearchPath = directory;
+            var program = ext switch {
+                "qasm" => parser.ParseFile(),   // QASM files must start with QASM
+                _ => parser.ParseProgram()      // Non QASM files are treated as *.inc files
+            };
 
             // Verify compatibility with 'Circuit' object
 

@@ -155,17 +155,22 @@ public class Parser {
     /// Evaluate a classical expression atomic element
     /// </summary>
     /// <returns>double</returns>
-    private double EvaluateAtomicExpression() {
+    private IExpressionContext EvaluateAtomicExpression() {
         if (Next(TokenType.REAL)) {
             var ret = double.Parse(Current.Lexeme);
             Inc();
-            return ret;
+            return new ExpressionLiteralContext(ret);
         } else if (Next(TokenType.NNINTEGER)) {
             var ret = int.Parse(Current.Lexeme);
             Inc();
-            return ret;
+            return new ExpressionLiteralContext(ret);
+        } else if (Next(TokenType.ID)) {
+            var ret = Current.Lexeme;
+            Inc();
+            return new ExpressionLiteralContext(ret);
         } else if (Next(TokenType.PI)) {
-            return Math.PI;
+            Inc();
+            return new ExpressionLiteralContext(Math.PI);
         } else if (Next(TokenType.LPAREN)) {
             Inc();
             var ret = EvaluateClassicalExpression();
@@ -179,19 +184,19 @@ public class Parser {
             switch (Current.Type) {
                 case TokenType.SIN:
                     Inc();
-                    return Math.Sin(EvaluateClassicalExpression());
+                    return new FunctionCallExpressionContext((x) => Math.Sin(x), EvaluateClassicalExpression()); 
                 case TokenType.COS:
                     Inc();
-                    return Math.Cos(EvaluateClassicalExpression());
+                    return new FunctionCallExpressionContext((x) => Math.Cos(x), EvaluateClassicalExpression());
                 case TokenType.TAN:
                     Inc();
-                    return Math.Tan(EvaluateClassicalExpression());
+                    return new FunctionCallExpressionContext((x) => Math.Tan(x), EvaluateClassicalExpression());
                 case TokenType.EXP:
                     Inc();
-                    return Math.Exp(EvaluateClassicalExpression());
+                    return new FunctionCallExpressionContext((x) => Math.Exp(x), EvaluateClassicalExpression());
                 case TokenType.LN:
                     Inc();
-                    return Math.Log(EvaluateClassicalExpression());
+                    return new FunctionCallExpressionContext((x) => Math.Log(x), EvaluateClassicalExpression());
                 default:
                     throw new OpenQasmSyntaxException(Current, "Missing expression literal or function call");
             }
@@ -202,14 +207,14 @@ public class Parser {
     /// Evaluate a unitary classical expression
     /// </summary>
     /// <returns>double</returns>
-    private double EvaluateUnitaryExpression() {
+    private IExpressionContext EvaluateUnitaryExpression() {
         // PLUS signedAtom | MINUS signedAtom | func | atom
         if (Next(TokenType.PLUS)) {
             Inc();
             return EvaluateAtomicExpression();
         } else if (Next(TokenType.MINUS)) {
             Inc();
-            return -1 * EvaluateAtomicExpression();
+            return new FunctionCallExpressionContext((x) => -x, EvaluateClassicalExpression());
         } else {
             return EvaluateAtomicExpression();
         }
@@ -219,17 +224,17 @@ public class Parser {
     /// Evaluate a classical expression with exponents
     /// </summary>
     /// <returns>double</returns>
-    private double EvaluatePowExpression() {
+    private IExpressionContext EvaluatePowExpression() {
         // signedAtom (POW signedAtom)*
-        List<double> pows = new List<double>();
+        List<IExpressionContext> pows = new List<IExpressionContext>();
         pows.Add(EvaluateUnitaryExpression());
         while(Next(TokenType.POW)) {
             Inc();
             pows.Add(EvaluateUnitaryExpression());
         }
-        double root = pows[pows.Count - 1];
+        IExpressionContext root = pows[pows.Count - 1];
         for (int i = pows.Count - 1; i > 0; i++) {
-            root = Math.Pow(pows[i-1], root);
+            root = new ArithmeticExpressionContext(pows[i-1], ArithmeticOperation.Power, root);
         }
         return root;
     }
@@ -238,16 +243,18 @@ public class Parser {
     /// Evaluate a classical expression with multiplication and division
     /// </summary>
     /// <returns>double</returns>
-    private double EvaluateMulDivExpression() {
+    private IExpressionContext EvaluateMulDivExpression() {
         // powExpression ((TIMES | DIV) powExpression)*
-        double x = EvaluatePowExpression();
+        IExpressionContext x = EvaluatePowExpression();
         while(Next(TokenType.TIMES) || Next(TokenType.DIVIDE)) {
             switch (Current.Type) {
                 case TokenType.TIMES:
-                    x = x * EvaluatePowExpression();
+                    Inc();
+                    x = new ArithmeticExpressionContext(x, ArithmeticOperation.Multiplication, EvaluatePowExpression());
                     break;
                 case TokenType.DIVIDE:
-                    x = x / EvaluatePowExpression();
+                    Inc();
+                    x = new ArithmeticExpressionContext(x, ArithmeticOperation.Division, EvaluatePowExpression());
                     break;
             }
         }
@@ -258,16 +265,18 @@ public class Parser {
     /// Evaluate a classical expression with addition and subtraction
     /// </summary>
     /// <returns>double</returns>
-    private double EvaluateAddSubExpression() {
+    private IExpressionContext EvaluateAddSubExpression() {
         // multiplyingExpression ((PLUS | MINUS) multiplyingExpression)*
-        double x = EvaluateMulDivExpression();
-        while(Next(TokenType.TIMES) || Next(TokenType.DIVIDE)) {
+        IExpressionContext x = EvaluateMulDivExpression();
+        while(Next(TokenType.PLUS) || Next(TokenType.MINUS)) {
             switch (Current.Type) {
-                case TokenType.TIMES:
-                    x = x * EvaluateMulDivExpression();
+                case TokenType.PLUS:
+                    Inc();
+                    x = new ArithmeticExpressionContext(x, ArithmeticOperation.Addition, EvaluateMulDivExpression());
                     break;
-                case TokenType.DIVIDE:
-                    x = x / EvaluateMulDivExpression();
+                case TokenType.MINUS:
+                    Inc();
+                    x = new ArithmeticExpressionContext(x, ArithmeticOperation.Subtraction, EvaluateMulDivExpression());
                     break;
             }
         }
@@ -278,7 +287,7 @@ public class Parser {
     /// Evaluate a classical expression
     /// </summary>
     /// <returns>double</returns>
-    public double EvaluateClassicalExpression() {
+    public IExpressionContext EvaluateClassicalExpression() {
         return EvaluateAddSubExpression();
     }
 
@@ -430,8 +439,8 @@ public class Parser {
         return ls;
     }
 
-    private List<double> ParseExpressionList() {
-        var ls = new List<double>();
+    private List<IExpressionContext> ParseExpressionList() {
+        var ls = new List<IExpressionContext>();
         ls.Add(EvaluateClassicalExpression());
         while (Next(TokenType.COMMA)) {
             Inc();
@@ -446,9 +455,9 @@ public class Parser {
     /// <returns>UnitaryOperation AST context</returns>
     public UnitaryOperationContext ParseUnitaryOperation() {
         // Built-IN
-        // "U"|"CX" "(" explist ")" argument ;
+        // "U" "(" explist ")" argument ;
         int pos = Current.Position;
-        if (Next(TokenType.U) || Next(TokenType.CX)) {
+        if (Next(TokenType.U)) {
             string name = Current.Type.ToString();
             Inc();
 
@@ -457,14 +466,29 @@ public class Parser {
             }
             Inc();
             
-            List<double> classicalArgs = ParseExpressionList();
+            List<IExpressionContext> classicalArgs = ParseExpressionList();
 
             if (!Next(TokenType.RPAREN)) {
                 throw new OpenQasmSyntaxException(Current, "Missing ')'");
             }
             Inc();
 
-            return new UnitaryOperationContext(pos, name, classicalArgs, new List<ArgumentContext>());
+            List<ArgumentContext> quantumArgs = ParseArgumentList();
+
+            Semicolon();
+
+            return new UnitaryOperationContext(pos, name, classicalArgs, quantumArgs);
+        }
+        //"CX" argument
+        if (Next(TokenType.CX)) {
+            string name = Current.Type.ToString();
+            Inc();
+
+            List<ArgumentContext> quantumArgs = ParseArgumentList();
+
+            Semicolon(); //*
+
+            return new UnitaryOperationContext(pos, name, new List<IExpressionContext>(), quantumArgs);
         }
         // User-Defined
         // id "(" explist ")" anylist ";"
@@ -472,7 +496,7 @@ public class Parser {
             string name = Current.Lexeme;
             Inc();
 
-            List<double> classicalArgs = null;
+            List<IExpressionContext> classicalArgs = null;
             if (Next(TokenType.LPAREN)) {
                 Inc();
 
@@ -488,7 +512,7 @@ public class Parser {
 
             Semicolon();
 
-            return new UnitaryOperationContext(pos, name, classicalArgs ?? new List<double>(), quantumArgs);
+            return new UnitaryOperationContext(pos, name, classicalArgs ?? new List<IExpressionContext>(), quantumArgs);
         } else {
             throw new OpenQasmSyntaxException(Current, "Expecting unitary expression");
         }
@@ -599,6 +623,7 @@ public class Parser {
         // "(" idlist ")"
         List<string> classical = null;
         if (Next(TokenType.LPAREN)) {
+            Inc();
             classical = ParseIdList();
             Require(TokenType.RPAREN, ")");
         }
@@ -699,7 +724,7 @@ public class Parser {
         int pos = Current.Position;
         ProgramContext ctx = new ProgramContext(pos);
         while (!IsDone) {
-            var position = Position;
+            pos = Current.Position;
             var inc = ParseInclude();
             if (inc != null && IncludeSearchPath != null) {
                 var path = Path.Join(IncludeSearchPath, inc);
@@ -709,11 +734,11 @@ public class Parser {
                             Parser sub = new Parser(Lexer.Tokenize(reader));
                             ctx.Statements.AddRange(sub.ParseProgram().Statements);
                         } catch (OpenQasmException ex) {
-                            throw new OpenQasmSyntaxException(position, string.Format("Syntax error in include '{0}' at pos '{2}', '{1}'", path, ex.Message, ex.Position));
+                            throw new OpenQasmSyntaxException(pos, string.Format("Syntax error in include '{0}' at pos '{2}', '{1}'", path, ex.Message, ex.Position));
                         }
                     }
                 } else {
-                    throw new OpenQasmIncludeException(position, path);
+                    throw new OpenQasmIncludeException(pos, path);
                 }
                 continue;
             }
