@@ -158,19 +158,23 @@ public class Parser {
     private IExpressionContext EvaluateAtomicExpression() {
         if (Next(TokenType.REAL)) {
             var ret = double.Parse(Current.Lexeme);
+            int pos = Current.Position;
             Inc();
-            return new ExpressionLiteralContext(ret);
+            return new ExpressionLiteralContext(pos, ret);
         } else if (Next(TokenType.NNINTEGER)) {
             var ret = int.Parse(Current.Lexeme);
+            int pos = Current.Position;
             Inc();
-            return new ExpressionLiteralContext(ret);
+            return new ExpressionLiteralContext(pos, ret);
         } else if (Next(TokenType.ID)) {
             var ret = Current.Lexeme;
+            int pos = Current.Position;
             Inc();
-            return new ExpressionLiteralContext(ret);
+            return new ExpressionLiteralContext(pos, ret);
         } else if (Next(TokenType.PI)) {
+            int pos = Current.Position;
             Inc();
-            return new ExpressionLiteralContext(Math.PI);
+            return new ExpressionLiteralContext(pos, Math.PI);
         } else if (Next(TokenType.LPAREN)) {
             Inc();
             var ret = EvaluateClassicalExpression();
@@ -181,22 +185,23 @@ public class Parser {
             return ret;
         } 
         else {
+            int pos = Current.Position;
             switch (Current.Type) {
                 case TokenType.SIN:
                     Inc();
-                    return new FunctionCallExpressionContext((x) => Math.Sin(x), EvaluateClassicalExpression()); 
+                    return new FunctionCallExpressionContext(pos, (x) => Math.Sin(x), EvaluateClassicalExpression()); 
                 case TokenType.COS:
                     Inc();
-                    return new FunctionCallExpressionContext((x) => Math.Cos(x), EvaluateClassicalExpression());
+                    return new FunctionCallExpressionContext(pos, (x) => Math.Cos(x), EvaluateClassicalExpression());
                 case TokenType.TAN:
                     Inc();
-                    return new FunctionCallExpressionContext((x) => Math.Tan(x), EvaluateClassicalExpression());
+                    return new FunctionCallExpressionContext(pos, (x) => Math.Tan(x), EvaluateClassicalExpression());
                 case TokenType.EXP:
                     Inc();
-                    return new FunctionCallExpressionContext((x) => Math.Exp(x), EvaluateClassicalExpression());
+                    return new FunctionCallExpressionContext(pos, (x) => Math.Exp(x), EvaluateClassicalExpression());
                 case TokenType.LN:
                     Inc();
-                    return new FunctionCallExpressionContext((x) => Math.Log(x), EvaluateClassicalExpression());
+                    return new FunctionCallExpressionContext(pos, (x) => Math.Log(x), EvaluateClassicalExpression());
                 default:
                     throw new OpenQasmSyntaxException(Current, "Missing expression literal or function call");
             }
@@ -213,8 +218,9 @@ public class Parser {
             Inc();
             return EvaluateAtomicExpression();
         } else if (Next(TokenType.MINUS)) {
+            int pos = Current.Position;
             Inc();
-            return new FunctionCallExpressionContext((x) => -x, EvaluateClassicalExpression());
+            return new FunctionCallExpressionContext(pos, (x) => -x, EvaluateClassicalExpression());
         } else {
             return EvaluateAtomicExpression();
         }
@@ -227,14 +233,16 @@ public class Parser {
     private IExpressionContext EvaluatePowExpression() {
         // signedAtom (POW signedAtom)*
         List<IExpressionContext> pows = new List<IExpressionContext>();
+        List<int> positions = new List<int>();
         pows.Add(EvaluateUnitaryExpression());
         while(Next(TokenType.POW)) {
+            positions.Add(Current.Position);
             Inc();
             pows.Add(EvaluateUnitaryExpression());
         }
         IExpressionContext root = pows[pows.Count - 1];
         for (int i = pows.Count - 1; i > 0; i++) {
-            root = new ArithmeticExpressionContext(pows[i-1], ArithmeticOperation.Power, root);
+            root = new ArithmeticExpressionContext(positions[i], pows[i-1], ArithmeticOperation.Power, root);
         }
         return root;
     }
@@ -248,14 +256,18 @@ public class Parser {
         IExpressionContext x = EvaluatePowExpression();
         while(Next(TokenType.TIMES) || Next(TokenType.DIVIDE)) {
             switch (Current.Type) {
-                case TokenType.TIMES:
+                case TokenType.TIMES: {
+                    int pos = Current.Position;
                     Inc();
-                    x = new ArithmeticExpressionContext(x, ArithmeticOperation.Multiplication, EvaluatePowExpression());
+                    x = new ArithmeticExpressionContext(pos, x, ArithmeticOperation.Multiplication, EvaluatePowExpression());
                     break;
-                case TokenType.DIVIDE:
+                }
+                case TokenType.DIVIDE:{
+                    int pos = Current.Position;
                     Inc();
-                    x = new ArithmeticExpressionContext(x, ArithmeticOperation.Division, EvaluatePowExpression());
+                    x = new ArithmeticExpressionContext(pos, x, ArithmeticOperation.Division, EvaluatePowExpression());
                     break;
+                }
             }
         }
         return x;
@@ -270,14 +282,18 @@ public class Parser {
         IExpressionContext x = EvaluateMulDivExpression();
         while(Next(TokenType.PLUS) || Next(TokenType.MINUS)) {
             switch (Current.Type) {
-                case TokenType.PLUS:
+                case TokenType.PLUS: {
+                    int pos = Current.Position;
                     Inc();
-                    x = new ArithmeticExpressionContext(x, ArithmeticOperation.Addition, EvaluateMulDivExpression());
+                    x = new ArithmeticExpressionContext(pos, x, ArithmeticOperation.Addition, EvaluateMulDivExpression());
                     break;
-                case TokenType.MINUS:
+                }
+                case TokenType.MINUS: {
+                    int pos = Current.Position;
                     Inc();
-                    x = new ArithmeticExpressionContext(x, ArithmeticOperation.Subtraction, EvaluateMulDivExpression());
+                    x = new ArithmeticExpressionContext(pos, x, ArithmeticOperation.Subtraction, EvaluateMulDivExpression());
                     break;
+                }
             }
         }
         return x;
