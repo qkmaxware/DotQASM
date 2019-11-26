@@ -5,7 +5,7 @@ namespace DotQasm.IO.OpenQasm.Ast {
 public class BarrierContext: StatementContext, ICustomGateOperation {
     public List<ArgumentContext> Arguments {get; private set;}
 
-    public BarrierContext(List<ArgumentContext> args) {
+    public BarrierContext(int position, List<ArgumentContext> args): base(position) {
         this.Arguments = args;
     }
 }

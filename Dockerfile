@@ -16,8 +16,9 @@ COPY . .
 RUN dotnet publish --self-contained --runtime linux-x64 -c Release -o out OpenQASM.Tools
 
 # --------------------------------------------------------------------------------
-FROM ubuntu:latest AS runtime
+FROM mcr.microsoft.com/dotnet/core/runtime:3.0 AS runtime
 
-COPY out/Release/* /usr/local/bin*
+COPY --from=build /app/out/ /usr/local/bin/qasm
+ENV PATH="/usr/local/bin/qasm:${PATH}"
 
 ENTRYPOINT /bin/bash

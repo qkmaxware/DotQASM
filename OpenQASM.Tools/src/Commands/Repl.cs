@@ -10,7 +10,7 @@ namespace DotQasm.Tools.Commands {
 
 [Verb("repl", HelpText="Interactive quantum circuit Read-Evaluate-Print-Loop")]
 public class Repl : ICommand {
-    [Option('q', "qubits", Default=5, HelpText="Number of qubits", Min = 1, Max=Int32.MaxValue)]
+    [Option('q', "qubits", Default=5, HelpText="Number of qubits")]
     public int Qubits {get; set;}
 
     public Status Exec() {

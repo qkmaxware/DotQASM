@@ -1,4 +1,5 @@
 using System;
+using DotQasm.Scheduling;
 
 namespace DotQasm {
 
@@ -28,9 +29,44 @@ public class Circuit {
         }
     }
 
+    public class Cbit {
+        public int ClassicalBitId {get; private set;}
+        public Circuit ParentCircuit {get; private set;}
+
+        public Cbit(Circuit circuit) {
+            this.ParentCircuit = circuit;
+            this.ClassicalBitId = circuit.BitCount++;
+        }
+
+        public override bool Equals(object obj) {
+            if (obj is Cbit) {
+                Cbit q = (Cbit)obj;
+                return q.ClassicalBitId == this.ClassicalBitId && q.ParentCircuit == this.ParentCircuit;
+            } else {
+                return base.Equals(obj);
+            }
+        }
+
+        public override int GetHashCode() {
+            return HashCode.Combine(ClassicalBitId, ParentCircuit);
+        }
+    }   
+
     public int QubitCount {get; private set;}
     public int BitCount {get; private set;}
-    public Schedule GateSchedule {get; set;}
+    public ISchedule GateSchedule {get; set;}
+
+    public Circuit() {
+        this.GateSchedule = new LinearSchedule(); // Default to a simple empty linear schedule
+    }
+
+    public Cbit[] CreateRegister(int classicalCount) {
+        Cbit[] cbits = new Cbit[classicalCount];
+        for (int i = 0; i < classicalCount; i++) {
+            cbits[i] = new Cbit(this);
+        }
+        return cbits;
+    }
 
     public Qubit Allocate() {
         return new Qubit(this);

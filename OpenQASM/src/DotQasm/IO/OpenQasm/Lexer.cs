@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace DotQasm.IO.OpenQasm {
 
+/// <summary>
+/// OpenQASM lexicographic analysis 
+/// </summary>
 public static class Lexer {
     /*
     https://github.com/Qiskit/openqasm/blob/master/spec/qasm2.rst
@@ -45,6 +48,11 @@ public static class Lexer {
     sqrt      := "sqrt"
     */
 
+    /// <summary>
+    /// From a text stream, create OpenQASM tokens
+    /// </summary>
+    /// <param name="reader">text strem</param>
+    /// <returns>list of OpenQASM tokens</returns>
     public static List<Token> Tokenize(TextReader reader) {
         List<Token> tokens = new List<Token>();
         int position = 0;

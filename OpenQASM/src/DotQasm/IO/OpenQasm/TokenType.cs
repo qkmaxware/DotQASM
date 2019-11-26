@@ -1,5 +1,8 @@
 namespace DotQasm.IO.OpenQasm {
 
+/// <summary>
+/// All OpenQASM token classifications
+/// </summary>
 public enum TokenType {
     // Value Types
     ID,

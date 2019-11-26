@@ -4,12 +4,12 @@ public class ArgumentContext: OpenQasmAstContext {
     public string ArgumentName {get; private set;}
     public int? ArgumentOffset {get; private set;}
 
-    public ArgumentContext(string name) {
+    public ArgumentContext(int position, string name) : base(position) {
         this.ArgumentName = name;
         this.ArgumentOffset = null;
     }
 
-    public ArgumentContext(string name, int offset) {
+    public ArgumentContext(int position, string name, int offset) : base(position) {
         this.ArgumentName = name;
         this.ArgumentOffset = offset;
     }

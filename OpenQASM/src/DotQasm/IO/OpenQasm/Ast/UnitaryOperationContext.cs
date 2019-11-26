@@ -7,7 +7,7 @@ public class UnitaryOperationContext: QuantumOperationContext, ICustomGateOperat
     public List<double> ClassicalParametres {get; private set;}
     public List<ArgumentContext> QuantumParametres {get; private set;}
 
-    public UnitaryOperationContext(string name, List<double> classicalParams, List<ArgumentContext> quantumParams) {
+    public UnitaryOperationContext(int position, string name, List<double> classicalParams, List<ArgumentContext> quantumParams): base(position) {
         this.OperationName = name;
         this.ClassicalParametres = classicalParams;
         this.QuantumParametres = quantumParams;

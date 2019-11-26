@@ -10,7 +10,7 @@ public class DeclContext: StatementContext {
     public DeclType Type {get; private set;}
     public int Amount {get; private set;}
 
-    public DeclContext(DeclType type, string name, int amount) {
+    public DeclContext(int position, DeclType type, string name, int amount): base(position) {
         this.VariableName = name;
         this.Type = type;
         this.Amount = amount;

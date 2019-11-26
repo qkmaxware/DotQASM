@@ -1,0 +1,11 @@
+title: .QASM
+description: "A .Net standard library for creating and manipulating quantum circuits"
+baseurl: #"/DotQASM"
+url: "https://qkmaxware.github.io"
+
+markdown: kramdown
+
+collections:
+  posts:
+    output: true
+    permalink: /update/:year/:month/:day/:title

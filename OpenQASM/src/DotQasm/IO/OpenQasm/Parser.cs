@@ -76,6 +76,11 @@ public class Parser {
     private Token Current => Position < queue.Count ? queue.ElementAt(Position) : queue.Last();
 
     /// <summary>
+    /// Directory to search when including files
+    /// </summary>
+    public string IncludeSearchPath;
+
+    /// <summary>
     /// Create a new parser for the given token stream
     /// </summary>
     /// <param name="tokens">list of OpenQASM tokens</param>
@@ -303,6 +308,7 @@ public class Parser {
     /// </summary>
     /// <returns>Declaration AST context</returns>
     public DeclContext ParseDecl() {
+        int pos = Current.Position;
         DeclType type = DeclType.Quantum;
         if (Next(TokenType.QREG)) {
             type = DeclType.Quantum;
@@ -336,7 +342,7 @@ public class Parser {
         }
         Inc();
 
-        var ctx = new DeclContext(type, name, amt);
+        var ctx = new DeclContext(pos, type, name, amt);
 
         Semicolon();
 
@@ -348,6 +354,7 @@ public class Parser {
     /// </summary>
     /// <returns>Argument AST context</returns>
     public ArgumentContext ParseArgument() {
+        int pos = Current.Position;
         // id | id [ nninteger ]
         if (!Next(TokenType.ID)) {
             throw new OpenQasmSyntaxException(Current, "Missing argument identifier");
@@ -366,9 +373,9 @@ public class Parser {
                 throw new OpenQasmSyntaxException(Current, "Missing ']'");
             }
             Inc();
-            return new ArgumentContext(name, index);
+            return new ArgumentContext(pos, name, index);
         } else {
-            return new ArgumentContext(name);
+            return new ArgumentContext(pos, name);
         }
     }
 
@@ -377,6 +384,7 @@ public class Parser {
     /// </summary>
     /// <returns>Measurement AST context</returns>
     public MeasurementContext ParseMeasurement() {
+        int pos = Current.Position;
         if (!Next(TokenType.MEASURE)) {
             return null;
         }
@@ -393,7 +401,7 @@ public class Parser {
 
         Semicolon();
 
-        return new MeasurementContext(quantum, classical);
+        return new MeasurementContext(pos, quantum, classical);
     }
 
     /// <summary>
@@ -401,6 +409,7 @@ public class Parser {
     /// </summary>
     /// <returns>Reset AST context</returns>
     public ResetContext ParseReset() {
+        int pos = Current.Position;
         if (!Next(TokenType.RESET)) {
             return null;
         }
@@ -408,7 +417,7 @@ public class Parser {
 
         var quantum = ParseArgument();
 
-        return new ResetContext(quantum);
+        return new ResetContext(pos, quantum);
     }
 
     private List<ArgumentContext> ParseArgumentList() {
@@ -438,6 +447,7 @@ public class Parser {
     public UnitaryOperationContext ParseUnitaryOperation() {
         // Built-IN
         // "U"|"CX" "(" explist ")" argument ;
+        int pos = Current.Position;
         if (Next(TokenType.U) || Next(TokenType.CX)) {
             string name = Current.Type.ToString();
             Inc();
@@ -454,7 +464,7 @@ public class Parser {
             }
             Inc();
 
-            return new UnitaryOperationContext(name, classicalArgs, new List<ArgumentContext>());
+            return new UnitaryOperationContext(pos, name, classicalArgs, new List<ArgumentContext>());
         }
         // User-Defined
         // id "(" explist ")" anylist ";"
@@ -478,7 +488,7 @@ public class Parser {
 
             Semicolon();
 
-            return new UnitaryOperationContext(name, classicalArgs ?? new List<double>(), quantumArgs);
+            return new UnitaryOperationContext(pos, name, classicalArgs ?? new List<double>(), quantumArgs);
         } else {
             throw new OpenQasmSyntaxException(Current, "Expecting unitary expression");
         }
@@ -507,12 +517,13 @@ public class Parser {
     /// </summary>
     /// <returns>Barrier AST context</returns>
     public BarrierContext ParseBarrier() {
+        int pos = Current.Position;
         if (!Next(TokenType.BARRIER)) {
             return null;
         }
         Inc();
 
-        BarrierContext ctx = new BarrierContext(ParseArgumentList());
+        BarrierContext ctx = new BarrierContext(pos, ParseArgumentList());
 
         Semicolon();
         return ctx;
@@ -523,6 +534,7 @@ public class Parser {
     /// </summary>
     /// <returns>If statement AST context</returns>
     public IfContext ParseIf() {
+        int pos = Current.Position;
         if (!Next(TokenType.IF)) {
             return null;
         }
@@ -548,7 +560,7 @@ public class Parser {
 
         QuantumOperationContext stmt = ParseQuantumOperation();
 
-        return new IfContext(name, value, stmt);
+        return new IfContext(pos, name, value, stmt);
     }
 
     private List<string> ParseIdList() {
@@ -571,6 +583,7 @@ public class Parser {
     }
 
     public GateDeclContext ParseGateDecl() {
+        int pos = Current.Position;
         // "gate" id 
         if (!Next(TokenType.GATE)) {
             return null;
@@ -615,10 +628,11 @@ public class Parser {
 
         Require(TokenType.RBRACE, "}");
 
-        return new GateDeclContext(name, classical ?? new List<string>(), quantum, ops);
+        return new GateDeclContext(pos, name, classical ?? new List<string>(), quantum, ops);
     }
 
     public OpaqueGateDeclContext ParseOpaqueGateDecl() {
+        int pos = Current.Position;
         // "opaque" id 
         if (!Next(TokenType.OPAQUE)) {
             return null;
@@ -641,7 +655,7 @@ public class Parser {
         // idlist
         List<string> quantum = ParseIdList();
 
-        return new OpaqueGateDeclContext(name, classical ?? new List<string>(), quantum);
+        return new OpaqueGateDeclContext(pos, name, classical ?? new List<string>(), quantum);
     }
 
     /// <summary>
@@ -682,11 +696,25 @@ public class Parser {
     /// </summary>
     /// <returns>Program AST context</returns>
     public ProgramContext ParseProgram() {
-        ProgramContext ctx = new ProgramContext();
+        int pos = Current.Position;
+        ProgramContext ctx = new ProgramContext(pos);
         while (!IsDone) {
+            var position = Position;
             var inc = ParseInclude();
-            if (inc != null) {
-                // TODO handle include statements
+            if (inc != null && IncludeSearchPath != null) {
+                var path = Path.Join(IncludeSearchPath, inc);
+                if (File.Exists(path)) {
+                    using (var reader = new StreamReader(path)) {
+                        try {
+                            Parser sub = new Parser(Lexer.Tokenize(reader));
+                            ctx.Statements.AddRange(sub.ParseProgram().Statements);
+                        } catch (OpenQasmException ex) {
+                            throw new OpenQasmSyntaxException(position, string.Format("Syntax error in include '{0}' at pos '{2}', '{1}'", path, ex.Message, ex.Position));
+                        }
+                    }
+                } else {
+                    throw new OpenQasmIncludeException(position, path);
+                }
                 continue;
             }
 
@@ -719,8 +747,10 @@ public class Parser {
     /// <param name="ast"></param>
     /// <returns></returns>
     public static Circuit Ast2Circuit(ProgramContext ast) {
-        // TODO
-        return null;
+        Circuit circuit = new Circuit();
+        var visitor = new OpenQasm2CircuitVisitor(circuit);
+        visitor.VisitProgram(ast);
+        return circuit;
     }
 
     /// <summary>

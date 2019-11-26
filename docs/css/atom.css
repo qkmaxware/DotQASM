@@ -1,0 +1,76 @@
+.flip {
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+}
+
+.atom-container-bg {
+    background: rgb(95,199,250);
+    background: linear-gradient(360deg, rgba(95,199,250,1) 0%, rgba(67,207,137,1) 100%);
+}
+
+.atom-orbit {
+    width: 400px;
+    height: 400px; 
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    border: 2px #4A437F dashed;
+    border-radius: 100%;
+    animation: spin-right 50s linear infinite;
+    -webkit-animation: spin-right 50s linear infinite;
+}
+
+.atom-sm {
+    height: 16px;
+    width: 16px;
+    margin-top: -8px;
+    left: 50%;
+    border-radius: 50%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.atom-md {
+    height: 25px;
+    width: 25px;
+    margin-top: -12px;
+    left: 50%;
+    border-radius: 50%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@keyframes spin-right {
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.anim-reverse {
+    animation-direction: reverse;
+    -webkit-animation-direction: reverse;
+}
+
+.spin-slow {
+    animation-duration: 50s;
+    -webkit-animation-duration: 50s;
+} 
+
+.spin-medium {
+    animation-duration: 32s;
+    -webkit-animation-duration: 32s;
+} 
+
+.spin-fast {
+    animation-duration: 25s;
+    -webkit-animation-duration: 25s;
+} 

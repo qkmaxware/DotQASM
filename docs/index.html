@@ -1,0 +1,47 @@
+---
+layout: default
+---
+<div id="divider" class="w3-teal w3-wide" style="height: 24px;"></div>
+<div id="header" class="w3-display-container w3-wide w3-padding-48 atom-container-bg">
+    <div class="header-bg" style="position: relative; width: 100%; height: 400px;">
+        <div class="atom-orbit spin-slow" style="width: 400px; height: 400px;">
+            <span class="atom-md" style="background-color: #4A437F;"></span>
+        </div>
+        <div class="atom-orbit anim-reverse spin-medium" style="width: 325px; height: 325px;">
+            <span class="atom-sm" style="background-color: #00FFCA;"></span>
+        </div>
+        <div class="atom-orbit spin-fast" style="width: 250px; height: 250px;">
+            <span class="atom-sm" style="background-color: #9F98E6;"></span>
+        </div>
+    </div>
+    <div id="header-content" class="w3-display-middle w3-margin-top w3-center" style="width: 100%;">
+        <img class="w3-image" src="{{ site.baseurl }}/logo.svg" alt="" width="128" height="128" />
+        <h1>{{ site.title }}</h1>
+        <h2>{{ site.description }}</h2>
+        <hr>
+        <p>
+            <a class="w3-button w3-teal" href="{{ site.github.repository_url }}">
+                See It On Github
+            </a>
+            <a class="w3-button w3-teal" href="{{ site.github.releases_url }}">
+                Download
+            </a>
+        </p>
+    </div>
+</div>
+<div id="divider" class="w3-teal w3-wide" style="height: 24px;"></div>
+<div style="text-align: center;">
+    <h1>
+        Updates
+    </h1>
+    <div class="w3-container">
+    {% for post in site.posts %}
+        <div class="w3-card">
+            <h2>{{ post.title }}</h2>
+            <b>{{ post.date | date: "%Y-%m-%d" }}</b>
+            <p>{{ post.excerpt | strip_html | truncatewords: 50 }}</p>
+            <a href="{{ site.baseurl }}{{ post.url }}" class="w3-button w3-block w3-teal">Continue</a>
+        </div>
+    {% endfor %}
+    </div>
+</div>

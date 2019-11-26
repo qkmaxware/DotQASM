@@ -8,7 +8,7 @@ public class OpaqueGateDeclContext: StatementContext {
     public List<string> ClassicalArguments {get; private set;}
     public List<string> QuantumArguments {get; private set;} 
 
-    public OpaqueGateDeclContext(string name, List<string> classicalArgs, List<string> quantumArgs) {
+    public OpaqueGateDeclContext(int position, string name, List<string> classicalArgs, List<string> quantumArgs): base(position) {
         this.GateName = name;
         this.ClassicalArguments = classicalArgs;
         this.QuantumArguments = quantumArgs;
