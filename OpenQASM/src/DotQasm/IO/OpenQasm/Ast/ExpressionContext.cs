@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace DotQasm.IO.OpenQasm.Ast {
@@ -9,6 +10,7 @@ public enum ArithmeticOperation {
 
 public interface IExpressionContext {
     double Evaluate(Dictionary<string, double> variables);
+    IEnumerable<ExpressionLiteralContext> GetVariables();
 }
 
 public class ExpressionLiteralContext: OpenQasmAstContext, IExpressionContext {
@@ -38,6 +40,14 @@ public class ExpressionLiteralContext: OpenQasmAstContext, IExpressionContext {
             return Literal;
         }
     }
+
+    public IEnumerable<ExpressionLiteralContext> GetVariables() {
+        if (IsVariable) {
+            return new ExpressionLiteralContext[]{this};
+        } else {
+            return new ExpressionLiteralContext[]{};
+        }
+    }
 }
 
 public class FunctionCallExpressionContext: OpenQasmAstContext, IExpressionContext {
@@ -51,6 +61,10 @@ public class FunctionCallExpressionContext: OpenQasmAstContext, IExpressionConte
 
     public double Evaluate(Dictionary<string, double> variables) {
         return Function.Invoke(Evaluatable.Evaluate(variables));
+    }
+
+    public IEnumerable<ExpressionLiteralContext> GetVariables() {
+        return Evaluatable.GetVariables();
     }
 }
 
@@ -75,6 +89,10 @@ public class ArithmeticExpressionContext: OpenQasmAstContext, IExpressionContext
             ArithmeticOperation.Multiplication  => LHS.Evaluate(variables) * RHS.Evaluate(variables),
             _                                   => LHS.Evaluate(variables)
         };
+    }
+
+    public IEnumerable<ExpressionLiteralContext> GetVariables() {
+        return LHS.GetVariables().Concat(RHS.GetVariables());
     }
 
 }

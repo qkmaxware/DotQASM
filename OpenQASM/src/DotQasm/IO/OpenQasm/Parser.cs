@@ -54,7 +54,7 @@ productionlist::
 /// <summary>
 /// Parser for OpenQASM formatted text
 /// </summary>
-public class Parser {
+public class Parser: IParser<Circuit>, IEmitter<Circuit> {
 
     /// <summary>
     /// Internal token queue
@@ -742,19 +742,23 @@ public class Parser {
         while (!IsDone) {
             pos = Current.Position;
             var inc = ParseInclude();
-            if (inc != null && IncludeSearchPath != null) {
-                var path = Path.Join(IncludeSearchPath, inc);
-                if (File.Exists(path)) {
-                    using (var reader = new StreamReader(path)) {
-                        try {
-                            Parser sub = new Parser(Lexer.Tokenize(reader));
-                            ctx.Statements.AddRange(sub.ParseProgram().Statements);
-                        } catch (OpenQasmException ex) {
-                            throw new OpenQasmSyntaxException(pos, string.Format("Syntax error in include '{0}' at pos '{2}', '{1}'", path, ex.Message, ex.Position));
+            if (inc != null) {
+                if (IncludeSearchPath != null) {
+                    var path = Path.Join(IncludeSearchPath, inc);
+                    if (File.Exists(path)) {
+                        using (var reader = new StreamReader(path)) {
+                            try {
+                                Parser sub = new Parser(Lexer.Tokenize(reader));
+                                ctx.Statements.AddRange(sub.ParseProgram().Statements);
+                            } catch (OpenQasmException ex) {
+                                throw new OpenQasmSyntaxException(pos, string.Format("Syntax error in include '{0}' at pos '{2}', '{1}'", path, ex.Message, ex.Position));
+                            }
                         }
+                    } else {
+                        throw new OpenQasmIncludeException(pos, path);
                     }
                 } else {
-                    throw new OpenQasmIncludeException(pos, path);
+                    throw new OpenQasmSyntaxException(pos, string.Format("Files cannot be included without specifying a search path"));
                 }
                 continue;
             }
@@ -799,7 +803,7 @@ public class Parser {
     /// </summary>
     /// <param name="program">Text reader containing an OpenQASM program</param>
     /// <returns>Quantum circuit</returns>
-    public static Circuit Parse(TextReader program) {
+    public Circuit Parse(TextReader program) {
         var tokens = Lexer.Tokenize(program);
         Parser p = new Parser(tokens);
         var ast = p.ParseFile();
@@ -811,7 +815,7 @@ public class Parser {
     /// </summary>
     /// <param name="program">OpenQASM program</param>
     /// <returns>Quantum circuit</returns>
-    public static Circuit Parse(string program) {
+    public Circuit Parse(string program) {
         Circuit circuit;
         using (StringReader reader = new StringReader(program)) {
             circuit = Parse(reader);
@@ -824,7 +828,7 @@ public class Parser {
     /// </summary>
     /// <param name="program">Quantum circuit</param>
     /// <returns>OpenQASM program</returns>
-    public static string Stringify(Circuit program) {
+    public string Stringify(Circuit program) {
         StringBuilder builder = new StringBuilder();
         using (StringWriter writer = new StringWriter(builder)) {
             Stringify(program, writer);
@@ -838,7 +842,7 @@ public class Parser {
     /// <param name="program">Quantum circuit</param>
     /// <param name="writer">TextWriter to output OpenQASM program to</param>
     /// <returns>OpenQASM program</returns>
-    public static void Stringify(Circuit program, TextWriter writer) {
+    public void Stringify(Circuit program, TextWriter writer) {
         writer.WriteLine("OPENQASM 2.0;");
         // TODO
     }

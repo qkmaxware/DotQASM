@@ -12,6 +12,8 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     public Circuit Circuit {get; set;}
     public bool CanEditCircuit => Circuit != null;    
 
+    private OpenQasmSemanticAnalyser Semantics = new OpenQasmSemanticAnalyser();
+
     private Dictionary<string, IEnumerable<Circuit.Qubit>> qubitMap = new Dictionary<string, IEnumerable<Circuit.Qubit>>();
     private Dictionary<string, IEnumerable<Circuit.Cbit>> cbitMap = new Dictionary<string, IEnumerable<Circuit.Cbit>>();
 
@@ -19,15 +21,11 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
         this.Circuit = circuit;
     }
 
-    private bool IsDeclared(string varname) {
-        return qubitMap.ContainsKey(varname) || cbitMap.ContainsKey(varname);
-    }
-
-    private IEnumerable<Circuit.Qubit> GetQRegister(string varname) {
+    protected IEnumerable<Circuit.Qubit> GetQRegister(string varname) {
         return qubitMap[varname];
     }
 
-    private IEnumerable<Circuit.Cbit> GetCRegister(string varname) {
+    protected IEnumerable<Circuit.Cbit> GetCRegister(string varname) {
         return cbitMap[varname];
     }
 
@@ -39,19 +37,8 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
         return cbitMap[varname].ElementAt(0);
     }
 
-    public void VisitBarrier(BarrierContext barrier) {
-        throw new System.NotImplementedException();
-    }
-
-    public void VisitClassicalIf(IfContext @if) {
-        throw new System.NotImplementedException();
-    }
-
     public void VisitDeclaration(DeclContext declaration) {
-        if (IsDeclared(declaration.VariableName)) {
-            // Throw
-            throw new OpenQasmSemanticException(declaration, "Local variable already defined in current scope");
-        }
+        Semantics.VisitDeclaration(declaration);
 
         switch (declaration.Type) {
             case DeclType.Classical: 
@@ -66,7 +53,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     public void VisitGateDeclaration(GateDeclContext declaration) {
-        throw new System.NotImplementedException();
+        Semantics.VisitGateDeclaration(declaration);
     }
 
     public void VisitOpaqueGateDeclaration(OpaqueGateDeclContext declaration) {
@@ -105,15 +92,33 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     public void VisitUnitaryQuantumOperator(UnitaryOperationContext qop) {
+        Semantics.VisitUnitaryQuantumOperator(qop);
         throw new System.NotImplementedException();
+        // TODO add to circuit schedule, expand operator if need be
     }
 
     public void VisitMeasurement (MeasurementContext measure) {
+        Semantics.VisitMeasurement(measure);
         throw new System.NotImplementedException();
+        // TODO add to circuit schedule
     }
 
-    public void VisitReset (ResetContext measure) {
+    public void VisitReset (ResetContext reset) {
+        Semantics.VisitReset(reset);
         throw new System.NotImplementedException();
+        // TODO add to circuit schedule
+    }
+
+    public void VisitBarrier(BarrierContext barrier) {
+        Semantics.VisitBarrier(barrier);
+        throw new System.NotImplementedException();
+        // TODO add to circuit schedule
+    }
+
+    public void VisitClassicalIf(IfContext @if) {
+        Semantics.VisitClassicalIf(@if);
+        throw new System.NotImplementedException();
+        //TODO add to circuit schedule
     }
 
 }

@@ -38,12 +38,16 @@ public class Verify : ICommand {
             // Verify syntatic analysis
             IO.OpenQasm.Parser parser = new IO.OpenQasm.Parser(tokens);
             parser.IncludeSearchPath = directory;
+
             var program = ext switch {
-                "qasm" => parser.ParseFile(),   // QASM files must start with QASM
-                _ => parser.ParseProgram()      // Non QASM files are treated as *.inc files
+                ".qasm"=> parser.ParseFile(),           // QASM files must start with QASM
+                "qasm" => parser.ParseFile(),           // QASM files must start with QASM
+                _ => parser.ParseProgram()              // Non QASM files are treated as *.inc files
             };
 
             // Verify compatibility with 'Circuit' object
+            OpenQasmSemanticAnalyser semanticAnalyser = new OpenQasmSemanticAnalyser();
+            semanticAnalyser.VisitProgram(program);
 
         } catch (OpenQasmException ex) {
             Console.WriteLine(ex.Format(filename, contents));

@@ -58,8 +58,8 @@ public interface IOpenQasmVisitor {
     /// <summary>
     /// Visit a reset operation
     /// </summary>
-    /// <param name="measure">reset operation to visit</param>
-    void VisitReset (ResetContext measure);
+    /// <param name="reset">reset operation to visit</param>
+    void VisitReset (ResetContext reset);
 
 }
 
