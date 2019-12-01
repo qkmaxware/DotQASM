@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Numerics;
 using System.Collections.Generic;
 using CommandLine;
 using DotQasm;
@@ -16,17 +17,34 @@ public class Repl : ICommand {
     public Status Exec() {
         Console.WriteLine(
 @"OpenQASM interactive console
-type 'exit' to quit, 'help' for more information"
+type 'exit' to quit, 'help' for information, 'print' for state info"
         );
         Console.WriteLine();
 
         Simulator sim = new Simulator(Qubits);
+        OpenQasmSemanticAnalyser Semantics = new OpenQasmSemanticAnalyser();
 
         while (true) {
             Console.Write("|0> ");
             string input = Console.ReadLine();
             if (input == "exit") {
                 break;
+            } else if (input == "print") {
+                var fmt = "{1}|{0}>";
+                bool first = true;
+                for(int i = 0; i < sim.StateCount; i++) {
+                    var value = sim[i];
+                    if (!value.Equals(Complex.Zero)) {
+                        if (first != true) {
+                            Console.Write (" + ");
+                        } else {
+                            first = false;
+                        }
+                        Console.Write(string.Format(fmt, Convert.ToString(i, 2).PadLeft(sim.QubitCount, '0'), value));
+                    }
+                }
+                Console.WriteLine();
+                continue;
             } else if (input == "help") {
                 // Write header
                 int col1 = 32; int col2 = 50; int col3 = 24;
@@ -61,9 +79,18 @@ type 'exit' to quit, 'help' for more information"
                     IO.OpenQasm.Parser p = new IO.OpenQasm.Parser(tokens);
                     var stmt = p.ParseStatement();
 
+                    // Verify semantics
+                    Semantics.VisitStatement(stmt);
+
                     // Execute
+                    switch (stmt) {
+                        default: {
+                            Console.WriteLine(string.Format("{0} command not supported in REPL", stmt.GetType().Name));
+                            break;
+                        }
+                    }
                 } catch (OpenQasmException ex) {
-                    Console.WriteLine(ex.Format("command.qasm", input));
+                    Console.WriteLine(ex.Format("command", input));
                     continue;
                 } catch (Exception ex) {
                     Console.WriteLine(ex);

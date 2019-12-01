@@ -34,36 +34,40 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
         }
     }
 
+    public void VisitStatement(StatementContext stmt) {
+        switch (stmt) {
+            case BarrierContext barrier: 
+                VisitBarrier(barrier);
+                break;
+            case DeclContext decl: 
+                VisitDeclaration(decl);
+                break;
+            case GateDeclContext gate: 
+                VisitGateDeclaration(gate);
+                break;
+            case IfContext @if: 
+                VisitClassicalIf(@if);
+                break;
+            case OpaqueGateDeclContext gate: 
+                VisitOpaqueGateDeclaration(gate);
+                break;
+            case MeasurementContext measure: 
+                VisitMeasurement(measure);
+                break;
+            case UnitaryOperationContext qop:
+                VisitUnitaryQuantumOperator(qop);  
+                break;
+            case ResetContext reset: 
+                VisitReset(reset);
+                break;
+            default:
+                throw new OpenQasmSemanticException(stmt, "Statement is not supported in circuit");
+        }  
+    }
+
     public void VisitProgram(ProgramContext program) {
         foreach (var stmt in program.Statements) {
-            switch (stmt) {
-                case BarrierContext barrier: 
-                    VisitBarrier(barrier);
-                    break;
-                case DeclContext decl: 
-                    VisitDeclaration(decl);
-                    break;
-                case GateDeclContext gate: 
-                    VisitGateDeclaration(gate);
-                    break;
-                case IfContext @if: 
-                    VisitClassicalIf(@if);
-                    break;
-                case OpaqueGateDeclContext gate: 
-                    VisitOpaqueGateDeclaration(gate);
-                    break;
-                case MeasurementContext measure: 
-                    VisitMeasurement(measure);
-                    break;
-                case UnitaryOperationContext qop:
-                    VisitUnitaryQuantumOperator(qop);  
-                    break;
-                case ResetContext reset: 
-                    VisitReset(reset);
-                    break;
-                default:
-                    throw new OpenQasmSemanticException(stmt, "Statement is not supported in circuit");
-            }
+            VisitStatement(stmt);
         }
     }
 
@@ -115,7 +119,11 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
     }
 
     public void VisitOpaqueGateDeclaration(OpaqueGateDeclContext declaration) {
-        throw new System.NotImplementedException();
+        if (IsDeclared(declaration.GateName)) {
+            throw new OpenQasmSemanticException(declaration, "Duplicate identifier");
+        }
+
+        identifiers.Add(declaration.GateName, OpenQasmType.Gate);
     }
 
     public void VisitUnitaryQuantumOperator(UnitaryOperationContext qop) {
@@ -147,6 +155,9 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
                 }
                 if (!IsType(qop.OperationName, OpenQasmType.Gate)) {
                     throw new OpenQasmSemanticException(qop, "Identifier does not refer to a quantum gate");
+                }
+                if (!gateMap.ContainsKey(qop.OperationName)) {
+                    throw new OpenQasmSemanticException(qop, "Gate does not have a defined body");
                 }
 
                 var gate = gateMap[qop.OperationName];
