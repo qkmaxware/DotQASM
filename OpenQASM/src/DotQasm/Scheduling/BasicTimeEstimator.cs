@@ -27,20 +27,20 @@ public class BasicTimeEstimator : ITimeEstimator {
         };
     }
 
-    public TimeSpan ShortestTimeBetween (IEventGraphIterator start, IEventGraphIterator end) {
+    public TimeSpan? ShortestTimeBetween (IEventGraphIterator start, IEventGraphIterator end) {
         return DotQasm.Search.AStarSearch.Path(start, end, Search.AStarSearch.SortOrder.Shortest, (evt) => {
-            return 0; // No Heuristic
+            return TimeOf(evt.Current).Milliseconds; // No Heuristic
         })
-        .Select(x => TimeOf(x.Current))
-        .Aggregate((a,b) => a.Add(b));
+        ?.Select(x => TimeOf(x.Current))
+        ?.Aggregate((a,b) => a.Add(b));
     }
 
-    public TimeSpan LongestTimeBetween (IEventGraphIterator start, IEventGraphIterator end) {
+    public TimeSpan? LongestTimeBetween (IEventGraphIterator start, IEventGraphIterator end) {
         return DotQasm.Search.AStarSearch.Path(start, end, Search.AStarSearch.SortOrder.Longest, (evt) => {
-            return 0; // No Heuristic
+            return TimeOf(evt.Current).Milliseconds; // No Heuristic
         })
-        .Select(x => TimeOf(x.Current))
-        .Aggregate((a,b) => a.Add(b));
+        ?.Select(x => TimeOf(x.Current))
+        ?.Aggregate((a,b) => a.Add(b));
     }
 }
 

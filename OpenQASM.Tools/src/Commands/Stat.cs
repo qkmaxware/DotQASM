@@ -36,6 +36,7 @@ public class Stat : ICommand {
         List<Token> tokens;
         try {
             // Verify lexical analysis
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             using (StringReader reader = new StringReader(contents)) {
                 tokens = Lexer.Tokenize(reader);
             }
@@ -49,6 +50,7 @@ public class Stat : ICommand {
                 "qasm" => parser.ParseFile(),           // QASM files must start with QASM
                 _ => parser.ParseProgram()              // Non QASM files are treated as *.inc files
             };
+            var parsetime = stopwatch.Elapsed;
 
             // Verify compatibility with 'Circuit' object
             OpenQasm2CircuitVisitor builder = new OpenQasm2CircuitVisitor();
@@ -64,11 +66,12 @@ public class Stat : ICommand {
             var fmt ="{0,-24} {1,-10}";
             Console.WriteLine(string.Format(fmt, "Property", "Value"));
             Console.WriteLine(string.Format(fmt, new string('-', 24), new string('-', 10)));
+            Console.WriteLine(string.Format(fmt, "Processing Time", parsetime.Milliseconds + "ms"));
             Console.WriteLine(string.Format(fmt, "Quantum Bits", semanticAnalyser.QubitCount));
             Console.WriteLine(string.Format(fmt, "Classic Bits", semanticAnalyser.CbitCount));
             Console.WriteLine(string.Format(fmt, "Gate Uses", semanticAnalyser.GateUses));
             Console.WriteLine(string.Format(fmt, "Instructions", semanticAnalyser.InstructionCount));
-            Console.WriteLine(string.Format(fmt, "Est. Time", "~" + (longTime.Milliseconds.ToString() ?? "?") + "ns"));
+            Console.WriteLine(string.Format(fmt, "Est. Running Time", "~" + ((longTime?.Milliseconds.ToString()) ?? "?") + "ms"));
         } catch (OpenQasmException ex) {
             Console.WriteLine(ex.Format(filename, contents));
             return Status.Failure;

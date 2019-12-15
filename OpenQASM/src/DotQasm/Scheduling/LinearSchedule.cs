@@ -9,12 +9,15 @@ public class LinearSchedule: ISchedule {
     public class LinearIterator : IEventGraphIterator {
         private int position;
         private IEnumerable<IEvent> list;
-        public IEnumerable<IGraphEdge<IEvent>> Next => new IGraphEdge<IEvent>[]{ 
+        public IEnumerable<IGraphEdge<IEvent>> Next => 
+        position < list.Count() - 1 
+        ? new IGraphEdge<IEvent>[]{ 
             new IGraphEdge<IEvent>(
-                position + 1,
+                0,
                 new LinearIterator(list, position + 1) 
             )
-        };
+        } 
+        : new IGraphEdge<IEvent>[0];
         public IEvent Current {get; private set;}
 
         public LinearIterator(IEnumerable<IEvent> list, int position) {
@@ -31,7 +34,7 @@ public class LinearSchedule: ISchedule {
         }
 
         public override int GetHashCode() {
-            return position ^ list.GetHashCode();
+            return this.position ^ this.list.GetHashCode();
         }
     }
 
