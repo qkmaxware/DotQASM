@@ -16,6 +16,14 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
     private Dictionary<string, OpenQasmType> identifiers = new Dictionary<string, OpenQasmType>();
     private Dictionary<string, GateDeclContext> gateMap = new Dictionary<string, GateDeclContext>();
 
+    public int QubitCount {get; set;}
+
+    public int CbitCount {get; set;}
+
+    public int GateUses {get; set;}
+
+    public int InstructionCount {get; set;}
+
     public OpenQasmSemanticAnalyser() {}
 
     public bool IsDeclared(string varname) {
@@ -35,6 +43,7 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
     }
 
     public void VisitStatement(StatementContext stmt) {
+        InstructionCount++;
         switch (stmt) {
             case BarrierContext barrier: 
                 VisitBarrier(barrier);
@@ -80,9 +89,11 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
         switch (declaration.Type) {
             case DeclType.Classical: 
                 identifiers.Add(declaration.VariableName, OpenQasmType.CReg);
+                QubitCount += declaration.Amount;
                 break;
             case DeclType.Quantum:
                 identifiers.Add(declaration.VariableName, OpenQasmType.QReg);
+                CbitCount += declaration.Amount;
                 break;
         }
     }
@@ -171,6 +182,7 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
                 }
                 break;
         }
+        GateUses++;
     }
 
     public void VisitMeasurement (MeasurementContext measure) {

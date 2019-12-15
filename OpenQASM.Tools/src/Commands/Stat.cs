@@ -5,13 +5,18 @@ using CommandLine;
 
 using DotQasm;
 using DotQasm.IO.OpenQasm;
+using DotQasm.Scheduling;
 
 namespace DotQasm.Tools.Commands {
 
-[Verb("verify", HelpText="Validate the syntax and semantics of an OpenQASM program file")]
-public class Verify : ICommand {
+[Verb("stat", HelpText="")]
+public class Stat : ICommand {
+
     [Value(0, MetaName="file", HelpText="OpenQASM file path")]
     public string QasmFile {get; set;}
+
+    [Option('o', "optimization", Required = false, HelpText = "Optimizations to apply")]
+    public IEnumerable<string> InputFiles { get; set; }
 
     public Status Exec() {
         string contents = null;
@@ -46,11 +51,24 @@ public class Verify : ICommand {
             };
 
             // Verify compatibility with 'Circuit' object
-            OpenQasmSemanticAnalyser semanticAnalyser = new OpenQasmSemanticAnalyser();
-            semanticAnalyser.VisitProgram(program);
+            OpenQasm2CircuitVisitor builder = new OpenQasm2CircuitVisitor();
+            builder.VisitProgram(program);
+            OpenQasmSemanticAnalyser semanticAnalyser = builder.Analyser;
+            
+            var timer = new BasicTimeEstimator();
+            var longTime = timer.LongestTimeBetween(
+                builder.Circuit.GateSchedule.First, 
+                builder.Circuit.GateSchedule.Last
+            );
 
-            Console.WriteLine(string.Format("'{0}' is syntactically and semantically valid", filename));
-
+            var fmt ="{0,-24} {1,-10}";
+            Console.WriteLine(string.Format(fmt, "Property", "Value"));
+            Console.WriteLine(string.Format(fmt, new string('-', 24), new string('-', 10)));
+            Console.WriteLine(string.Format(fmt, "Quantum Bits", semanticAnalyser.QubitCount));
+            Console.WriteLine(string.Format(fmt, "Classic Bits", semanticAnalyser.CbitCount));
+            Console.WriteLine(string.Format(fmt, "Gate Uses", semanticAnalyser.GateUses));
+            Console.WriteLine(string.Format(fmt, "Instructions", semanticAnalyser.InstructionCount));
+            Console.WriteLine(string.Format(fmt, "Est. Time", "~" + (longTime.Milliseconds.ToString() ?? "?") + "ns"));
         } catch (OpenQasmException ex) {
             Console.WriteLine(ex.Format(filename, contents));
             return Status.Failure;
@@ -61,6 +79,7 @@ public class Verify : ICommand {
 
         return Status.Success;
     }
+
 }
 
 }

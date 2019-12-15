@@ -11,9 +11,10 @@ namespace DotQasm.Tools {
             });
             
             return (int)parser
-            .ParseArguments<Verify, Repl, Run, Transpile>(args)
+            .ParseArguments<Verify, Stat, Repl, Run, Transpile>(args)
             .MapResult(
                 (Verify opts)   => opts.Exec(),
+                (Stat opts)     => opts.Exec(),
                 (Repl opts)     => opts.Exec(),
                 (Run opts)      => opts.Exec(),
                 (Transpile opts)=> opts.Exec(),

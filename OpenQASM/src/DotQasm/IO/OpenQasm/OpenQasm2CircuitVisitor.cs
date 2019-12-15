@@ -13,13 +13,19 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     public Circuit Circuit {get; set;}
     public bool CanEditCircuit => Circuit != null;    
 
-    private OpenQasmSemanticAnalyser Semantics = new OpenQasmSemanticAnalyser();
+    public OpenQasmSemanticAnalyser Analyser {get; private set;}
 
     private Dictionary<string, IEnumerable<Circuit.Qubit>> qubitMap = new Dictionary<string, IEnumerable<Circuit.Qubit>>();
     private Dictionary<string, IEnumerable<Circuit.Cbit>> cbitMap = new Dictionary<string, IEnumerable<Circuit.Cbit>>();
 
+    public OpenQasm2CircuitVisitor() {
+        this.Circuit = new Circuit();
+        this.Analyser = new OpenQasmSemanticAnalyser();
+    }
+
     public OpenQasm2CircuitVisitor(Circuit circuit) {
         this.Circuit = circuit;
+        this.Analyser = new OpenQasmSemanticAnalyser();
     }
 
     protected IEnumerable<Circuit.Qubit> GetQRegister(string varname) {
@@ -79,7 +85,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     public void VisitDeclaration(DeclContext declaration) {
-        Semantics.VisitDeclaration(declaration);
+        Analyser.VisitDeclaration(declaration);
 
         switch (declaration.Type) {
             case DeclType.Classical: 
@@ -94,16 +100,17 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     public void VisitGateDeclaration(GateDeclContext declaration) {
-        Semantics.VisitGateDeclaration(declaration);
+        Analyser.VisitGateDeclaration(declaration);
     }
 
     public void VisitOpaqueGateDeclaration(OpaqueGateDeclContext declaration) {
-        Semantics.VisitOpaqueGateDeclaration(declaration);
+        Analyser.VisitOpaqueGateDeclaration(declaration);
         throw new System.NotImplementedException();
     }
 
     public void VisitProgram(ProgramContext program) {
         foreach (var stmt in program.Statements) {
+            Analyser.InstructionCount++;
             switch (stmt) {
                 case BarrierContext barrier: 
                     VisitBarrier(barrier);
@@ -152,7 +159,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
                 ));
             } break;
             default: {
-                GateDeclContext gate = Semantics.GetGateDefinition(qop.OperationName);
+                GateDeclContext gate = Analyser.GetGateDefinition(qop.OperationName);
                 IEnumerable<double> values = qop.ClassicalParametres.Select((x) => x.Evaluate(vars));  
 
                 foreach (var appl in gate.Operations) {
@@ -179,7 +186,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     public void VisitUnitaryQuantumOperator(UnitaryOperationContext qop) {
-        Semantics.VisitUnitaryQuantumOperator(qop);
+        Analyser.VisitUnitaryQuantumOperator(qop);
 
         List<IEvent> events = new List<IEvent>();
         ExpandUnitaryQuantumOperatorEvents(qop, events);
@@ -200,7 +207,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     public void VisitMeasurement (MeasurementContext measure) {
-        Semantics.VisitMeasurement(measure);
+        Analyser.VisitMeasurement(measure);
 
         Circuit.GateSchedule.ScheduleEvent(
             GetMeasurementEvent(measure)
@@ -214,7 +221,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     public void VisitReset (ResetContext reset) {
-        Semantics.VisitReset(reset);
+        Analyser.VisitReset(reset);
 
         Circuit.GateSchedule.ScheduleEvent(
             GetResetEvent(reset)
@@ -227,7 +234,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     public void VisitBarrier(BarrierContext barrier) {
-        Semantics.VisitBarrier(barrier);
+        Analyser.VisitBarrier(barrier);
 
         Circuit.GateSchedule.ScheduleEvent(
             GetBarrierEvent(barrier)
@@ -235,7 +242,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     public void VisitClassicalIf(IfContext @if) {
-        Semantics.VisitClassicalIf(@if);
+        Analyser.VisitClassicalIf(@if);
 
         switch (@if.Operation) {
             case MeasurementContext context: {
