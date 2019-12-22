@@ -14,7 +14,7 @@ public static class AStarSearch {
 
         public override bool Equals(object other) {
             return other switch {
-                SearchNode<T> node => node.Current == Current,
+                SearchNode<T> node => node.Current.Equals(this.Current),
                 _ => base.Equals(other)
             };
         }
@@ -27,16 +27,6 @@ public static class AStarSearch {
         public int Compare(SearchNode<T> x, SearchNode<T> y) {
             return x.F.CompareTo(y.F);
         }
-    }
-
-    private class LargestFirstComparison<T>: IComparer<SearchNode<T>> {
-        public int Compare(SearchNode<T> x, SearchNode<T> y) {
-            return -1 * x.F.CompareTo(y.F);
-        }
-    }
-
-    public enum SortOrder {
-        Shortest, Longest
     }
 
     /// <summary>
@@ -66,11 +56,18 @@ public static class AStarSearch {
     /// <param name="heuristic">comparison heuristic</param>
     /// <typeparam name="T">iterator stored type</typeparam>
     /// <returns>path from start to end iterator</returns>
-    public static IEnumerable<IGraphIterator<T>> Path<T> (IGraphIterator<T> start, IGraphIterator<T> end, SortOrder order, Func<IGraphIterator<T>,int> heuristic) {
+    public static IEnumerable<IGraphIterator<T>> Path<T> (IGraphIterator<T> start, IGraphIterator<T> end, Func<IGraphIterator<T>,int> heuristic) {
+        // Start is end
+        if (start == end) {
+            var x = new List<IGraphIterator<T>>(1);
+            x.Add(start);
+            return x;
+        } 
+
         // Already evaluated nodes
         HashSet<SearchNode<T>> closed = new HashSet<SearchNode<T>>();
         // Current nodes
-        var comparer = order == SortOrder.Shortest ? (IComparer<SearchNode<T>>)new SmallestFirstComparison<T>() : (IComparer<SearchNode<T>>)new LargestFirstComparison<T>();
+        var comparer = new SmallestFirstComparison<T>();
         PriorityQueue<SearchNode<T>> open = new PriorityQueue<SearchNode<T>>(comparer);
 
         // Init
@@ -95,7 +92,7 @@ public static class AStarSearch {
                 node.Current = successor.Node;
                 node.Parent = current;
 
-                if (successor.Equals(end)) {
+                if (node.Current.Equals(end)) {
                     return Backtrack<T>(node);
                 }
 

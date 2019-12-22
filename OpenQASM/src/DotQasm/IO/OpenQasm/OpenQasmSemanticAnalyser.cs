@@ -20,9 +20,12 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
 
     public int CbitCount {get; set;}
 
-    public int GateUses {get; set;}
-
-    public int InstructionCount {get; set;}
+    public int GateUseCount {get; set;}
+    public int MeasurementCount {get; set;}
+    public int ResetCount {get; set;}
+    public int BarrierCount {get; set;}
+    public int ClassicalConditionCount {get; set;}
+    public int StatementCount {get; set;}
 
     public OpenQasmSemanticAnalyser() {}
 
@@ -43,7 +46,7 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
     }
 
     public void VisitStatement(StatementContext stmt) {
-        InstructionCount++;
+        StatementCount++;
         switch (stmt) {
             case BarrierContext barrier: 
                 VisitBarrier(barrier);
@@ -182,7 +185,7 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
                 }
                 break;
         }
-        GateUses++;
+        GateUseCount++;
     }
 
     public void VisitMeasurement (MeasurementContext measure) {
@@ -193,12 +196,16 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
         if (!IsType(measure.ClassicalArgument.ArgumentName, OpenQasmType.CReg)) {
             throw new OpenQasmSemanticException(measure, "Second argument of measure must be a classical variable");
         }
+
+        MeasurementCount++;
     }
 
     public void VisitReset (ResetContext reset) {
         if (!IsType(reset.Argument.ArgumentName, OpenQasmType.QReg)) {
             throw new OpenQasmSemanticException(reset, "Argument of reset must be a quantum variable");
         }
+        
+        ResetCount++;
     }
 
     public void VisitBarrier(BarrierContext barrier) {
@@ -207,6 +214,8 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
                 throw new OpenQasmSemanticException(argument, "Argument of barrier must be a quantum variable");
             }
         }
+
+        BarrierCount++;
     }
 
     public void VisitClassicalIf(IfContext @if) {
@@ -227,6 +236,7 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
             default:
                 throw new OpenQasmSemanticException(@if.Operation, "Operation is not supported in 'if' statement");
         }
+        ClassicalConditionCount ++;
     }
 
 }
