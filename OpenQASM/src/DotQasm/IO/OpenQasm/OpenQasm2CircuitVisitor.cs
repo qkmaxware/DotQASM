@@ -110,7 +110,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
 
     public void VisitProgram(ProgramContext program) {
         foreach (var stmt in program.Statements) {
-            Analyser.InstructionCount++;
+            Analyser.StatementCount++;
             switch (stmt) {
                 case BarrierContext barrier: 
                     VisitBarrier(barrier);
@@ -140,38 +140,51 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
         }
     }
 
-    private void ExpandUnitaryQuantumOperatorEvents(UnitaryOperationContext qop, List<IEvent> list, Dictionary<string, double> vars = null) {
-        // TODO add to circuit schedule, expand operator if need be
+    private void ExpandUnitaryQuantumOperatorEvents(UnitaryOperationContext qop, List<IEvent> list, Dictionary<string, double> vars = null, List<ArgumentContext> actualParametres = null) {
         vars = vars ?? new Dictionary<string, double>();
+        var declaredParametres = qop.QuantumParametres;
+
         switch (qop.OperationName) {
             case "U": {
                 IEnumerable<double> values = qop.ClassicalParametres.Select((x) => x.Evaluate(vars)); 
 
                 list.Add(new GateEvent(
                     Gate.U(values.ElementAt(0), values.ElementAt(1), values.ElementAt(2)),
-                    qop.QuantumParametres.SelectMany((x) => GetQubitsForArgument(x))
+                    (actualParametres ?? declaredParametres).SelectMany((x) => GetQubitsForArgument(x))
                 ));
             } break;
             case "CX": {
                 list.Add(new GateEvent(
                     Gate.CNot,
-                    qop.QuantumParametres.SelectMany((x) => GetQubitsForArgument(x))
+                     (actualParametres ?? declaredParametres).SelectMany((x) => GetQubitsForArgument(x))
                 ));
             } break;
             default: {
                 GateDeclContext gate = Analyser.GetGateDefinition(qop.OperationName);
                 IEnumerable<double> values = qop.ClassicalParametres.Select((x) => x.Evaluate(vars));  
+                Dictionary<string, ArgumentContext> formalActualMap = new Dictionary<string, ArgumentContext>();
+                for (int i = 0; i < gate.QuantumArguments.Count; i++) {
+                    var formal = gate.QuantumArguments[i];
+                    var actual = (actualParametres ?? qop.QuantumParametres)[i];
+                    formalActualMap.Add(formal, actual);
+                }
 
                 foreach (var appl in gate.Operations) {
                     switch (appl) {
                         case UnitaryOperationContext uop: {
                             // Create new values for passing onto next func
-                            //Dictionary<string, double> newVars;
-                            
-                            //TODO
+                            Dictionary<string, double> newVars = new Dictionary<string, double>();
+                        
+                            foreach (var (value, key) in values.Select((x, y) => (x, y))) {
+                                if (key < gate.ClassicalArguments.Count)
+                                    newVars.Add(gate.ClassicalArguments[key], value);
+                            }
+
+                            // Construct actual parametre list
+                            var actual = uop.QuantumParametres.Select((x) => formalActualMap[x.ArgumentName]).ToList();
 
                             // Can be a unitary operator or a barrier
-                            //ExpandUnitaryQuantumOperatorEvents(uop, list, newVars);
+                            ExpandUnitaryQuantumOperatorEvents(uop, list, newVars, actual);
                         } break;
                         case BarrierContext barrier: {
                             list.Add(GetBarrierEvent(barrier));
@@ -247,13 +260,21 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
         switch (@if.Operation) {
             case MeasurementContext context: {
                 Circuit.GateSchedule.ScheduleEvent(
-                    GetMeasurementEvent(context)
+                    new IfEvent(
+                        GetCRegister(@if.ClassicalVariableName),
+                        @if.ClassicalVariableValue,
+                        GetMeasurementEvent(context)
+                    )
                 );
                 break;
             }
             case ResetContext context: {
                 Circuit.GateSchedule.ScheduleEvent(
-                    GetResetEvent(context)
+                    new IfEvent(
+                        GetCRegister(@if.ClassicalVariableName),
+                        @if.ClassicalVariableValue,
+                        GetResetEvent(context)
+                    )
                 );
                 break;
             }
@@ -262,7 +283,11 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
                 ExpandUnitaryQuantumOperatorEvents(context, events);
                 foreach (var evt in events) {
                     Circuit.GateSchedule.ScheduleEvent(
-                        new IfEvent(GetCbit(@if.ClassicalVariableName), @if.ClassicalVariableValue, evt)
+                        new IfEvent(
+                            GetCRegister(@if.ClassicalVariableName), 
+                            @if.ClassicalVariableValue, 
+                            evt
+                        )
                     );
                 }
                 break;

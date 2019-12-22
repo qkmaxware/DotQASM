@@ -37,23 +37,25 @@ public class Transpile : ICommand {
         ITranspiler<OpenQasmAstContext, string> transpiler = null;
         switch (Language) {
             case SupportedLanguages.OpenQASM:
-                // transpiler ?? new IO.OpenQASM.Transpiler();
+                // transpiler = transpiler ?? new IO.OpenQASM.Transpiler();
             case SupportedLanguages.ProjectQ:
-                // transpiler ?? new IO.ProjectQ.Transpiler();
+                // transpiler = transpiler ?? new IO.ProjectQ.Transpiler();
             case SupportedLanguages.QISkit:
-                // transpiler ?? new IO.QISkit.Transpiler();
+                // transpiler = transpiler ?? new IO.QISkit.Transpiler();
             case SupportedLanguages.QSharp:
-                // transpiler ?? new IO.QSharp.Transpiler();
+                transpiler = transpiler ?? (ITranspiler<OpenQasmAstContext, string>)new IO.QSharp.QSharpTranspiler();
+                goto case SupportedLanguages.Scaffold;
             case SupportedLanguages.Quil:
-                // transpiler ?? new IO.Quil.Transpiler();
+                // transpiler = transpiler ?? new IO.Quil.Transpiler();
             case SupportedLanguages.Scaffold:
-                // transpiler ?? new IO.Scaffold.Transpiler();
+                // transpiler = transpiler ?? new IO.Scaffold.Transpiler();
                 string NameOnly = Path.GetFileName(QasmFile);
                 string OutputNameOnly = Path.GetFileName(OutputFile);
                 Console.Write(QasmFile + " -> " + OutputNameOnly + " ... ");
 
                 // var node = ...
-                // transpiler?.Transpile(node);
+                // var content = transpiler?.Transpile(node);
+                // using (StreamWriter writer = new StreamWriter(OutputFile)) { writer.Write(content) }
 
                 Console.WriteLine("Saved");
                 return Status.Success;

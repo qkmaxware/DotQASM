@@ -19,6 +19,7 @@ public class Stat : ICommand {
     public IEnumerable<string> InputFiles { get; set; }
 
     public Status Exec() {
+        // Read in text
         string contents = null;
         string filename = null;
         string directory = null;
@@ -57,26 +58,38 @@ public class Stat : ICommand {
             builder.VisitProgram(program);
             OpenQasmSemanticAnalyser semanticAnalyser = builder.Analyser;
             
+            // Compute runtime
             var timer = new BasicTimeEstimator();
-            var longTime = timer.LongestTimeBetween(
+            TimeSpan? longTime = timer.ShortestTimeBetween(
                 builder.Circuit.GateSchedule.First, 
                 builder.Circuit.GateSchedule.Last
             );
 
-            var fmt ="{0,-24} {1,-10}";
+            // Print analysis results
+            int[] widths = new int[]{24,42};
+            var fmt ="{0,-"+widths[0]+"} {1,-"+widths[1]+"}";
             Console.WriteLine(string.Format(fmt, "Property", "Value"));
-            Console.WriteLine(string.Format(fmt, new string('-', 24), new string('-', 10)));
-            Console.WriteLine(string.Format(fmt, "Processing Time", parsetime.Milliseconds + "ms"));
+            Console.WriteLine(string.Format(fmt, new string('-', widths[0]), new string('-', widths[1])));
+            Console.WriteLine(string.Format(fmt, "QASM Statements", semanticAnalyser.StatementCount));
             Console.WriteLine(string.Format(fmt, "Quantum Bits", semanticAnalyser.QubitCount));
             Console.WriteLine(string.Format(fmt, "Classic Bits", semanticAnalyser.CbitCount));
-            Console.WriteLine(string.Format(fmt, "Gate Uses", semanticAnalyser.GateUses));
-            Console.WriteLine(string.Format(fmt, "Instructions", semanticAnalyser.InstructionCount));
-            Console.WriteLine(string.Format(fmt, "Est. Running Time", "~" + ((longTime?.Milliseconds.ToString()) ?? "?") + "ms"));
+            Console.WriteLine(string.Format(fmt, "Scheduled Events", builder.Circuit.GateSchedule.EventCount));
+            Console.WriteLine(string.Format(fmt, "First Event", builder.Circuit.GateSchedule.First.Current.GetType()));
+            Console.WriteLine(string.Format(fmt, "Last Event", builder.Circuit.GateSchedule.Last.Current.GetType()));
+            Console.WriteLine(string.Format(fmt, "Gate Uses", semanticAnalyser.GateUseCount));
+            Console.WriteLine(string.Format(fmt, "Measurements", semanticAnalyser.MeasurementCount));
+            Console.WriteLine(string.Format(fmt, "Resets", semanticAnalyser.ResetCount));
+            Console.WriteLine(string.Format(fmt, "Barriers", semanticAnalyser.BarrierCount));
+            Console.WriteLine(string.Format(fmt, "Conditionals", semanticAnalyser.ClassicalConditionCount));
+            Console.WriteLine(string.Format(fmt, "Est. Time", (longTime.HasValue ? "~" + longTime.Value.Milliseconds + "ns" : "?")));
+        
         } catch (OpenQasmException ex) {
             Console.WriteLine(ex.Format(filename, contents));
             return Status.Failure;
+        
         } catch (Exception ex) {
             Console.WriteLine(ex.Message);
+            Console.Write(ex.StackTrace);
             return Status.Failure;
         }
 

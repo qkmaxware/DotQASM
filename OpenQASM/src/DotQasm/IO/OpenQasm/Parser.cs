@@ -54,7 +54,7 @@ productionlist::
 /// <summary>
 /// Parser for OpenQASM formatted text
 /// </summary>
-public class Parser: IParser<Circuit>, IEmitter<Circuit> {
+public class Parser: IParser<Circuit> {
 
     /// <summary>
     /// Internal token queue
@@ -823,29 +823,6 @@ public class Parser: IParser<Circuit>, IEmitter<Circuit> {
         return circuit;
     }
 
-    /// <summary>
-    /// Convert a quantum circuit to an OpenQASM program
-    /// </summary>
-    /// <param name="program">Quantum circuit</param>
-    /// <returns>OpenQASM program</returns>
-    public string Stringify(Circuit program) {
-        StringBuilder builder = new StringBuilder();
-        using (StringWriter writer = new StringWriter(builder)) {
-            Stringify(program, writer);
-        }
-        return builder.ToString();
-    }
-
-    /// <summary>
-    /// Convert a quantum circuit to an OpenQASM program
-    /// </summary>
-    /// <param name="program">Quantum circuit</param>
-    /// <param name="writer">TextWriter to output OpenQASM program to</param>
-    /// <returns>OpenQASM program</returns>
-    public void Stringify(Circuit program, TextWriter writer) {
-        writer.WriteLine("OPENQASM 2.0;");
-        // TODO
-    }
 }
 
 }

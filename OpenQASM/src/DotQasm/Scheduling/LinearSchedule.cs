@@ -6,18 +6,22 @@ namespace DotQasm.Scheduling {
 
 public class LinearSchedule: ISchedule {
 
+    /// <summary>
+    /// Iterator for linear schedules
+    /// </summary>
     public class LinearIterator : IEventGraphIterator {
         private int position;
         private IEnumerable<IEvent> list;
         public IEnumerable<IGraphEdge<IEvent>> Next => 
-        position < list.Count() - 1 
-        ? new IGraphEdge<IEvent>[]{ 
+        !IsEnd 
+        ? new IGraphEdge<IEvent>[] { 
             new IGraphEdge<IEvent>(
-                0,
+                1,
                 new LinearIterator(list, position + 1) 
             )
         } 
         : new IGraphEdge<IEvent>[0];
+        public bool IsEnd => position >= list.Count() - 1;
         public IEvent Current {get; private set;}
 
         public LinearIterator(IEnumerable<IEvent> list, int position) {
@@ -42,6 +46,7 @@ public class LinearSchedule: ISchedule {
 
     public IEnumerable<IEvent> Events => events;
 
+    public int EventCount => Events.Count();
     public IEventGraphIterator First => new LinearIterator(Events, 0);
     public IEventGraphIterator Last => new LinearIterator(Events, Events.Count() - 1);
 
