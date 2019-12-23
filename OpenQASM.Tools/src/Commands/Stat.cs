@@ -12,11 +12,11 @@ namespace DotQasm.Tools.Commands {
 [Verb("stat", HelpText="")]
 public class Stat : ICommand {
 
-    [Value(0, MetaName="file", HelpText="OpenQASM file path")]
+    [Value(0, MetaName = "file", HelpText = "OpenQASM file path")]
     public string QasmFile {get; set;}
 
     [Option('o', "optimization", Required = false, HelpText = "Optimizations to apply")]
-    public IEnumerable<string> InputFiles { get; set; }
+    public IEnumerable<string> Optimizations { get; set; }
 
     public Status Exec() {
         // Read in text
@@ -57,25 +57,31 @@ public class Stat : ICommand {
             OpenQasm2CircuitVisitor builder = new OpenQasm2CircuitVisitor();
             builder.VisitProgram(program);
             OpenQasmSemanticAnalyser semanticAnalyser = builder.Analyser;
+            Circuit circuit = builder.Circuit;
             
+            // Apply optimizations
+            foreach (var optimization in this.Optimizations) {
+                
+            }
+
             // Compute runtime
             var timer = new BasicTimeEstimator();
             TimeSpan? longTime = timer.ShortestTimeBetween(
-                builder.Circuit.GateSchedule.First, 
-                builder.Circuit.GateSchedule.Last
+                circuit.GateSchedule.First, 
+                circuit.GateSchedule.Last
             );
 
             // Print analysis results
-            int[] widths = new int[]{24,42};
+            int[] widths = new int[]{24, 42};
             var fmt ="{0,-"+widths[0]+"} {1,-"+widths[1]+"}";
             Console.WriteLine(string.Format(fmt, "Property", "Value"));
             Console.WriteLine(string.Format(fmt, new string('-', widths[0]), new string('-', widths[1])));
             Console.WriteLine(string.Format(fmt, "QASM Statements", semanticAnalyser.StatementCount));
             Console.WriteLine(string.Format(fmt, "Quantum Bits", semanticAnalyser.QubitCount));
             Console.WriteLine(string.Format(fmt, "Classic Bits", semanticAnalyser.CbitCount));
-            Console.WriteLine(string.Format(fmt, "Scheduled Events", builder.Circuit.GateSchedule.EventCount));
-            Console.WriteLine(string.Format(fmt, "First Event", builder.Circuit.GateSchedule.First.Current.GetType()));
-            Console.WriteLine(string.Format(fmt, "Last Event", builder.Circuit.GateSchedule.Last.Current.GetType()));
+            Console.WriteLine(string.Format(fmt, "Scheduled Events", circuit.GateSchedule.EventCount));
+            Console.WriteLine(string.Format(fmt, "First Event", circuit.GateSchedule.First.Current.GetType()));
+            Console.WriteLine(string.Format(fmt, "Last Event", circuit.GateSchedule.Last.Current.GetType()));
             Console.WriteLine(string.Format(fmt, "Gate Uses", semanticAnalyser.GateUseCount));
             Console.WriteLine(string.Format(fmt, "Measurements", semanticAnalyser.MeasurementCount));
             Console.WriteLine(string.Format(fmt, "Resets", semanticAnalyser.ResetCount));

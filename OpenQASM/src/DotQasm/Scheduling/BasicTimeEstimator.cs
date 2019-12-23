@@ -5,14 +5,16 @@ namespace DotQasm.Scheduling {
 
 public class BasicTimeEstimator : ITimeEstimator {
 
-    // Default times based on https://github.com/Qiskit/ibmq-device-information/tree/master/backends/yorktown/V1
-    public TimeSpan SingleGateTime = TimeSpan.FromMilliseconds(2.8);
-    public TimeSpan MultipleGateTime = TimeSpan.FromMilliseconds(2.9);
+    private static readonly double ns = 1e-6;
+
+    // Default times based on https://github.com/Qiskit/ibmq-device-information/blob/master/backends/yorktown/V1/version_log.md
+    public TimeSpan SingleGateTime = TimeSpan.FromMilliseconds(150 * ns);
+    public TimeSpan MultipleGateTime = TimeSpan.FromMilliseconds(211 * ns); // AVERAGE OF 190,190,250,250,150,240 for CX times
     public TimeSpan ClassicalCheckLatency = TimeSpan.FromMilliseconds(1);
     public TimeSpan MeasurementTime = TimeSpan.FromMilliseconds(1);
-    public TimeSpan ResetTime = TimeSpan.FromMilliseconds(1);
-    public TimeSpan BarrierTime = new TimeSpan();
-    public TimeSpan OtherEventTime = TimeSpan.FromMilliseconds(1);
+    public TimeSpan ResetTime = TimeSpan.FromMilliseconds(1); // Set to MeasurementTime + SingleGateTime
+    public TimeSpan BarrierTime = new TimeSpan(); // Is a compiler pragma and takes no time
+    public TimeSpan OtherEventTime = new TimeSpan(); // Unidentified events get this time
 
     public TimeSpan TimeOf (IEvent evt) {
         return evt switch {
@@ -30,7 +32,7 @@ public class BasicTimeEstimator : ITimeEstimator {
 
     public TimeSpan? ShortestTimeBetween (IEventGraphIterator start, IEventGraphIterator end) {
         return DotQasm.Search.AStarSearch.Path(start, end, (evt) => {
-            return 0; 
+            return 0; //TimeOf(evt.Current).TotalMilliseconds
         })
         ?.Select(x => TimeOf(x.Current))
         ?.Aggregate((a,b) => a.Add(b));

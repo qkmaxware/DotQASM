@@ -16,7 +16,7 @@ public class LinearSchedule: ISchedule {
         !IsEnd 
         ? new IGraphEdge<IEvent>[] { 
             new IGraphEdge<IEvent>(
-                1,
+                0,
                 new LinearIterator(list, position + 1) 
             )
         } 

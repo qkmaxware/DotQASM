@@ -56,7 +56,7 @@ public static class AStarSearch {
     /// <param name="heuristic">comparison heuristic</param>
     /// <typeparam name="T">iterator stored type</typeparam>
     /// <returns>path from start to end iterator</returns>
-    public static IEnumerable<IGraphIterator<T>> Path<T> (IGraphIterator<T> start, IGraphIterator<T> end, Func<IGraphIterator<T>,int> heuristic) {
+    public static IEnumerable<IGraphIterator<T>> Path<T> (IGraphIterator<T> start, IGraphIterator<T> end, Func<IGraphIterator<T>,double> heuristic) {
         // Start is end
         if (start == end) {
             var x = new List<IGraphIterator<T>>(1);

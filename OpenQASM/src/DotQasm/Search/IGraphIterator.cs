@@ -4,9 +4,9 @@ namespace DotQasm.Search {
 
 public class IGraphEdge<T> {
    public IGraphIterator<T> Node {get; private set;}
-   public int Weight {get; private set;}
+   public double Weight {get; private set;}
 
-   public IGraphEdge(int weight, IGraphIterator<T> iterator) {
+   public IGraphEdge(double weight, IGraphIterator<T> iterator) {
       this.Weight = weight;
       this.Node = iterator;
    }
