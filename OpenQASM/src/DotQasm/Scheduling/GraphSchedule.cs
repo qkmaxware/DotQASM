@@ -5,6 +5,44 @@ using DotQasm.Search;
 namespace DotQasm.Scheduling {
 
 public class GraphSchedule : ISchedule {
+    private class NanEvent : IEvent {
+        private Circuit.Qubit[] qubits = new Circuit.Qubit[0];
+        private Circuit.Cbit[] cbits = new Circuit.Cbit[0];
+        public IEnumerable<Circuit.Qubit> QuantumDependencies => qubits;
+        public IEnumerable<Circuit.Cbit> ClassicalDependencies => cbits;
+
+        public override bool Equals(object obj) {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode() {
+            return base.GetHashCode();
+        }
+    }
+
+    public class GraphIterator : IEventGraphIterator {
+        private GraphSchedule graph;
+        private int evt;
+
+        public GraphIterator(GraphSchedule graph, int evt) {
+            this.graph = graph;
+            this.evt = evt;
+        }
+        public IEnumerable<IGraphEdge<IEvent>> Next => graph.Neighbors(this.evt);
+        public IEvent Current => this.graph.Events.ElementAt(this.evt);
+
+        public override bool Equals(object obj) {
+            return obj switch {
+                GraphIterator it => it.graph == this.graph && it.evt == this.evt,
+                _ => base.Equals(obj)
+            };
+        }
+
+        public override int GetHashCode() {
+            return this.evt ^ this.graph.GetHashCode();
+        }
+    }
+
     // List of events
     public IEnumerable<IEvent> Events {get; private set;}
     
@@ -12,11 +50,13 @@ public class GraphSchedule : ISchedule {
     public int EventCount {get; private set;}
 
     // Get iterators to the first and last events
-    public IEventGraphIterator First => throw new System.Exception();
-    public IEventGraphIterator Last => throw new System.Exception();
+    public IEventGraphIterator First => new GraphIterator(this, StartNodeIndex);
+    public IEventGraphIterator Last => new GraphIterator(this, EndNodeIndex);
 
-    private IEvent startNode;
-    private IEvent endNode;
+    private IEvent startNode = new NanEvent();
+    public IEvent ScheduleStartEvent => startNode;
+    private IEvent endNode = new NanEvent();
+    public IEvent ScheduleEndEvent => endNode;
 
     // Helper utility accessors to get quick access to elements of the matrix
     public int StartNodeIndex => 0;
@@ -48,17 +88,22 @@ public class GraphSchedule : ISchedule {
         }
     }
 
-    public IEnumerable<IEvent> Neighbors(int from) {
-        List<IEvent> evts = new List<IEvent>();
+    public void AddEdge(int from, int to, double weight) {
+        this.adjacencyMatrix[from, to] = true;
+        this.weightMatrix[from, to] = weight;
+    }
+
+    public void RemoveEdge(int from, int to) {
+        this.adjacencyMatrix[from, to] = false;
+        this.weightMatrix[from, to] = default;
+    }
+
+    public IEnumerable<IGraphEdge<IEvent>> Neighbors(int from) {
+        List<IGraphEdge<IEvent>> evts = new List<IGraphEdge<IEvent>>();
         for (int to = 0; to < this.EventCount; to++) {
-            if (adjacencyMatrix[from, to]) {
-                if (to == 0) {
-                    evts.Add(startNode);
-                } else if (to == 1) {
-                    evts.Add(endNode);
-                } else {
-                    evts.Add(Events.ElementAt(to - 2));
-                }
+            if (IsConnected(from, to)) {
+                var weight = ConnectionWeight(from, to);
+                evts.Add(new IGraphEdge<IEvent>(weight, new GraphIterator(this, to)));
             }
         }
         return evts;

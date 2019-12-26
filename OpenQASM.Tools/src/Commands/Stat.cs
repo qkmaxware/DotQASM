@@ -87,7 +87,7 @@ public class Stat : ICommand {
             Console.WriteLine(string.Format(fmt, "Resets", semanticAnalyser.ResetCount));
             Console.WriteLine(string.Format(fmt, "Barriers", semanticAnalyser.BarrierCount));
             Console.WriteLine(string.Format(fmt, "Conditionals", semanticAnalyser.ClassicalConditionCount));
-            Console.WriteLine(string.Format(fmt, "Est. Time", (longTime.HasValue ? "~" + longTime.Value.Milliseconds + "ns" : "?")));
+            Console.WriteLine(string.Format(fmt, "Est. Time", (longTime.HasValue ? "~" + longTime.Value.TotalMilliseconds + "ns" : "?")));
         
         } catch (OpenQasmException ex) {
             Console.WriteLine(ex.Format(filename, contents));
