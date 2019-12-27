@@ -15,6 +15,9 @@ public class Stat : ICommand {
     [Value(0, MetaName = "file", HelpText = "OpenQASM file path")]
     public string QasmFile {get; set;}
 
+    [Option('m', "show-matrix", Required = false, HelpText = "Show instruction dependency matrix")]
+    public bool ShowMatrix {get; set;}
+
     [Option('o', "optimization", Required = false, HelpText = "Optimizations to apply")]
     public IEnumerable<string> Optimizations { get; set; }
 
@@ -58,20 +61,37 @@ public class Stat : ICommand {
             builder.VisitProgram(program);
             OpenQasmSemanticAnalyser semanticAnalyser = builder.Analyser;
             Circuit circuit = builder.Circuit;
-            
-            // Apply optimizations
-            foreach (var optimization in this.Optimizations) {
-                
-            }
-
-            // Compute runtime
+            var linearEventCount = circuit.GateSchedule.EventCount;
+            var first = circuit.GateSchedule.First;
+            var last = circuit.GateSchedule.Last;
+            // Before optimization time
             var timer = new BasicTimeEstimator();
             TimeSpan? longTime = timer.ShortestTimeBetween(
                 circuit.GateSchedule.First, 
                 circuit.GateSchedule.Last
             );
 
+            circuit.GateSchedule = new GraphSchedule(circuit.GateSchedule.Events);
+
+            // Apply optimizations
+            foreach (var optimization in this.Optimizations) {
+                
+            }
+
+            // After optimization time
+            TimeSpan? shortTime = timer.ShortestTimeBetween(
+                circuit.GateSchedule.First, 
+                circuit.GateSchedule.Last
+            );
+
             // Print analysis results
+            if (ShowMatrix) {
+                Console.WriteLine("Connectivity Matrix:");
+                Console.WriteLine(circuit.GateSchedule.ToString());
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("QASM Properties:");
             int[] widths = new int[]{24, 42};
             var fmt ="{0,-"+widths[0]+"} {1,-"+widths[1]+"}";
             Console.WriteLine(string.Format(fmt, "Property", "Value"));
@@ -79,16 +99,17 @@ public class Stat : ICommand {
             Console.WriteLine(string.Format(fmt, "QASM Statements", semanticAnalyser.StatementCount));
             Console.WriteLine(string.Format(fmt, "Quantum Bits", semanticAnalyser.QubitCount));
             Console.WriteLine(string.Format(fmt, "Classic Bits", semanticAnalyser.CbitCount));
-            Console.WriteLine(string.Format(fmt, "Scheduled Events", circuit.GateSchedule.EventCount));
-            Console.WriteLine(string.Format(fmt, "First Event", circuit.GateSchedule.First.Current.GetType()));
-            Console.WriteLine(string.Format(fmt, "Last Event", circuit.GateSchedule.Last.Current.GetType()));
+            Console.WriteLine(string.Format(fmt, "Scheduled Events", linearEventCount.ToString()));
+            Console.WriteLine(string.Format(fmt, "First Event", first.Current.GetType()));
+            Console.WriteLine(string.Format(fmt, "Last Event", last.Current.GetType()));
             Console.WriteLine(string.Format(fmt, "Gate Uses", semanticAnalyser.GateUseCount));
             Console.WriteLine(string.Format(fmt, "Measurements", semanticAnalyser.MeasurementCount));
             Console.WriteLine(string.Format(fmt, "Resets", semanticAnalyser.ResetCount));
             Console.WriteLine(string.Format(fmt, "Barriers", semanticAnalyser.BarrierCount));
             Console.WriteLine(string.Format(fmt, "Conditionals", semanticAnalyser.ClassicalConditionCount));
-            Console.WriteLine(string.Format(fmt, "Est. Time", (longTime.HasValue ? "~" + longTime.Value.TotalMilliseconds + "ns" : "?")));
-        
+            Console.WriteLine(string.Format(fmt, "Est. Un-optimized Time.", (longTime.HasValue ? "~" + longTime.Value.TotalMilliseconds.ToString("0.00") + "ns" : "?")));
+            Console.WriteLine(string.Format(fmt, "Est. Optimized Time", (shortTime.HasValue ? "~" + shortTime.Value.TotalMilliseconds.ToString("0.00") + "ns" : "?")));
+
         } catch (OpenQasmException ex) {
             Console.WriteLine(ex.Format(filename, contents));
             return Status.Failure;

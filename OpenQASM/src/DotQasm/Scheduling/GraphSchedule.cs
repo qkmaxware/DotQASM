@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 using DotQasm.Search;
 
@@ -10,14 +11,6 @@ public class GraphSchedule : ISchedule {
         private Circuit.Cbit[] cbits = new Circuit.Cbit[0];
         public IEnumerable<Circuit.Qubit> QuantumDependencies => qubits;
         public IEnumerable<Circuit.Cbit> ClassicalDependencies => cbits;
-
-        public override bool Equals(object obj) {
-            return base.Equals(obj);
-        }
-
-        public override int GetHashCode() {
-            return base.GetHashCode();
-        }
     }
 
     public class GraphIterator : IEventGraphIterator {
@@ -28,8 +21,8 @@ public class GraphSchedule : ISchedule {
             this.graph = graph;
             this.evt = evt;
         }
-        public IEnumerable<IGraphEdge<IEvent>> Next => graph.Neighbors(this.evt);
-        public IEvent Current => this.graph.Events.ElementAt(this.evt);
+        public IEnumerable<IGraphEdge<IEvent>> Next => this.graph.Neighbors(this.evt);
+        public IEvent Current => this.graph.GetEvent(this.evt);
 
         public override bool Equals(object obj) {
             return obj switch {
@@ -48,6 +41,7 @@ public class GraphSchedule : ISchedule {
     
     // Total number of events
     public int EventCount {get; private set;}
+    private int TotalEventCount {get; set;}
 
     // Get iterators to the first and last events
     public IEventGraphIterator First => new GraphIterator(this, StartNodeIndex);
@@ -73,18 +67,22 @@ public class GraphSchedule : ISchedule {
         this.Events = events;
         this.EventCount = events.Count();
         int count = this.EventCount;
-        int total = count + 2;
+
         // Add 2 spots at the start for "start" and "end" node
+        int total = count + 2; 
+        TotalEventCount = total;
         adjacencyMatrix = new bool[total, total];
         weightMatrix = new double[total, total];
+
         // Create linear chain
         adjacencyMatrix[StartNodeIndex, 2] = true;         // Start node to start of events
-        adjacencyMatrix[count +2, EndNodeIndex] = true;    // last of events to end node
+        adjacencyMatrix[count + 1, EndNodeIndex] = true;   // last of events to end node
 
         int pos = 3;
         foreach (var evt in events) {
             if(pos < total)
                 adjacencyMatrix[pos - 1, pos] = true;       // Chain from one event to the next
+            pos++;
         }
     }
 
@@ -100,10 +98,12 @@ public class GraphSchedule : ISchedule {
 
     public IEnumerable<IGraphEdge<IEvent>> Neighbors(int from) {
         List<IGraphEdge<IEvent>> evts = new List<IGraphEdge<IEvent>>();
-        for (int to = 0; to < this.EventCount; to++) {
+        for (int to = 0; to < this.TotalEventCount; to++) {
             if (IsConnected(from, to)) {
-                var weight = ConnectionWeight(from, to);
-                evts.Add(new IGraphEdge<IEvent>(weight, new GraphIterator(this, to)));
+                evts.Add(new IGraphEdge<IEvent>(
+                    ConnectionWeight(from, to), 
+                    new GraphIterator(this, to)
+                ));
             }
         }
         return evts;
@@ -117,8 +117,36 @@ public class GraphSchedule : ISchedule {
         return weightMatrix[from, to];
     }
 
+    public IEvent GetEvent(int evt) {
+        if (evt == StartNodeIndex) {
+            return this.startNode;
+        } else if (evt == EndNodeIndex) {
+            return this.endNode;
+        } else {
+            return this.Events.ElementAt(evt - 2);
+        }
+    }
+
     public void ScheduleEvent(IEvent evt){
         throw new System.Data.ReadOnlyException();
+    }
+
+    public override string ToString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (int from = 0; from < TotalEventCount; from++) {
+            sb.Append(string.Format("[", from));
+            for (int to = 0; to < TotalEventCount; to++) {
+                if (IsConnected(from, to)) {
+                    sb.Append(" + ");
+                } else {
+                    sb.Append(" - ");
+                }
+            }
+            sb.AppendLine("]");
+        }
+
+        return sb.ToString();
     }
 }
 

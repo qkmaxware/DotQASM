@@ -76,7 +76,7 @@ public static class AStarSearch {
         startNode.G = 0;
         startNode.H = 0;
         open.Enqueue(startNode);
-
+        
         // Loop
         while (!open.IsEmpty) {
             // Find the node with least F and pop it off the open list
