@@ -18,7 +18,7 @@ public class Stat : ICommand {
     [Option('m', "show-matrix", Required = false, HelpText = "Show instruction dependency matrix")]
     public bool ShowMatrix {get; set;}
 
-    [Option('o', "optimization", Required = false, HelpText = "Optimizations to apply")]
+    [Option('o', "optimization", Required = false, HelpText = "Apply optimization strategy")]
     public IEnumerable<string> Optimizations { get; set; }
 
     public Status Exec() {
@@ -107,8 +107,8 @@ public class Stat : ICommand {
             Console.WriteLine(string.Format(fmt, "Resets", semanticAnalyser.ResetCount));
             Console.WriteLine(string.Format(fmt, "Barriers", semanticAnalyser.BarrierCount));
             Console.WriteLine(string.Format(fmt, "Conditionals", semanticAnalyser.ClassicalConditionCount));
-            Console.WriteLine(string.Format(fmt, "Est. Un-optimized Time.", (longTime.HasValue ? "~" + longTime.Value.TotalMilliseconds.ToString("0.00") + "ns" : "?")));
-            Console.WriteLine(string.Format(fmt, "Est. Optimized Time", (shortTime.HasValue ? "~" + shortTime.Value.TotalMilliseconds.ToString("0.00") + "ns" : "?")));
+            Console.WriteLine(string.Format(fmt, "Est. Un-optimized Time.", (longTime.HasValue ? "~" + longTime.Value.TotalMilliseconds.ToString("0.00") + "ms" : "?")));
+            Console.WriteLine(string.Format(fmt, "Est. Optimized Time", (shortTime.HasValue ? "~" + shortTime.Value.TotalMilliseconds.ToString("0.00") + "ms" : "?")));
 
         } catch (OpenQasmException ex) {
             Console.WriteLine(ex.Format(filename, contents));

@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 
 namespace DotQasm.Backend {
 
-public interface IBackend {
+public interface IBackend<T> where T:IBackendResult {
     bool IsAvailable();
     bool SupportsGate(Gate gate);
-    Task Exec(Circuit circuit);
+    Task<T> Exec(Circuit circuit);
 }
 
 }

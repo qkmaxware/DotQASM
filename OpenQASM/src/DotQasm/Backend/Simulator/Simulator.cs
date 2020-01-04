@@ -9,7 +9,7 @@ namespace DotQasm.Backend {
 /// <summary>
 /// Simple quantum simulator
 /// </summary>
-public class Simulator : IBackend {
+public class Simulator : IBackend<SimulatorResult> {
  
     private static Random rnd = new Random();
 
@@ -282,13 +282,19 @@ public class Simulator : IBackend {
     /// </summary>
     /// <param name="circuit">quantum circuit to execute</param>
     /// <returns>task which returns the results of the simulation</returns>
-    public Task Exec(Circuit circuit) {
-        // TODO
-        /*
-        foreach (var ScheduledOperator in circuit.Schedule) {
-            ApplyGate(ScheduledOperator.Qubits[0].QubitIndex, ScheduledOperator.Gate);
-        }*/
-        return null;
+    public Task<SimulatorResult> Exec(Circuit circuit) {
+        return new Task<SimulatorResult>(() => {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            List<int> register = new List<int>(new int[circuit.BitCount]);
+            
+            // TODO
+            /*
+            foreach (var ScheduledOperator in circuit.Schedule) {
+                ApplyGate(ScheduledOperator.Qubits[0].QubitIndex, ScheduledOperator.Gate);
+            }*/
+
+            return new SimulatorResult(watch.Elapsed, amplitudes.AsReadOnly(), register);
+        });
     }
 
     /// <summary>
