@@ -1,6 +1,6 @@
 using System.Numerics;
 using DotQasm;
-using DotQasm.Backend;
+using DotQasm.Backend.Local;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Tests.DotQasm.Backend {

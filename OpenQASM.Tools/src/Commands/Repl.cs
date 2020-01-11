@@ -4,7 +4,7 @@ using System.Numerics;
 using System.Collections.Generic;
 using CommandLine;
 using DotQasm;
-using DotQasm.Backend;
+using DotQasm.Backend.Local;
 using DotQasm.IO.OpenQasm;
 
 namespace DotQasm.Tools.Commands {

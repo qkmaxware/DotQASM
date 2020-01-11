@@ -4,7 +4,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace DotQasm.Backend {
+namespace DotQasm.Backend.Local {
     
 /// <summary>
 /// Simple quantum simulator

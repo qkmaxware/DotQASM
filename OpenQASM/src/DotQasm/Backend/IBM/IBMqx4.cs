@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
-
-namespace DotQasm.Backend {
+namespace DotQasm.Backend.IBM {
 
 public class IBMqx4 : IBMBackend {
 

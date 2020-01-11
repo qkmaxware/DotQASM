@@ -2,7 +2,7 @@ using System;
 using System.Numerics;
 using System.Collections.Generic;
 
-namespace DotQasm.Backend {
+namespace DotQasm.Backend.Local {
 
 public class SimulatorResult: IBackendResult {
 

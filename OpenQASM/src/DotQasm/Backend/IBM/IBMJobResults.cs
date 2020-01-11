@@ -1,6 +1,6 @@
 using System;
 
-namespace DotQasm.Backend {
+namespace DotQasm.Backend.IBM {
 
 public class IBMJobResults : IBackendResult {
     public string JobId {get; private set;}
