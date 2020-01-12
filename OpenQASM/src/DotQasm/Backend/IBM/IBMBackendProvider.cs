@@ -11,10 +11,9 @@ namespace DotQasm.Backend.IBM {
                 (IBackend<IBackendResult>)new IBMLondon(key),
                 (IBackend<IBackendResult>)new IBMMelbourne(key),
                 (IBackend<IBackendResult>)new IBMOurense(key),
-                (IBackend<IBackendResult>)new IBMqx4(key),
-                (IBackend<IBackendResult>)new IBMqx5(key),
                 (IBackend<IBackendResult>)new IBMSimulator(key),
-                (IBackend<IBackendResult>)new IBMVigo(key)
+                (IBackend<IBackendResult>)new IBMVigo(key),
+                (IBackend<IBackendResult>)new IBMYorktown(key),
             };
         }
     }

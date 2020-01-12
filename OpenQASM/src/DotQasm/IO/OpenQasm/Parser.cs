@@ -89,6 +89,24 @@ public class Parser: IParser<Circuit> {
         this.Position = 0;
     }
 
+    public static Circuit ParseCircuit(string str, string searchPath = null) {
+        using (StringReader reader = new StringReader(str)) {
+            return ParseCircuit(reader);
+        }
+    }
+
+    public static Circuit ParseCircuit(TextReader content, string searchPath = null) {
+        var tokens = Lexer.Tokenize(content);
+        var parser = new Parser(tokens);
+        parser.IncludeSearchPath = searchPath;
+        var ast = parser.ParseFile();
+
+        OpenQasm2CircuitVisitor builder = new OpenQasm2CircuitVisitor();
+        builder.VisitProgram(ast);
+
+        return builder.Circuit;
+    }
+
     /// <summary>
     /// Check that the next token is of the given type
     /// </summary>

@@ -3,9 +3,13 @@
     transform: scaleX(-1);
 }
 
+pre.highlight {
+    overflow-x: scroll;
+    padding: 10px;
+}
+
 .atom-container-bg {
-    background: rgb(95,199,250);
-    background: linear-gradient(360deg, rgba(95,199,250,1) 0%, rgba(67,207,137,1) 100%);
+    background: #ffefd1;
 }
 
 .atom-orbit {

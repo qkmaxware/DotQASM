@@ -18,9 +18,6 @@ public class Stat : ICommand {
     [Option('m', "show-matrix", Required = false, HelpText = "Show instruction dependency matrix")]
     public bool ShowMatrix {get; set;}
 
-    [Option('o', "optimization", Required = false, HelpText = "Apply optimization strategy")]
-    public IEnumerable<string> Optimizations { get; set; }
-
     public Status Exec() {
         // Read in text
         string contents = null;
@@ -72,11 +69,6 @@ public class Stat : ICommand {
             );
 
             circuit.GateSchedule = new GraphSchedule(circuit.GateSchedule.Events);
-
-            // Apply optimizations
-            foreach (var optimization in this.Optimizations) {
-                
-            }
 
             // After optimization time
             TimeSpan? shortTime = timer.ShortestTimeBetween(

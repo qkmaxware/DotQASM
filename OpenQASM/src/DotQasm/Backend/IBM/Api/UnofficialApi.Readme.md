@@ -28,8 +28,16 @@ Given that this APU is unofficial, it may not be up to date with the real API. A
       - [Purpose](#purpose-4)
       - [Request Body](#request-body-4)
       - [Response Body](#response-body-4)
-    - [/jobs/cancel](#jobscancel)
-    - [/jobs/status](#jobsstatus)
+    - [GET /jobs/{job_id}](#get-jobsjobid)
+      - [Purpose](#purpose-5)
+      - [Request Body](#request-body-5)
+      - [Response Body](#response-body-5)
+    - [/jobs/{job_id}/cancel](#jobsjobidcancel)
+      - [Request Body](#request-body-6)
+      - [Response Body](#response-body-6)
+    - [/jobs/{job_id}/status](#jobsjobidstatus)
+      - [Request Body](#request-body-7)
+      - [Response Body](#response-body-7)
     - [/jobs/properties](#jobsproperties)
     - [/jobs/jobDataUploaded](#jobsjobdatauploaded)
     - [/jobs/resultDownloaded](#jobsresultdownloaded)
@@ -38,22 +46,22 @@ Given that this APU is unofficial, it may not be up to date with the real API. A
     - [/jobs/jobUploadUrl](#jobsjobuploadurl)
   - [/network](#network)
     - [GET /network](#get-network)
-      - [Purpose](#purpose-5)
-      - [Request Body](#request-body-5)
-      - [Response Body](#response-body-5)
-  - [/users](#users)
-    - [POST /users/login](#post-userslogin)
       - [Purpose](#purpose-6)
-      - [Request Body](#request-body-6)
-      - [Response Body](#response-body-6)
-    - [POST /users/loginWithToken](#post-usersloginwithtoken)
-      - [Purpose](#purpose-7)
-      - [Request Body](#request-body-7)
-      - [Response Body](#response-body-7)
-    - [GET /users/me](#get-usersme)
-      - [Purpose](#purpose-8)
       - [Request Body](#request-body-8)
       - [Response Body](#response-body-8)
+  - [/users](#users)
+    - [POST /users/login](#post-userslogin)
+      - [Purpose](#purpose-7)
+      - [Request Body](#request-body-9)
+      - [Response Body](#response-body-9)
+    - [POST /users/loginWithToken](#post-usersloginwithtoken)
+      - [Purpose](#purpose-8)
+      - [Request Body](#request-body-10)
+      - [Response Body](#response-body-10)
+    - [GET /users/me](#get-usersme)
+      - [Purpose](#purpose-9)
+      - [Request Body](#request-body-11)
+      - [Response Body](#response-body-11)
 
 # Endpoints
 ## /backends
@@ -219,51 +227,17 @@ Get all user submitted jobs.
 
 ### POST /jobs
 #### Purpose
-Submit a new job to a particular IBM quantum computer
+Submit a new job to a particular IBM quantum computer. This will not do anything except create the job. Use the `uploadQobjectUrlEndpoint` property of the `objectStorageInfo` to upload a quantum program to the job
 #### Request Body
 ```js
 {
     name: "string",
-    qObject: {},
-    qasm: "string"
     backend: {
         name: "string"
     },
     shots: int,
     allowObjectStorage: bool,
     access_token: "string"  // access_token obtained from appropriate login mechanisms
-}
-```
-For QASM data simply set the `qasm` string. For more complicated data, qObject's must be employed with a data-structure similar to the following:
-```js
-{
-    type: "QASM",
-    schema_version: "1.0",
-    experiments: [
-        {
-            header: {},
-            config: {},
-            instructions: [
-                {
-                    name: "bfunc",  // Name of operation (bfunc, copy, reset, barrier, measure, snapshot, gate_name)
-                    mask: "0xF",    // Mask to apply to select register bits for comparison  
-                    relation: "==", // operation to apply
-                    val: "0x5",     // value to compare to
-                    register: int,  // register slot to store the results
-                    memory: int     // memory slot to store the function results
-                }
-                ...
-            ]
-        }
-        ...
-    ],
-    header: {},
-    config: {
-        shots: int,
-        memory_slots: int,
-        seed: int,
-        max_credits: int
-    }
 }
 ```
 #### Response Body
@@ -299,10 +273,203 @@ For QASM data simply set the `qasm` string. For more complicated data, qObject's
 }
 ```
 
-### /jobs/cancel
+### GET /jobs/{job_id}
+#### Purpose
+Get the information on a specific job if you know the job's unique id
+#### Request Body
+```js
+{
+    access_token: "string"  // access_token obtained from appropriate login mechanisms
+}
+```
+#### Response Body
+```js
+[
+    {
+        qasms: [
+            {
+                qasm: "string",
+                status: "string",
+                executionId: "string",
+                result: ?
+            }
+            ...
+        ],
+        kind: "string",
+        shots: int,
+        backend: {
+            id: "string",
+            name: "string"
+        },
+        status: "string",
+        creationDate: Date,
+        objectStorageInfo: {
+            jobId: "string",
+            uploadQObjectUrlEndpoint: "string",
+            downloadQObjectUrlEndpoint: "string",
+            jobQasmConverted: "string",
+            validatedUrl: "string",
+            validationUploadUrlEndpoint: "string",
+        },
+        summaryData: {
+            size: {
+                input: int,
+                output: int
+            },
+            success: bool,
+            summary: {
+                max_qubits_used: int,
+                gates_executed: int,
+                qobj_config: {
+                    n_qubits: int,
+                    max_credits: int,
+                    memory_slots: int,
+                    memory: bool,
+                    shots: int,
+                    type: "string"
+                },
+                num_circuits: int,
+                partial_validation: bool
+            },
+            resultTime: float
+        }
+        timePerStep: {
+            CREATING: Date,
+            ...
+        },
+        ip: {
+            ip: "string",
+            city: "string",
+            country: "string",
+            continent: "string"
+        },
+        hubInfo: {
+            hub: {
+                name: "string",
+                priority: int
+            },
+            group: {
+                name: "string",
+                priority: int
+            },
+            project: {
+                name: "string",
+                priority: int
+            }
+        },
+        codeId: "string",
+        endDate: Date,
+        cost: float,
+        id: "string",
+        userId: "string"
+    }
+    ...
+]
+```
 
-### /jobs/status
-
+### /jobs/{job_id}/cancel
+Cancel the given job
+#### Request Body
+```js
+{
+    access_token: "string"  // access_token obtained from appropriate login mechanisms
+}
+```
+#### Response Body
+```js
+```
+### /jobs/{job_id}/status
+Get the information on a specific job if you know the job's unique id
+#### Request Body
+```js
+{
+    access_token: "string"  // access_token obtained from appropriate login mechanisms
+}
+```
+#### Response Body
+```js
+[
+    {
+        qasms: [
+            {
+                qasm: "string",
+                status: "string",
+                executionId: "string",
+                result: ?
+            }
+            ...
+        ],
+        kind: "string",
+        shots: int,
+        backend: {
+            id: "string",
+            name: "string"
+        },
+        status: "string",
+        creationDate: Date,
+        objectStorageInfo: {
+            jobId: "string",
+            uploadQObjectUrlEndpoint: "string",
+            downloadQObjectUrlEndpoint: "string",
+            jobQasmConverted: "string",
+            validatedUrl: "string",
+            validationUploadUrlEndpoint: "string",
+        },
+        summaryData: {
+            size: {
+                input: int,
+                output: int
+            },
+            success: bool,
+            summary: {
+                max_qubits_used: int,
+                gates_executed: int,
+                qobj_config: {
+                    n_qubits: int,
+                    max_credits: int,
+                    memory_slots: int,
+                    memory: bool,
+                    shots: int,
+                    type: "string"
+                },
+                num_circuits: int,
+                partial_validation: bool
+            },
+            resultTime: float
+        }
+        timePerStep: {
+            CREATING: Date,
+            ...
+        },
+        ip: {
+            ip: "string",
+            city: "string",
+            country: "string",
+            continent: "string"
+        },
+        hubInfo: {
+            hub: {
+                name: "string",
+                priority: int
+            },
+            group: {
+                name: "string",
+                priority: int
+            },
+            project: {
+                name: "string",
+                priority: int
+            }
+        },
+        codeId: "string",
+        endDate: Date,
+        cost: float,
+        id: "string",
+        userId: "string"
+    }
+    ...
+]
+```
 ### /jobs/properties
 
 ### /jobs/jobDataUploaded

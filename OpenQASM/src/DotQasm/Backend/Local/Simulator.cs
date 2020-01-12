@@ -33,6 +33,8 @@ public class Simulator : IBackend<SimulatorResult> {
     public int StateCount => (this.QubitCount == 0 ? 0 : 1 << this.QubitCount);
  
     private List<Complex> amplitudes;
+    private List<int> register;
+
     /// <summary>
     /// Retrive complex amplitude for a given state
     /// </summary>
@@ -47,6 +49,7 @@ public class Simulator : IBackend<SimulatorResult> {
         this.QubitCount = initialQubits;
         RebuildAmplitudes();
         this.amplitudes[0] = new Complex(1,0); // Start off in the first '|0..0> = 0' state
+        this.register = new List<int>(new int[this.QubitCount]);
     }
  
     private void RebuildAmplitudes() {
@@ -285,7 +288,6 @@ public class Simulator : IBackend<SimulatorResult> {
     public Task<SimulatorResult> Exec(Circuit circuit) {
         return new Task<SimulatorResult>(() => {
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            List<int> register = new List<int>(new int[circuit.BitCount]);
             
             // TODO
             /*
@@ -293,7 +295,7 @@ public class Simulator : IBackend<SimulatorResult> {
                 ApplyGate(ScheduledOperator.Qubits[0].QubitIndex, ScheduledOperator.Gate);
             }*/
 
-            return new SimulatorResult(watch.Elapsed, amplitudes.AsReadOnly(), register);
+            return new SimulatorResult(watch.Elapsed, amplitudes.AsReadOnly(), register.AsReadOnly());
         });
     }
 

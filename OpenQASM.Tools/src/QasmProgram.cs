@@ -13,12 +13,13 @@ namespace DotQasm.Tools {
             return (int)parser
             .ParseArguments<Verify, Stat, Repl, Run, Transpile>(args)
             .MapResult(
-                (Verify opts)   => opts.Exec(),
-                (Stat opts)     => opts.Exec(),
-                (Repl opts)     => opts.Exec(),
-                (Run opts)      => opts.Exec(),
-                (Transpile opts)=> opts.Exec(),
-                errs            => Status.Failure
+                (Verify opts)       =>  opts.Exec(),
+                (Stat opts)         =>  opts.Exec(),
+                (Repl opts)         =>  opts.Exec(),
+                (Run opts)          =>  opts.Exec(),
+                (Transpile opts)    =>  opts.Exec(),
+                (Optimize opts)     =>  opts.Exec(),
+                errs                =>  Status.Failure
             );
         }
     }

@@ -2,6 +2,9 @@ using System;
 
 namespace DotQasm.Backend.IBM.Api {
 
+/// <summary>
+/// A backend device as defined by IBM's API
+/// </summary>
 public class IBMDevice {
     public class IBMDeviceGateParametre {
         public DateTime date {get; set;}

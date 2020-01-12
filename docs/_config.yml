@@ -9,3 +9,5 @@ collections:
   posts:
     output: true
     permalink: /update/:year/:month/:day/:title
+  features:
+    output: false

@@ -1,7 +1,7 @@
 ---
 layout: default
 ---
-<div id="divider" class="w3-teal w3-wide" style="height: 24px;"></div>
+<div id="divider" class="w3-blue w3-wide" style="height: 24px;"></div>
 <div id="header" class="w3-display-container w3-wide w3-padding-48 atom-container-bg">
     <div class="header-bg" style="position: relative; width: 100%; height: 400px;">
         <div class="atom-orbit spin-slow" style="width: 400px; height: 400px;">
@@ -15,27 +15,32 @@ layout: default
         </div>
     </div>
     <div id="header-content" class="w3-display-middle w3-margin-top w3-center" style="width: 80%;">
-        <img class="w3-image" src="{{ site.baseurl }}/logo.svg" alt="" width="128" height="128" />
+        <img class="w3-image" src="{{ site.baseurl }}/logo.svg" alt="" width="256" height="256" />
         <h1>{{ site.title }}</h1>
         <h2>{{ site.description }}</h2>
         <hr>
         <p>
-            <a class="w3-button w3-teal" href="{{ site.github.repository_url }}">
+            <a class="w3-button w3-blue" href="{{ site.github.repository_url }}">
                 See It On Github
             </a>
-            <a class="w3-button w3-teal" href="{{ site.github.releases_url }}">
+            <a class="w3-button w3-blue" href="{{ site.github.releases_url }}">
                 Download
             </a>
         </p>
     </div>
 </div>
-<div id="divider" class="w3-teal w3-wide" style="height: 24px;"></div>
+<div id="divider" class="w3-blue w3-wide" style="height: 24px;"></div>
 <div style="text-align: center;">
     <h1>
         Features
     </h1>
     {% for feature in site.features %}
-        {{ feature.content }}
+        <div class="w3-card w3-padding w3-margin">
+            <div class="w3-wide w3-xlarge {% cycle 'w3-left-align', 'w3-right-align' %}">{{ feature.title }}</div>
+            <div class="w3-wide" style="text-align: left;">
+            {{ feature.content }}
+            </div>
+        </div>
     {% endfor %}
 </div>
 <hr>
@@ -45,11 +50,11 @@ layout: default
     </h1>
     <div class="w3-container">
     {% for post in site.posts %}
-        <div class="w3-card">
+        <div class="w3-card w3-padding w3-margin">
             <h2>{{ post.title }}</h2>
             <b>{{ post.date | date: "%Y-%m-%d" }}</b>
             <p>{{ post.excerpt | strip_html | truncatewords: 50 }}</p>
-            <a href="{{ site.baseurl }}{{ post.url }}" class="w3-button w3-block w3-teal">Continue</a>
+            <a href="{{ site.baseurl }}{{ post.url }}" class="w3-button w3-block w3-blue">Continue</a>
         </div>
     {% endfor %}
     </div>

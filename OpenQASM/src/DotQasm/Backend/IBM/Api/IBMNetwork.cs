@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DotQasm.Backend.IBM.Api {
 
+/// <summary>
+/// A network as defined by IBM's API
+/// </summary>
 public class IBMNetwork {
     public class Group {
         public string name {get; set;}    

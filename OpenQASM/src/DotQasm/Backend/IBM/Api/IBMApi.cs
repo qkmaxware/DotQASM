@@ -11,6 +11,9 @@ using System.Text.Json.Serialization;
 
 namespace DotQasm.Backend.IBM.Api {
 
+/// <summary>
+/// Interface with the IBM Q-Experience API
+/// </summary>
 public class IBMApi {
 
     private HttpClient client;
@@ -21,6 +24,7 @@ public class IBMApi {
     public string TokenLoginApiUrl => RootApiUrl + @"/users/loginWithToken";
 
     public string JobsApiUrl => RootApiUrl + @"/jobs/";
+    public string GetJobUploadUrlUpload => JobsApiUrl + @"{0}/jobUploadUrl";
 
     public string NetworkApiUrl => RootApiUrl + @"/network";
 
@@ -92,7 +96,11 @@ public class IBMApi {
     // Authentication 
     // ---------------------------------------------------------------------------------------
 
-    private void AuthenticateWithToken(string apiToken) {
+    /// <summary>
+    /// Authenticate with the API using a login token
+    /// </summary>
+    /// <param name="apiToken">login token</param>
+    public void AuthenticateWithToken(string apiToken) {
         // Create data-structure IBM expects
         var data = new {
             apiToken = apiToken
@@ -104,7 +112,12 @@ public class IBMApi {
         session = JsonSerializer.Deserialize<IBMSession>(response);
     }
 
-    private void AuthenticateWithUsername(string email, string password) { 
+    /// <summary>
+    /// Authenticate with the API using an email and password
+    /// </summary>
+    /// <param name="email">login email</param>
+    /// <param name="password">login password</param>
+    public void AuthenticateWithUsername(string email, string password) { 
         // Create data-structure IBM expects
         var data = new {
             email = email,
@@ -125,7 +138,11 @@ public class IBMApi {
     // ---------------------------------------------------------------------------------------
     // Backends 
     // ---------------------------------------------------------------------------------------
-
+    /// <summary>
+    /// Get the information for a given quantum device
+    /// </summary>
+    /// <param name="deviceName">name of backend</param>
+    /// <returns>Device information structure</returns>
     public IBMDevice GetDeviceInfo (string deviceName) {
         ForceAuth();
 
@@ -140,22 +157,42 @@ public class IBMApi {
         return JsonSerializer.Deserialize<IBMDevice>(response);
     }
 
+    /// <summary>
+    /// Get the information for a given quantum device
+    /// </summary>
+    /// <param name="device">project link to device</param>
+    /// <returns>Device information structure</returns>
     public IBMDevice GetDeviceInfo (IBMNetwork.ProjectDevice device) {
         return GetDeviceInfo(device.name);
     }
 
     // TODO GetDeviceDefaults
 
+    /// <summary>
+    /// Get the status of a particular quantum device
+    /// </summary>
+    /// <param name="deviceName">name of device</param>
+    /// <returns>Device status structure</returns>
     public IBMDeviceStatus GetDeviceStatus (string deviceName) {
         // Send and decode
         var response = Get(string.Format(TokenLoginApiUrl, deviceName));
         return JsonSerializer.Deserialize<IBMDeviceStatus>(response);
     }
 
+    /// <summary>
+    /// Get the status of a particular quantum device
+    /// </summary>
+    /// <param name="device">IBM device info</param>
+    /// <returns>Device status structure</returns>
     public IBMDeviceStatus GetDeviceStatus (IBMDevice device) {
         return GetDeviceStatus(device.backend_name);
     }
 
+    /// <summary>
+    /// Get the status of a particular quantum device
+    /// </summary>
+    /// <param name="device">project link to device</param>
+    /// <returns>Device status structure</returns>
     public IBMDeviceStatus GetDeviceStatus (IBMNetwork.ProjectDevice device) {
         return GetDeviceStatus(device.name);    
     } 
@@ -163,7 +200,10 @@ public class IBMApi {
     // ---------------------------------------------------------------------------------------
     // Jobs 
     // ---------------------------------------------------------------------------------------
-
+    /// <summary>
+    /// Get all jobs submitted by the logged in user
+    /// </summary>
+    /// <returns>List of jobs</returns>
     public IBMApiJob[] GetSubmittedJobs() {
         ForceAuth();
 
@@ -178,32 +218,114 @@ public class IBMApi {
         return JsonSerializer.Deserialize<IBMApiJob[]>(response);
     }
 
-    public void SubmitQasm (string backendName, string jobName, string qasm, int shots=1024) {
+    /// <summary>
+    /// Get the info for a particular job by the job id
+    /// </summary>
+    /// <param name="jobId">id of the job</param>
+    /// <returns>job information</returns>
+    public IBMApiJob GetJobInfo(string jobId) {
         ForceAuth();
 
         // Create data-structure IBM expects
         var data = new {
-            name = jobName,
-            qObject = new {
-
-            },
-            backend = new {
-                name = backendName
-            },
-            shots = shots,
-            allowObjectStorage = true,
             access_token = session.id
         };
         var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
         // Send and decode
-        var response = Post(JobsApiUrl, json);
+        var response = Get(JobsApiUrl + WebUtility.UrlEncode(jobId), json);
+        return JsonSerializer.Deserialize<IBMApiJob>(response);
+    }
+
+    /// <summary>
+    /// Get the updated info for a particular job reference to the old job info
+    /// </summary>
+    /// <param name="job">the old job strcuture</param>
+    /// <returns>job information</returns>
+    public IBMApiJob GetJobInfo (IBMApiJob job) {
+        return GetJobInfo(job.id);
+    }
+
+    /// <summary>
+    /// Get the status of a job by the job id
+    /// </summary>
+    /// <param name="jobId">id of the job</param>
+    /// <returns>job information</returns>
+    public string GetJobStatus(string jobId) {
+        return GetJobInfo(jobId).status;
+    }
+
+    public void CancelJob(string jobId) {
+        throw new NotImplementedException();
+    }
+
+    public IBMApiJob SubmitQasm (string backendName, string jobName, string qasmText, int shots=1024) {
+        ForceAuth();
+
+        // A. Create a blank job
+        IBMApiJob job = null;
+        {
+            // Create data-structure IBM expects
+            var data = new {
+                name = jobName,
+                backend = new {
+                    name = backendName
+                },
+                shots = shots,
+                allowObjectStorage = true,
+                access_token = session.id
+            };
+            var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+
+            // Send and decode
+            var response = Post(JobsApiUrl, json);
+            job = JsonSerializer.Deserialize<IBMApiJob>(response); // job.id;
+        }
+
+        // B. Get the QObject upload url
+        Uri upload_url = null;
+        {
+            // Create data-structure IBM expects
+            var data = new {
+                access_token = session.id
+            };
+            var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+
+            // Send and decode
+            var response = Post(string.Format(GetJobUploadUrlUpload, WebUtility.UrlEncode(job.id)), json);
+            upload_url = JsonSerializer.Deserialize<IBMApiUrl>(response).GetUri();
+        }
+
+        // C. Upload QObject to job
+        {
+
+            // Create data-structure IBM expects
+            var data = new {
+                qasms = new[] {
+                    new {
+                        qasm = qasmText
+                    }
+                },
+                access_token = session.id
+            };
+            var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+
+            // Send and decode
+            var response = Post(upload_url.ToString(), json);
+        }
+
+        // D. Let IBM know the object has been uploaded
+
+        throw new NotImplementedException();
     }
 
     // ---------------------------------------------------------------------------------------
     // Networks 
     // ---------------------------------------------------------------------------------------
-
+    /// <summary>
+    /// Get all the networks which a user belongs to
+    /// </summary>
+    /// <returns>list of networks</returns>
     public IEnumerable<IBMNetwork> GetAllNetworks() {
         ForceAuth();
 
@@ -217,19 +339,31 @@ public class IBMApi {
         var response = Get(JobsApiUrl, json);
         return JsonSerializer.Deserialize<IBMNetwork[]>(response);
     }
-
+    /// <summary>
+    /// Get all the groups within each network that the user belongs to
+    /// </summary>
+    /// <returns>list of groups</returns>
     public IEnumerable<IBMNetwork.Group> GetAllGroups() {
         return GetAllNetworks().SelectMany(n => n.groups.Values);
     }
-
+    /// <summary>
+    /// Get all the projects within each group that the user belongs to
+    /// </summary>
+    /// <returns>list of projects</returns>
     public IEnumerable<IBMNetwork.Project> GetAllProjects() {
         return GetAllGroups().SelectMany(g => g.projects.Values);
     }
-
+    /// <summary>
+    /// Get all the authorized devices for each project that the user has access to
+    /// </summary>
+    /// <returns>list of project devices</returns>
     public IEnumerable<IBMNetwork.ProjectDevice> GetAllProjectDevices() {
         return GetAllProjects().SelectMany(p => p.devices.Values);
     }
-
+    /// <summary>
+    /// Get all authorized devices for the given user
+    /// </summary>
+    /// <returns>list of devices</returns>
     public IEnumerable<IBMDevice> GetDevices() {
         return GetAllProjectDevices().Select(pd => GetDeviceInfo(pd));
     }
