@@ -3,13 +3,14 @@ using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using DotQasm.Scheduling;
 
 namespace DotQasm.Backend.Local {
     
 /// <summary>
 /// Simple quantum simulator
 /// </summary>
-public class Simulator : IBackend<SimulatorResult> {
+public class Simulator : IBackend {
  
     private static Random rnd = new Random();
 
@@ -33,7 +34,8 @@ public class Simulator : IBackend<SimulatorResult> {
     public int StateCount => (this.QubitCount == 0 ? 0 : 1 << this.QubitCount);
  
     private List<Complex> amplitudes;
-    private List<int> register;
+    private List<State> register;
+    public int RegisterSize => register.Count;
 
     /// <summary>
     /// Retrive complex amplitude for a given state
@@ -49,7 +51,7 @@ public class Simulator : IBackend<SimulatorResult> {
         this.QubitCount = initialQubits;
         RebuildAmplitudes();
         this.amplitudes[0] = new Complex(1,0); // Start off in the first '|0..0> = 0' state
-        this.register = new List<int>(new int[this.QubitCount]);
+        this.register = new List<State>(new State[this.QubitCount]);
     }
  
     private void RebuildAmplitudes() {
@@ -101,7 +103,7 @@ public class Simulator : IBackend<SimulatorResult> {
     /// <param name="op">quantum gate</param>
     /// <returns>true if the backend supports the gate</returns>
     public bool SupportsGate(Gate op) {
-        return op.QubitCount == 1;
+        return true;
     }
  
     /// <summary>
@@ -281,21 +283,64 @@ public class Simulator : IBackend<SimulatorResult> {
     }
 
     /// <summary>
+    /// Execute a scheduled event
+    /// </summary>
+    /// <param name="evt">event to run</param>
+    public void ExecEvent(IEvent evt) {
+        switch (evt) {
+            case BarrierEvent be: break;
+            case ControlledGateEvent cge: {
+                foreach (var qubit in cge.TargetQubits) {
+                    ApplyControlledGate(cge.ControlQubit.QubitId, qubit.QubitId, cge.Operator);
+                }
+            } break;
+            case GateEvent ge: {
+                foreach (var qubit in ge.QuantumDependencies) {
+                    ApplyGate(qubit.QubitId, ge.Operator);
+                }
+            } break;
+            case IfEvent ife: {
+                //# 1. convert cbit register to integer
+                int regVal = 0; 
+                foreach (var cbit in ife.ClassicalDependencies) {
+                    regVal <<= 1; // Shift everything over 1
+                    regVal |= (int)this.register[cbit.ClassicalBitId]; // Add new value
+                }
+
+                //# 2. if true, apply event
+                if (regVal == ife.LiteralValue) {
+                    ExecEvent(ife.Event);
+                }
+            } break;
+            case MeasurementEvent me: {
+                for (int i = 0; i < me.QuantumDependencies.Count(); i++) {
+                    this.register[me.ClassicalDependencies.ElementAt(i).ClassicalBitId] = Measure(me.QuantumDependencies.ElementAt(i).QubitId);
+                }
+            } break;
+            case ResetEvent re: {
+                foreach (var qubit in re.QuantumDependencies) {
+                    Zero(qubit.QubitId);
+                }
+            } break;
+            default:
+                throw new InvalidOperationException(evt.GetType() + " is not an operation supported by the simulator");
+        }
+    }
+
+    /// <summary>
     /// Execute the given quantum circuit
     /// </summary>
     /// <param name="circuit">quantum circuit to execute</param>
     /// <returns>task which returns the results of the simulation</returns>
-    public Task<SimulatorResult> Exec(Circuit circuit) {
-        return new Task<SimulatorResult>(() => {
+    public Task<BackendResult> Exec(Circuit circuit) {
+        return new Task<BackendResult>(() => {
             var watch = System.Diagnostics.Stopwatch.StartNew();
             
-            // TODO
-            /*
-            foreach (var ScheduledOperator in circuit.Schedule) {
-                ApplyGate(ScheduledOperator.Qubits[0].QubitIndex, ScheduledOperator.Gate);
-            }*/
+            foreach (var evt in circuit.GateSchedule) {
+                ExecEvent(evt);
+            }
 
-            return new SimulatorResult(watch.Elapsed, amplitudes.AsReadOnly(), register.AsReadOnly());
+            return new SimulatorResult(this, watch.Elapsed, amplitudes.AsReadOnly(), register.AsReadOnly());
         });
     }
 

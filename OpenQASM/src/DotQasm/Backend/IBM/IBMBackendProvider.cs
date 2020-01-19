@@ -1,19 +1,28 @@
+using System.Linq;
 using System.Collections.Generic;
 
 namespace DotQasm.Backend.IBM {
 
     public class IBMBackendProvider : IBackendProvider {
-        public IEnumerable<IBackend<IBackendResult>> GetBackends(string key) {
-            return new IBackend<IBackendResult>[]{
-                (IBackend<IBackendResult>)new IBMArmonk(key),
-                (IBackend<IBackendResult>)new IBMBurlington(key),
-                (IBackend<IBackendResult>)new IBMEssex(key),
-                (IBackend<IBackendResult>)new IBMLondon(key),
-                (IBackend<IBackendResult>)new IBMMelbourne(key),
-                (IBackend<IBackendResult>)new IBMOurense(key),
-                (IBackend<IBackendResult>)new IBMSimulator(key),
-                (IBackend<IBackendResult>)new IBMVigo(key),
-                (IBackend<IBackendResult>)new IBMYorktown(key),
+        public string ProviderName => "IBM Quantum Experience";
+        public string ProviderAbbreviation => "IBM";
+
+        public IBackend CreateBackendInterface(string deviceName, int minQubits, string apikey){
+            var deviceLower = deviceName.ToLower();
+            return (IBackend)GetBackends(apikey).Where((backend) => backend.BackendName.ToLower() == deviceLower && minQubits <= backend.QubitCount).FirstOrDefault();
+        }
+
+        private IEnumerable<IBMBackend> GetBackends(string key) {
+            return new IBMBackend[]{
+                new IBMArmonk(key),
+                new IBMBurlington(key),
+                new IBMEssex(key),
+                new IBMLondon(key),
+                new IBMMelbourne(key),
+                new IBMOurense(key),
+                new IBMSimulator(key),
+                new IBMVigo(key),
+                new IBMYorktown(key),
             };
         }
     }

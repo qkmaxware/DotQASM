@@ -52,8 +52,22 @@ public class Circuit {
         }
     }   
 
+    /// <summary>
+    /// User chosen name for the given circuit
+    /// </summary>
+    public string Name {get; set;}
+
+    /// <summary>
+    /// Number of qubits in the circuit
+    /// </summary>
     public int QubitCount {get; private set;}
+    /// <summary>
+    /// Number of classical in the circuit
+    /// </summary>
     public int BitCount {get; private set;}
+    /// <summary>
+    /// The schedule of quantum gates and events
+    /// </summary>
     public ISchedule GateSchedule {get; set;}
 
     public Circuit() {

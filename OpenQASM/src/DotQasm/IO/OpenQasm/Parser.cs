@@ -54,7 +54,7 @@ productionlist::
 /// <summary>
 /// Parser for OpenQASM formatted text
 /// </summary>
-public class Parser: IParser<Circuit> {
+public class Parser {
 
     /// <summary>
     /// Internal token queue
@@ -91,7 +91,7 @@ public class Parser: IParser<Circuit> {
 
     public static Circuit ParseCircuit(string str, string searchPath = null) {
         using (StringReader reader = new StringReader(str)) {
-            return ParseCircuit(reader);
+            return ParseCircuit(reader, searchPath);
         }
     }
 
@@ -801,44 +801,6 @@ public class Parser: IParser<Circuit> {
         if (context != null)
             context.Version = version;
         return context;
-    }
-    
-
-    /// <summary>
-    /// Convert a OpenQASM abstract syntax tree to a quantum circuit representation
-    /// </summary>
-    /// <param name="ast"></param>
-    /// <returns></returns>
-    public static Circuit Ast2Circuit(ProgramContext ast) {
-        Circuit circuit = new Circuit();
-        var visitor = new OpenQasm2CircuitVisitor(circuit);
-        visitor.VisitProgram(ast);
-        return circuit;
-    }
-
-    /// <summary>
-    /// Parses an OpenQASM program using the grammar found at: https://github.com/Qiskit/openqasm/blob/master/spec/qasm2.rst
-    /// </summary>
-    /// <param name="program">Text reader containing an OpenQASM program</param>
-    /// <returns>Quantum circuit</returns>
-    public Circuit Parse(TextReader program) {
-        var tokens = Lexer.Tokenize(program);
-        Parser p = new Parser(tokens);
-        var ast = p.ParseFile();
-        return Ast2Circuit(ast);
-    }
-    
-    /// <summary>
-    /// Parses an OpenQASM program using the grammar found at: https://github.com/Qiskit/openqasm/blob/master/spec/qasm2.rst
-    /// </summary>
-    /// <param name="program">OpenQASM program</param>
-    /// <returns>Quantum circuit</returns>
-    public Circuit Parse(string program) {
-        Circuit circuit;
-        using (StringReader reader = new StringReader(program)) {
-            circuit = Parse(reader);
-        }
-        return circuit;
     }
 
 }

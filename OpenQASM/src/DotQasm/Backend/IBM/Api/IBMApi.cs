@@ -259,64 +259,26 @@ public class IBMApi {
         throw new NotImplementedException();
     }
 
-    public IBMApiJob SubmitQasm (string backendName, string jobName, string qasmText, int shots=1024) {
+    public IBMApiJob SubmitJob (string backendName, string jobName, IBMQObj obj) {
         ForceAuth();
+        
+        // Create data-structure IBM expects
+        var data = new {
+            name = jobName,
+            qObject = obj,
+            backend = new {
+                name = backendName
+            },
+            allowObjectStorage = true,
+            access_token = session.id
+        };
+        var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
 
-        // A. Create a blank job
-        IBMApiJob job = null;
-        {
-            // Create data-structure IBM expects
-            var data = new {
-                name = jobName,
-                backend = new {
-                    name = backendName
-                },
-                shots = shots,
-                allowObjectStorage = true,
-                access_token = session.id
-            };
-            var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
-
-            // Send and decode
-            var response = Post(JobsApiUrl, json);
-            job = JsonSerializer.Deserialize<IBMApiJob>(response); // job.id;
-        }
-
-        // B. Get the QObject upload url
-        Uri upload_url = null;
-        {
-            // Create data-structure IBM expects
-            var data = new {
-                access_token = session.id
-            };
-            var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
-
-            // Send and decode
-            var response = Post(string.Format(GetJobUploadUrlUpload, WebUtility.UrlEncode(job.id)), json);
-            upload_url = JsonSerializer.Deserialize<IBMApiUrl>(response).GetUri();
-        }
-
-        // C. Upload QObject to job
-        {
-
-            // Create data-structure IBM expects
-            var data = new {
-                qasms = new[] {
-                    new {
-                        qasm = qasmText
-                    }
-                },
-                access_token = session.id
-            };
-            var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
-
-            // Send and decode
-            var response = Post(upload_url.ToString(), json);
-        }
-
-        // D. Let IBM know the object has been uploaded
-
-        throw new NotImplementedException();
+        // Send and decode
+        var response = Post(JobsApiUrl, json);
+        var job = JsonSerializer.Deserialize<IBMApiJob>(response); // job.id;
+        
+        return job;
     }
 
     // ---------------------------------------------------------------------------------------

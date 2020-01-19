@@ -68,7 +68,7 @@ public class Stat : ICommand {
                 circuit.GateSchedule.Last
             );
 
-            circuit.GateSchedule = new GraphSchedule(circuit.GateSchedule.Events);
+            circuit.GateSchedule = new GraphSchedule(circuit.GateSchedule);
 
             // After optimization time
             TimeSpan? shortTime = timer.ShortestTimeBetween(

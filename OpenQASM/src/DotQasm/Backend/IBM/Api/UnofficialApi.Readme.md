@@ -38,12 +38,12 @@ Given that this APU is unofficial, it may not be up to date with the real API. A
     - [/jobs/{job_id}/status](#jobsjobidstatus)
       - [Request Body](#request-body-7)
       - [Response Body](#response-body-7)
-    - [/jobs/properties](#jobsproperties)
-    - [/jobs/jobDataUploaded](#jobsjobdatauploaded)
-    - [/jobs/resultDownloaded](#jobsresultdownloaded)
-    - [/jobs/jobDownloadUrl](#jobsjobdownloadurl)
-    - [/jobs/resultDownloadUrl](#jobsresultdownloadurl)
-    - [/jobs/jobUploadUrl](#jobsjobuploadurl)
+    - [/jobs/{job_id}/properties](#jobsjobidproperties)
+    - [/jobs/{job_id}/jobDataUploaded](#jobsjobidjobdatauploaded)
+    - [/jobs/{job_id}/resultDownloaded](#jobsjobidresultdownloaded)
+    - [/job/{job_id}s/jobDownloadUrl](#jobjobidsjobdownloadurl)
+    - [/jobs/{job_id}/resultDownloadUrl](#jobsjobidresultdownloadurl)
+    - [/jobs/{job_id}/jobUploadUrl](#jobsjobidjobuploadurl)
   - [/network](#network)
     - [GET /network](#get-network)
       - [Purpose](#purpose-6)
@@ -227,22 +227,55 @@ Get all user submitted jobs.
 
 ### POST /jobs
 #### Purpose
-Submit a new job to a particular IBM quantum computer. This will not do anything except create the job. Use the `uploadQobjectUrlEndpoint` property of the `objectStorageInfo` to upload a quantum program to the job
+Submit a new job to a particular IBM quantum computer. To create the job, we submit a quantum object or `qObject` whose specification can be read about in the IBM article [Qiskit Backend Specifications for OpenQASM and OpenPulse Experiments](https://arxiv.org/abs/1809.03452).
 #### Request Body
 ```js
 {
     name: "string",
+    qObject: {
+        qobj_id: "string",
+        type: "string",
+        schema_version: "string",
+        experiements: [
+            {
+                header: {},
+                config: {},
+                instructions: [
+                    {
+                        name: "string",
+                        qubits: int[],
+                        memory: int[],
+                        register: int[]
+                    }
+                    ...
+                ]
+            }
+            ...
+        ],
+        header: {},
+        config: {
+            shots: int,
+            memory_slots: int
+        }
+    }
     backend: {
         name: "string"
     },
     shots: int,
-    allowObjectStorage: bool,
     access_token: "string"  // access_token obtained from appropriate login mechanisms
 }
 ```
 #### Response Body
 ```js
 {
+    qasms: [
+        {
+            status: "string",
+            executionId: "string"
+        }
+        ...
+    ],
+    qObject: {},
     kind: "string",
     shots: int,
     backend: {
@@ -251,25 +284,12 @@ Submit a new job to a particular IBM quantum computer. This will not do anything
     },
     status: "string",
     creationDate: Date,
-    hubInfo: {
-        hub: {
-            name: "string"
-        },
-        group: {
-            name: "string"
-        },
-        project: {
-            name: "string"
-        }
-    },
-    cost: int,
+    hubInfo: {},
+    cost: float,
     id: "string",
     userId: "string",
     name: "string",
-    timePerStep: {},
-    objectStorageInfo: {
-        ...
-    }
+    timePerStep: {}
 }
 ```
 
@@ -388,99 +408,32 @@ Get the information on a specific job if you know the job's unique id
 ```
 #### Response Body
 ```js
-[
-    {
-        qasms: [
-            {
-                qasm: "string",
-                status: "string",
-                executionId: "string",
-                result: ?
-            }
-            ...
-        ],
-        kind: "string",
-        shots: int,
-        backend: {
-            id: "string",
-            name: "string"
-        },
-        status: "string",
-        creationDate: Date,
-        objectStorageInfo: {
-            jobId: "string",
-            uploadQObjectUrlEndpoint: "string",
-            downloadQObjectUrlEndpoint: "string",
-            jobQasmConverted: "string",
-            validatedUrl: "string",
-            validationUploadUrlEndpoint: "string",
-        },
-        summaryData: {
-            size: {
-                input: int,
-                output: int
-            },
-            success: bool,
-            summary: {
-                max_qubits_used: int,
-                gates_executed: int,
-                qobj_config: {
-                    n_qubits: int,
-                    max_credits: int,
-                    memory_slots: int,
-                    memory: bool,
-                    shots: int,
-                    type: "string"
-                },
-                num_circuits: int,
-                partial_validation: bool
-            },
-            resultTime: float
-        }
-        timePerStep: {
-            CREATING: Date,
-            ...
-        },
-        ip: {
-            ip: "string",
-            city: "string",
-            country: "string",
-            continent: "string"
-        },
-        hubInfo: {
-            hub: {
-                name: "string",
-                priority: int
-            },
-            group: {
-                name: "string",
-                priority: int
-            },
-            project: {
-                name: "string",
-                priority: int
-            }
-        },
-        codeId: "string",
-        endDate: Date,
-        cost: float,
+{
+    kind: "string",
+    backend: {
         id: "string",
-        userId: "string"
-    }
-    ...
-]
+        name: "string"
+    },
+    status: "string",
+    creationDate: Date,
+    hubInfo: {},
+    endDate: Date,
+    id: "string",
+    userId: "string",
+    name: "string"
+}
 ```
-### /jobs/properties
+### /jobs/{job_id}/properties
 
-### /jobs/jobDataUploaded
+### /jobs/{job_id}/jobDataUploaded
 
-### /jobs/resultDownloaded
+### /jobs/{job_id}/resultDownloaded
 
-### /jobs/jobDownloadUrl
+### /job/{job_id}s/jobDownloadUrl
 
-### /jobs/resultDownloadUrl
+### /jobs/{job_id}/resultDownloadUrl
 
-### /jobs/jobUploadUrl
+### /jobs/{job_id}/jobUploadUrl
 
 ## /network
 ### GET /network

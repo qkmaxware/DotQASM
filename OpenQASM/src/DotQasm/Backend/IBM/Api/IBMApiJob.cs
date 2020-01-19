@@ -21,7 +21,7 @@ namespace DotQasm.Backend.IBM.Api {
             public string country {get; set;}
             public string continent {get; set;}
         }
-
+        public string name {get; set;}
         public string id {get; set;}
         public string[] qasms {get; set;}
         public string kind {get; set;}
@@ -29,16 +29,18 @@ namespace DotQasm.Backend.IBM.Api {
         public string status {get; set;}
         public int cost {get; set;}
         public DateTime creationDate {get; set;}
+        public DateTime endDate {get; set;}
         public IBMApiJobStorageInfo objectStorageInfo {get; set;}
+        public IBMQObj qObject {get; set;}
+        public IBMApiQObjectResult qObjectResult {get; set;}
         public Dictionary<string, DateTime> timePerStep {get; set;}
         public IBMJobSubmitter ip {get; set;}
 
-        public bool IsCreating() {
-            return (status ?? string.Empty) == "CREATING";
+        public bool IsDone() {
+            return endDate != null || (status ?? string.Empty) == "COMPLETE";
         }
-
-        public bool IsComplete() {
-            return (status ?? string.Empty) == "COMPLETE";
+        public bool HasResults() {
+            return qObjectResult != null;
         }
     }
 

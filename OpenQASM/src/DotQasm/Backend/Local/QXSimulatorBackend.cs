@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace DotQasm.Backend.QX {
+namespace DotQasm.Backend.Local {
 
-public class QXSimulatorBackend : IBackend<IBackendResult> {
+public class QXSimulatorBackend : IBackend {
     public bool IsAvailable() {
         Process p = new Process();
         p.StartInfo.FileName = "qx_simulator --version";
@@ -17,7 +17,7 @@ public class QXSimulatorBackend : IBackend<IBackendResult> {
         return true;
     }
 
-    public Task<IBackendResult> Exec(Circuit circuit) {
+    public Task<BackendResult> Exec(Circuit circuit) {
         throw new System.NotImplementedException();
     }
 }

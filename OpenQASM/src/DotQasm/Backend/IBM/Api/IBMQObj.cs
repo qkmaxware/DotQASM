@@ -190,11 +190,11 @@ public class IBMQObj {
     /// <summary>
     /// Configuration settings structure
     /// </summary>
-    public IBMQObjUserConfig user_config {get; set;}
+    public IBMQObjUserConfig config {get; set;}
 
     public IBMQObj() {
         schema_version = "1.0";
-        user_config = new IBMQObjUserConfig();
+        config = new IBMQObjUserConfig();
     }
 
     public IBMQObj(string name): this() {

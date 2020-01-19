@@ -2,6 +2,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using DotQasm.Search;
+using System.Collections;
 
 namespace DotQasm.Scheduling {
 
@@ -131,6 +132,37 @@ public class GraphSchedule : ISchedule {
         throw new System.Data.ReadOnlyException();
     }
 
+    public void ClearSchedule(){
+        throw new System.Data.ReadOnlyException();
+    }
+
+    public IEnumerable<IEvent> Enumerate() {
+        var linear = new List<int>(this.Events.Count()); // Shallow copy of events
+
+            // Sort events such that events happen before dependent ones and after ones they are dependent on
+            // Ignore "start" and "end" events as they are empty placeholders
+            // Pull or Push events depending on what they need to be behind
+
+            Queue<int> iint = new Queue<int>();
+        for (int i = 0; i < this.adjacencyMatrix.GetLength(0); i++) {
+            if (IsConnected(this.StartNodeIndex, i)) {
+                iint.Enqueue(i);
+            }
+        }
+        while (iint.Count > 0) {
+            int node = iint.Dequeue();
+            for (int i = 0; i < this.adjacencyMatrix.GetLength(0); i++) {
+                if (IsConnected(node, i)) {
+                    iint.Enqueue(i);
+                }
+            }
+            // Find spot in list where it should go
+            
+        }
+
+        return null;
+    }
+
     public override string ToString() {
         StringBuilder sb = new StringBuilder();
 
@@ -147,6 +179,14 @@ public class GraphSchedule : ISchedule {
         }
 
         return sb.ToString();
+    }
+
+    public IEnumerator<IEvent> GetEnumerator() {
+        return this.Enumerate().GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() {
+        return GetEnumerator();
     }
 }
 

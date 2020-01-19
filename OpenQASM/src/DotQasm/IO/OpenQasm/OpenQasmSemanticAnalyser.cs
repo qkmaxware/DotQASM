@@ -15,6 +15,7 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
 
     private Dictionary<string, OpenQasmType> identifiers = new Dictionary<string, OpenQasmType>();
     private Dictionary<string, GateDeclContext> gateMap = new Dictionary<string, GateDeclContext>();
+    private HashSet<string> externalGates = new HashSet<string>();
 
     public int QubitCount {get; set;}
 
@@ -132,6 +133,15 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
         gateMap.Add(declaration.GateName, declaration);
     }
 
+    /// <summary>
+    /// Declare that a gate exists, but in an external configuration. No semantic analysis can be performed with these gates
+    /// </summary>
+    /// <param name="ident">The identifier for the gate</param>
+    public void DeclareExternGate(string ident) {
+        identifiers.Add(ident, OpenQasmType.Gate);
+        externalGates.Add(ident);
+    }
+
     public void VisitOpaqueGateDeclaration(OpaqueGateDeclContext declaration) {
         if (IsDeclared(declaration.GateName)) {
             throw new OpenQasmSemanticException(declaration, "Duplicate identifier");
@@ -170,18 +180,22 @@ public class OpenQasmSemanticAnalyser : IOpenQasmVisitor {
                 if (!IsType(qop.OperationName, OpenQasmType.Gate)) {
                     throw new OpenQasmSemanticException(qop, "Identifier does not refer to a quantum gate");
                 }
-                if (!gateMap.ContainsKey(qop.OperationName)) {
-                    throw new OpenQasmSemanticException(qop, "Gate does not have a defined body");
-                }
 
-                var gate = gateMap[qop.OperationName];
+                // IF NOT EXTERNAl we can do more analysis
+                if (!externalGates.Contains(qop.OperationName)) {
+                    if (!gateMap.ContainsKey(qop.OperationName)) {
+                        throw new OpenQasmSemanticException(qop, "Gate does not have a defined body");
+                    }
 
-                // has the correct number of args
-                if (qop.ClassicalParametres.Count != gate.ClassicalArguments.Count) {
-                    throw new OpenQasmSemanticException(qop, string.Format("'{0}' gate requires exactly {1} classical arguments", qop.OperationName, qop.ClassicalParametres.Count));
-                }
-                if (qop.QuantumParametres.Count != gate.QuantumArguments.Count) {
-                    throw new OpenQasmSemanticException(qop, string.Format("'{0}' gate requires exactly {1} quantum argument", qop.OperationName, qop.QuantumParametres.Count));
+                    var gate = gateMap[qop.OperationName];
+
+                    // has the correct number of args
+                    if (qop.ClassicalParametres.Count != gate.ClassicalArguments.Count) {
+                        throw new OpenQasmSemanticException(qop, string.Format("'{0}' gate requires exactly {1} classical arguments", qop.OperationName, qop.ClassicalParametres.Count));
+                    }
+                    if (qop.QuantumParametres.Count != gate.QuantumArguments.Count) {
+                        throw new OpenQasmSemanticException(qop, string.Format("'{0}' gate requires exactly {1} quantum argument", qop.OperationName, qop.QuantumParametres.Count));
+                    }
                 }
                 break;
         }

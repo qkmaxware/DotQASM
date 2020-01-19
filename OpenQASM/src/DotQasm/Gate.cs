@@ -7,13 +7,11 @@ public class Gate {
 
     public string Name {get; protected set;}
     public string Symbol {get; protected set;}
-    public int QubitCount {get;}
     public Complex[,] Matrix {get; protected set;} 
 
     public static readonly Gate Identity = new Gate(
         "Identity",
-        "I",
-        1,
+        "i",
         new Complex[,]{
             {1, 0},
             {0, 1}
@@ -22,8 +20,7 @@ public class Gate {
 
     public static readonly Gate Hadamard = new Gate(
         "Hadamard",
-        "H",
-        1,
+        "h",
         new Complex[,]{
             {0.707, 0.707},
             {0.707, -0.707}
@@ -32,8 +29,7 @@ public class Gate {
 
     public static readonly Gate PauliX = new Gate(
         "Pauli-X",
-        "X",
-        1,
+        "x",
         new Complex[,]{
             {0, 1},
             {1, 0}
@@ -42,8 +38,7 @@ public class Gate {
 
     public static readonly Gate PauliY = new Gate(
         "Pauli-Y",
-        "Y",
-        1,
+        "y",
         new Complex[,]{
             {0, -1.i()},
             {1.i(), 0}
@@ -52,14 +47,14 @@ public class Gate {
 
     public static readonly Gate PauliZ = new Gate(
         "Pauli-Z",
-        "Z",
-        1,
+        "z",
         new Complex[,]{
             {1, 0},
             {0, -1}
         }
     );
 
+    /*
     public static readonly Gate Swap = new Gate(
         "Swap",
         "SWAP",
@@ -82,13 +77,12 @@ public class Gate {
             {0, 0, 0, 1},
             {0, 0, 1, 0}
         }
-    );
+    );*/
 
     public static Gate PhaseShift(double rotation) {
         return new Gate(
             "Phase Shift-" + rotation,
             "R" + rotation,
-            1,
             new Complex[,] {
                 {1, 0},
                 {0, new Complex(Math.Cos(rotation), Math.Sin(rotation))} // Euler's formula cos(x) + isin(x) = e^ix
@@ -96,11 +90,23 @@ public class Gate {
         );
     }
 
-    public static Gate U(double theta, double phi, double lambda) {
+    public static Gate U1(double lambda) {
+        var g = U3(0, 0, lambda);
+        g.Symbol = "U1";
+        return g;
+    }
+
+    public static Gate U2(double phi, double lambda) {
+        var g = U3(Math.PI / 2, phi, lambda);
+        g.Symbol = "U2";
+        return g;
+    }
+
+    public static Gate U3(double theta, double phi, double lambda) {
         // https://github.com/Qiskit/openqasm/blob/master/spec/qasm2.rst
         Gate u = new Gate();
         u.Name = "Parametric Rotation Gate (" + theta + "," + phi + "," + lambda + ")";
-        u.Symbol = "U(" + theta + "," + phi + "," + lambda + ")";
+        u.Symbol = "U3";
 
         double t2 = theta/2;
         double st2 = Math.Sin(t2);
@@ -129,17 +135,16 @@ public class Gate {
 
     protected Gate() {}
 
-    public Gate(string name, string symbol, int qubits, Complex[,] matrix) {
+    public Gate(string name, string symbol, Complex[,] matrix) {
         this.Name = name;
         this.Symbol = symbol;
-        this.QubitCount = qubits;
         this.Matrix = matrix;
         
         if (this.Matrix.GetLength(0) != this.Matrix.GetLength(1)) {
             throw new MatrixRepresentationException("Unitary matrix must be square");
         }
-        if (this.Matrix.GetLength(0) != IPow(2, this.QubitCount)) {
-            throw new MatrixRepresentationException("Size of unitary matrix must be 2^qubits");
+        if (this.Matrix.GetLength(0) != 2) {
+            throw new MatrixRepresentationException("Size of unitary matrix must be 2");
         }
     }
 

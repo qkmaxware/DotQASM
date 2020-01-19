@@ -18,6 +18,8 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     private Dictionary<string, IEnumerable<Circuit.Qubit>> qubitMap = new Dictionary<string, IEnumerable<Circuit.Qubit>>();
     private Dictionary<string, IEnumerable<Circuit.Cbit>> cbitMap = new Dictionary<string, IEnumerable<Circuit.Cbit>>();
 
+    private Dictionary<string, Gate> pre_declared_gates = new Dictionary<string, Gate>();
+
     public OpenQasm2CircuitVisitor() {
         this.Circuit = new Circuit();
         this.Analyser = new OpenQasmSemanticAnalyser();
@@ -103,40 +105,54 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
         Analyser.VisitGateDeclaration(declaration);
     }
 
+    public bool RegisterGate(Gate gate) {
+        if (Analyser.IsDeclared(gate.Symbol)) {
+            return false;
+        } else {
+            pre_declared_gates.Add(gate.Symbol, gate);
+            Analyser.DeclareExternGate(gate.Symbol);
+            return true;
+        }
+    }
+
     public void VisitOpaqueGateDeclaration(OpaqueGateDeclContext declaration) {
         Analyser.VisitOpaqueGateDeclaration(declaration);
         throw new System.NotImplementedException();
     }
 
+    public void VisitStatement(StatementContext stmt) {
+        Analyser.StatementCount++;
+        switch (stmt) {
+            case BarrierContext barrier: 
+                VisitBarrier(barrier);
+                break;
+            case DeclContext decl: 
+                VisitDeclaration(decl);
+                break;
+            case GateDeclContext gate: 
+                VisitGateDeclaration(gate);
+                break;
+            case IfContext @if: 
+                VisitClassicalIf(@if);
+                break;
+            case OpaqueGateDeclContext gate: 
+                VisitOpaqueGateDeclaration(gate);
+                break;
+            case MeasurementContext measure: 
+                VisitMeasurement(measure);
+                break;
+            case UnitaryOperationContext qop:
+                VisitUnitaryQuantumOperator(qop);  
+                break;
+            case ResetContext reset: 
+                VisitReset(reset);
+                break;
+        }
+    }
+
     public void VisitProgram(ProgramContext program) {
         foreach (var stmt in program.Statements) {
-            Analyser.StatementCount++;
-            switch (stmt) {
-                case BarrierContext barrier: 
-                    VisitBarrier(barrier);
-                    break;
-                case DeclContext decl: 
-                    VisitDeclaration(decl);
-                    break;
-                case GateDeclContext gate: 
-                    VisitGateDeclaration(gate);
-                    break;
-                case IfContext @if: 
-                    VisitClassicalIf(@if);
-                    break;
-                case OpaqueGateDeclContext gate: 
-                    VisitOpaqueGateDeclaration(gate);
-                    break;
-                case MeasurementContext measure: 
-                    VisitMeasurement(measure);
-                    break;
-                case UnitaryOperationContext qop:
-                    VisitUnitaryQuantumOperator(qop);  
-                    break;
-                case ResetContext reset: 
-                    VisitReset(reset);
-                    break;
-            }
+            VisitStatement(stmt);
         }
     }
 
@@ -149,48 +165,57 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
                 IEnumerable<double> values = qop.ClassicalParametres.Select((x) => x.Evaluate(vars)); 
 
                 list.Add(new GateEvent(
-                    Gate.U(values.ElementAt(0), values.ElementAt(1), values.ElementAt(2)),
+                    Gate.U3(values.ElementAt(0), values.ElementAt(1), values.ElementAt(2)),
                     (actualParametres ?? declaredParametres).SelectMany((x) => GetQubitsForArgument(x))
                 ));
             } break;
             case "CX": {
-                list.Add(new GateEvent(
-                    Gate.CNot,
-                     (actualParametres ?? declaredParametres).SelectMany((x) => GetQubitsForArgument(x))
+                var qubits = (actualParametres ?? declaredParametres).SelectMany((x) => GetQubitsForArgument(x));
+                list.Add(new ControlledGateEvent(
+                    Gate.PauliX,
+                    qubits.FirstOrDefault(),
+                    qubits.Skip(1)
                 ));
             } break;
             default: {
-                GateDeclContext gate = Analyser.GetGateDefinition(qop.OperationName);
-                IEnumerable<double> values = qop.ClassicalParametres.Select((x) => x.Evaluate(vars));  
-                Dictionary<string, ArgumentContext> formalActualMap = new Dictionary<string, ArgumentContext>();
-                for (int i = 0; i < gate.QuantumArguments.Count; i++) {
-                    var formal = gate.QuantumArguments[i];
-                    var actual = (actualParametres ?? qop.QuantumParametres)[i];
-                    formalActualMap.Add(formal, actual);
-                }
+                if (pre_declared_gates.ContainsKey(qop.OperationName)) {
+                    list.Add(new GateEvent(
+                        pre_declared_gates[qop.OperationName],
+                            (actualParametres ?? declaredParametres).SelectMany((x) => GetQubitsForArgument(x))
+                    ));
+                } else {
+                    IEnumerable<double> values = qop.ClassicalParametres.Select((x) => x.Evaluate(vars));  
+                    Dictionary<string, ArgumentContext> formalActualMap = new Dictionary<string, ArgumentContext>();
+                    GateDeclContext gate = Analyser.GetGateDefinition(qop.OperationName);
+                    for (int i = 0; i < gate.QuantumArguments.Count; i++) {
+                        var formal = gate.QuantumArguments[i];
+                        var actual = (actualParametres ?? qop.QuantumParametres)[i];
+                        formalActualMap.Add(formal, actual);
+                    }
 
-                foreach (var appl in gate.Operations) {
-                    switch (appl) {
-                        case UnitaryOperationContext uop: {
-                            // Create new values for passing onto next func
-                            Dictionary<string, double> newVars = new Dictionary<string, double>();
-                        
-                            foreach (var (value, key) in values.Select((x, y) => (x, y))) {
-                                if (key < gate.ClassicalArguments.Count)
-                                    newVars.Add(gate.ClassicalArguments[key], value);
+                    foreach (var appl in gate.Operations) {
+                        switch (appl) {
+                            case UnitaryOperationContext uop: {
+                                // Create new values for passing onto next func
+                                Dictionary<string, double> newVars = new Dictionary<string, double>();
+                            
+                                foreach (var (value, key) in values.Select((x, y) => (x, y))) {
+                                    if (key < gate.ClassicalArguments.Count)
+                                        newVars.Add(gate.ClassicalArguments[key], value);
+                                }
+
+                                // Construct actual parametre list
+                                var actual = uop.QuantumParametres.Select((x) => formalActualMap[x.ArgumentName]).ToList();
+
+                                // Can be a unitary operator or a barrier
+                                ExpandUnitaryQuantumOperatorEvents(uop, list, newVars, actual);
+                            } break;
+                            case BarrierContext barrier: {
+                                list.Add(GetBarrierEvent(barrier));
+                            } break;
+                            default: {
+                                throw new System.Exception("Unsupported gate operation");
                             }
-
-                            // Construct actual parametre list
-                            var actual = uop.QuantumParametres.Select((x) => formalActualMap[x.ArgumentName]).ToList();
-
-                            // Can be a unitary operator or a barrier
-                            ExpandUnitaryQuantumOperatorEvents(uop, list, newVars, actual);
-                        } break;
-                        case BarrierContext barrier: {
-                            list.Add(GetBarrierEvent(barrier));
-                        } break;
-                        default: {
-                            throw new System.Exception("Unsupported gate operation");
                         }
                     }
                 }

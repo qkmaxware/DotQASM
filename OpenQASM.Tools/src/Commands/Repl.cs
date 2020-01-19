@@ -6,6 +6,7 @@ using CommandLine;
 using DotQasm;
 using DotQasm.Backend.Local;
 using DotQasm.IO.OpenQasm;
+using DotQasm.IO.OpenQasm.Ast;
 
 namespace DotQasm.Tools.Commands {
 
@@ -22,13 +23,20 @@ type 'exit' to quit, 'help' for information, 'print' for state info"
         Console.WriteLine();
 
         Simulator sim = new Simulator(Qubits);
-        OpenQasmSemanticAnalyser Semantics = new OpenQasmSemanticAnalyser();
+        OpenQasm2CircuitVisitor builder = new OpenQasm2CircuitVisitor();
+
+        // Register default gates
+        builder.RegisterGate(Gate.Hadamard);
+        builder.RegisterGate(Gate.Identity);
+        builder.RegisterGate(Gate.PauliX);
+        builder.RegisterGate(Gate.PauliY);
+        builder.RegisterGate(Gate.PauliZ);
 
         while (true) {
             Console.Write("|0> ");
             string input = Console.ReadLine();
             if (input == "exit") {
-                break;
+                return Status.Success;
             } else if (input == "print") {
                 var fmt = "{1}|{0}>";
                 bool first = true;
@@ -80,21 +88,29 @@ type 'exit' to quit, 'help' for information, 'print' for state info"
                     var stmt = p.ParseStatement();
 
                     // Verify semantics
-                    Semantics.VisitStatement(stmt);
-
-                    // Execute
-                    switch (stmt) {
-                        default: {
-                            Console.WriteLine(string.Format("{0} command not supported in REPL", stmt.GetType().Name));
-                            break;
-                        }
+                    builder.VisitStatement(stmt);
+                    if (builder.Circuit.QubitCount > sim.QubitCount) {
+                        // Issue 1
+                        throw new Exception("Failed to allocate qubit register, index outside of machine bounds");
                     }
+                    if (builder.Circuit.BitCount > sim.RegisterSize) {
+                        // Issue 2
+                        throw new Exception("Failed to allocate classical register, index outside of machine bounds");
+                    }
+
+                    // Execute new events
+                    var task = sim.Exec(builder.Circuit);
+                    task.RunSynchronously();
+                    var result = task.Result;
+
+                    // Clear events for next time so we don't double execute
+                    builder.Circuit.GateSchedule.ClearSchedule();
                 } catch (OpenQasmException ex) {
-                    Console.WriteLine(ex.Format("command", input));
+                    Console.WriteLine(ex.Format(string.Empty, input));
                     continue;
                 } catch (Exception ex) {
                     Console.WriteLine(ex);
-                    continue;
+                    break;
                 }
             }
         }
