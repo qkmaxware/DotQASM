@@ -14,6 +14,13 @@ namespace DotQasm.Backend.Local {
                 _ => null
             };
         }
+
+        public IEnumerable<string> ListBackends() {
+            return new string[]{
+                "simulator",
+                "qx"
+            };
+        }
     }
 
 }

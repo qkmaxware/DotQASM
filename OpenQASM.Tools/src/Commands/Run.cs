@@ -28,6 +28,8 @@ public class Run : ICommand {
         new Backend.IBM.IBMBackendProvider()
     };
 
+    public static IEnumerable<IBackendProvider> Providers => providers;
+
     public Status Exec(){
         string lowerProvider = Provider.ToLower();
         string lowerBackend = Backend.ToLower();

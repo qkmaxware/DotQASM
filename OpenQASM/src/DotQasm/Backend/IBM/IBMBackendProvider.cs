@@ -12,6 +12,10 @@ namespace DotQasm.Backend.IBM {
             return (IBackend)GetBackends(apikey).Where((backend) => backend.BackendName.ToLower() == deviceLower && minQubits <= backend.QubitCount).FirstOrDefault();
         }
 
+        public IEnumerable<string> ListBackends() {
+            return GetBackends(string.Empty).Select(backend => backend.BackendName);
+        }
+
         private IEnumerable<IBMBackend> GetBackends(string key) {
             return new IBMBackend[]{
                 new IBMArmonk(key),

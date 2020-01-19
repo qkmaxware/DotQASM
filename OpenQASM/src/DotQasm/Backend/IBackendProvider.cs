@@ -7,6 +7,7 @@ public interface IBackendProvider {
     string ProviderAbbreviation {get;}
 
     IBackend CreateBackendInterface(string deviceName, int minQubits, string apikey);
+    IEnumerable<string> ListBackends();
 }
 
 }
