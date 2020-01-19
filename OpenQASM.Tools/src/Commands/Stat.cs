@@ -68,14 +68,6 @@ public class Stat : ICommand {
                 circuit.GateSchedule.Last
             );
 
-            circuit.GateSchedule = new GraphSchedule(circuit.GateSchedule);
-
-            // After optimization time
-            TimeSpan? shortTime = timer.ShortestTimeBetween(
-                circuit.GateSchedule.First, 
-                circuit.GateSchedule.Last
-            );
-
             // Print analysis results
             if (ShowMatrix) {
                 Console.WriteLine("Connectivity Matrix:");
@@ -99,9 +91,8 @@ public class Stat : ICommand {
             Console.WriteLine(string.Format(fmt, "Resets", semanticAnalyser.ResetCount));
             Console.WriteLine(string.Format(fmt, "Barriers", semanticAnalyser.BarrierCount));
             Console.WriteLine(string.Format(fmt, "Conditionals", semanticAnalyser.ClassicalConditionCount));
-            Console.WriteLine(string.Format(fmt, "Est. Un-optimized Time.", (longTime.HasValue ? "~" + longTime.Value.TotalMilliseconds.ToString("0.00") + "ms" : "?")));
-            Console.WriteLine(string.Format(fmt, "Est. Optimized Time", (shortTime.HasValue ? "~" + shortTime.Value.TotalMilliseconds.ToString("0.00") + "ms" : "?")));
-
+            Console.WriteLine(string.Format(fmt, "Est. Time.", (longTime.HasValue ? "~" + longTime.Value.TotalMilliseconds.ToString("0.00") + "ms" : "?")));
+            
         } catch (OpenQasmException ex) {
             Console.WriteLine(ex.Format(filename, contents));
             return Status.Failure;

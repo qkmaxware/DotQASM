@@ -9,13 +9,16 @@ public class Gate {
     public string Symbol {get; protected set;}
     public Complex[,] Matrix {get; protected set;} 
 
+    public (float, float, float) Parametres {get; private set;}
+
     public static readonly Gate Identity = new Gate(
         "Identity",
         "i",
         new Complex[,]{
             {1, 0},
             {0, 1}
-        }
+        },
+        (0, 0, 0)
     );
 
     public static readonly Gate Hadamard = new Gate(
@@ -24,7 +27,8 @@ public class Gate {
         new Complex[,]{
             {0.707, 0.707},
             {0.707, -0.707}
-        }
+        },
+        U2Params(0, Math.PI)
     );
 
     public static readonly Gate PauliX = new Gate(
@@ -33,7 +37,8 @@ public class Gate {
         new Complex[,]{
             {0, 1},
             {1, 0}
-        }
+        },
+        U3Params(Math.PI, 0, Math.PI)
     );
 
     public static readonly Gate PauliY = new Gate(
@@ -42,7 +47,8 @@ public class Gate {
         new Complex[,]{
             {0, -1.i()},
             {1.i(), 0}
-        }
+        },
+        U3Params(Math.PI, Math.PI/2, Math.PI/2)
     );
 
     public static readonly Gate PauliZ = new Gate(
@@ -51,7 +57,8 @@ public class Gate {
         new Complex[,]{
             {1, 0},
             {0, -1}
-        }
+        },
+        U1Params(Math.PI)
     );
 
     /*
@@ -79,34 +86,62 @@ public class Gate {
         }
     );*/
 
-    public static Gate PhaseShift(double rotation) {
-        return new Gate(
-            "Phase Shift-" + rotation,
-            "R" + rotation,
-            new Complex[,] {
-                {1, 0},
-                {0, new Complex(Math.Cos(rotation), Math.Sin(rotation))} // Euler's formula cos(x) + isin(x) = e^ix
-            }
-        );
+    public static Gate Rx(double theta) {
+        var gate = U3(theta, -Math.PI/2, Math.PI/2);
+        gate.Name = "rx(" + theta + ")";
+        gate.Symbol = "rx";
+        return gate;
+    }
+
+    public static Gate Ry(double theta) {
+        var gate = U3(theta,0,0);
+        gate.Name = "ry(" + theta + ")";
+        gate.Symbol = "ry";
+        return gate;
+    }
+
+    public static Gate Rz(double phi) {
+        var gate = U1(phi);
+        gate.Name = "rz(" + phi + ")";
+        gate.Symbol = "rz";
+        return gate;
     }
 
     public static Gate U1(double lambda) {
-        var g = U3(0, 0, lambda);
-        g.Symbol = "U1";
+        var g = U(0, 0, lambda);
+        g.Symbol = "u1";
         return g;
+    }
+
+    private static (float, float, float) U1Params (double lambda) {
+        return ((float)0, (float)0, (float)lambda);
     }
 
     public static Gate U2(double phi, double lambda) {
-        var g = U3(Math.PI / 2, phi, lambda);
-        g.Symbol = "U2";
+        var g = U(Math.PI / 2, phi, lambda);
+        g.Symbol = "u2";
         return g;
     }
 
+    private static (float, float, float) U2Params (double phi, double lambda) {
+        return ((float)(Math.PI / 2), (float)phi, (float)lambda);
+    }
+
     public static Gate U3(double theta, double phi, double lambda) {
+        var g = U(theta, phi, lambda);
+        g.Symbol = "u3";
+        return g;
+    }
+
+    private static (float, float, float) U3Params (double theta, double phi, double lambda) {
+        return ((float)theta, (float)phi, (float)lambda);
+    }
+
+    public static Gate U(double theta, double phi, double lambda) {
         // https://github.com/Qiskit/openqasm/blob/master/spec/qasm2.rst
         Gate u = new Gate();
         u.Name = "Parametric Rotation Gate (" + theta + "," + phi + "," + lambda + ")";
-        u.Symbol = "U3";
+        u.Symbol = "U";
 
         double t2 = theta/2;
         double st2 = Math.Sin(t2);
@@ -118,6 +153,7 @@ public class Gate {
             {Complex.Exp( (-PpL2).i() ) * ct2, -Complex.Exp( (-PmL2).i() ) * st2 },
             {Complex.Exp(   PmL2.i()  ) * st2,  Complex.Exp(   PpL2.i()  ) * ct2}
         };
+        u.Parametres = U3Params(theta, phi, lambda);
 
         return u;
     }
@@ -135,10 +171,12 @@ public class Gate {
 
     protected Gate() {}
 
-    public Gate(string name, string symbol, Complex[,] matrix) {
+    protected Gate(string name, string symbol, Complex[,] matrix, (double, double, double) parametres) {
         this.Name = name;
         this.Symbol = symbol;
         this.Matrix = matrix;
+
+        this.Parametres = ((float)parametres.Item1, (float)parametres.Item2, (float)parametres.Item3);
         
         if (this.Matrix.GetLength(0) != this.Matrix.GetLength(1)) {
             throw new MatrixRepresentationException("Unitary matrix must be square");

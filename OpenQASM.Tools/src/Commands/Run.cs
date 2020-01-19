@@ -25,7 +25,7 @@ public class Run : ICommand {
 
     private static List<IBackendProvider> providers = new List<IBackendProvider>(){
         new Backend.Local.LocalBackendProvider(),
-        //new Backend.IBM.IBMBackendProvider()
+        new Backend.IBM.IBMBackendProvider()
     };
 
     public Status Exec(){

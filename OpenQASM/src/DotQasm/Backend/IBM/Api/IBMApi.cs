@@ -35,11 +35,17 @@ public class IBMApi {
     private IBMSession session = null;
     public bool IsAuthenticated => session != null && session.WasRequestSuccessful;
 
+    private JsonSerializerOptions json_settings;
+
     /// <summary>
     /// Create a new un authenticated instance to the IBM API
     /// </summary>
     public IBMApi() {
-        client = new HttpClient();
+        this.client = new HttpClient();
+
+        this.json_settings = new JsonSerializerOptions();
+        this.json_settings.Converters.Add(new JsonStringEnumConverter());
+        this.json_settings.IgnoreNullValues = true;
     }
 
     /// <summary>
@@ -105,11 +111,11 @@ public class IBMApi {
         var data = new {
             apiToken = apiToken
         };
-        var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+        var json = new StringContent(JsonSerializer.Serialize(data, json_settings), Encoding.UTF8, "application/json");
 
         // Send and decode
         var response = Post(TokenLoginApiUrl, json);
-        session = JsonSerializer.Deserialize<IBMSession>(response);
+        session = JsonSerializer.Deserialize<IBMSession>(response, json_settings);
     }
 
     /// <summary>
@@ -123,11 +129,11 @@ public class IBMApi {
             email = email,
             password = password
         };
-        var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+        var json = new StringContent(JsonSerializer.Serialize(data, json_settings), Encoding.UTF8, "application/json");
 
         // Send and decode
         var response = Post(TokenLoginApiUrl, json);
-        session = JsonSerializer.Deserialize<IBMSession>(response);
+        session = JsonSerializer.Deserialize<IBMSession>(response, json_settings);
     }
 
     private void ForceAuth() {
@@ -150,11 +156,11 @@ public class IBMApi {
         var data = new {
             access_token = session.id
         };
-        var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+        var json = new StringContent(JsonSerializer.Serialize(data, json_settings), Encoding.UTF8, "application/json");
 
         // Send and decode
         var response = Get(string.Format(TokenLoginApiUrl, deviceName), json);
-        return JsonSerializer.Deserialize<IBMDevice>(response);
+        return JsonSerializer.Deserialize<IBMDevice>(response, json_settings);
     }
 
     /// <summary>
@@ -175,8 +181,8 @@ public class IBMApi {
     /// <returns>Device status structure</returns>
     public IBMDeviceStatus GetDeviceStatus (string deviceName) {
         // Send and decode
-        var response = Get(string.Format(TokenLoginApiUrl, deviceName));
-        return JsonSerializer.Deserialize<IBMDeviceStatus>(response);
+        var response = Get(string.Format(DeviceStatusApiUrl, deviceName));
+        return JsonSerializer.Deserialize<IBMDeviceStatus>(response, json_settings);
     }
 
     /// <summary>
@@ -211,11 +217,11 @@ public class IBMApi {
         var data = new {
             access_token = session.id
         };
-        var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+        var json = new StringContent(JsonSerializer.Serialize(data, json_settings), Encoding.UTF8, "application/json");
 
         // Send and decode
         var response = Get(JobsApiUrl, json);
-        return JsonSerializer.Deserialize<IBMApiJob[]>(response);
+        return JsonSerializer.Deserialize<IBMApiJob[]>(response, json_settings);
     }
 
     /// <summary>
@@ -230,11 +236,11 @@ public class IBMApi {
         var data = new {
             access_token = session.id
         };
-        var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+        var json = new StringContent(JsonSerializer.Serialize(data, json_settings), Encoding.UTF8, "application/json");
 
         // Send and decode
         var response = Get(JobsApiUrl + WebUtility.UrlEncode(jobId), json);
-        return JsonSerializer.Deserialize<IBMApiJob>(response);
+        return JsonSerializer.Deserialize<IBMApiJob>(response, json_settings);
     }
 
     /// <summary>
@@ -259,7 +265,7 @@ public class IBMApi {
         throw new NotImplementedException();
     }
 
-    public IBMApiJob SubmitJob (string backendName, string jobName, IBMQObj obj) {
+    public IBMApiJob SubmitJob (string backendName, string jobName, IBMQObj obj, int shots = 1024) {
         ForceAuth();
         
         // Create data-structure IBM expects
@@ -269,14 +275,14 @@ public class IBMApi {
             backend = new {
                 name = backendName
             },
-            allowObjectStorage = true,
+            shots = shots,
             access_token = session.id
         };
-        var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+        var json = new StringContent(JsonSerializer.Serialize(data, json_settings), Encoding.UTF8, "application/json");
 
         // Send and decode
         var response = Post(JobsApiUrl, json);
-        var job = JsonSerializer.Deserialize<IBMApiJob>(response); // job.id;
+        var job = JsonSerializer.Deserialize<IBMApiJob>(response, json_settings); // job.id;
         
         return job;
     }
@@ -295,11 +301,11 @@ public class IBMApi {
         var data = new {
             access_token = session.id
         };
-        var json = new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json");
+        var json = new StringContent(JsonSerializer.Serialize(data, json_settings), Encoding.UTF8, "application/json");
 
         // Send and decode
         var response = Get(JobsApiUrl, json);
-        return JsonSerializer.Deserialize<IBMNetwork[]>(response);
+        return JsonSerializer.Deserialize<IBMNetwork[]>(response, json_settings);
     }
     /// <summary>
     /// Get all the groups within each network that the user belongs to

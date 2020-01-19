@@ -23,11 +23,10 @@ namespace DotQasm.Backend.IBM.Api {
         }
         public string name {get; set;}
         public string id {get; set;}
-        public string[] qasms {get; set;}
         public string kind {get; set;}
         public int shots {get; set;}
         public string status {get; set;}
-        public int cost {get; set;}
+        public double cost {get; set;}
         public DateTime creationDate {get; set;}
         public DateTime endDate {get; set;}
         public IBMApiJobStorageInfo objectStorageInfo {get; set;}
@@ -37,7 +36,7 @@ namespace DotQasm.Backend.IBM.Api {
         public IBMJobSubmitter ip {get; set;}
 
         public bool IsDone() {
-            return endDate != null || (status ?? string.Empty) == "COMPLETE";
+            return (status ?? string.Empty) == "COMPLETED";
         }
         public bool HasResults() {
             return qObjectResult != null;

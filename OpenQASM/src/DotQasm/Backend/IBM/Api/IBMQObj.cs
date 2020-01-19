@@ -1,3 +1,7 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Runtime.Serialization;
+
 namespace DotQasm.Backend.IBM.Api {
 
 /// <summary>
@@ -7,10 +11,12 @@ public enum IBMQObjType {
     /// <summary>
     /// OpenQASM type
     /// </summary>
+    [EnumMember(Value="QASM")]
     QASM,
     /// <summary>
     /// OpenPulse type
     /// </summary>
+    [EnumMember(Value="PULSE")]
     PULSE
 }
 
@@ -30,13 +36,16 @@ public class IBMQObjUserConfig {
     /// <summary>
     ///  For credit-based backends, the maximum number of credits that a user is willing to spend on this run 
     /// </summary>
-    public int max_credits {get; set;}
+    //public int max_credits {get; set;}
 
+    /// <summary>
+    /// Create a new config
+    /// </summary>
     public IBMQObjUserConfig() {
         this.shots = 1024;
         this.memory_slots = 5;
         this.seed = 1;
-        this.max_credits = 0;
+        //this.max_credits = 0;
     }
 }
 
@@ -144,6 +153,14 @@ public class IBMQObjBfuncInstruction: IBMQObjInstruction {
     public int memory {get; set;}
 }
 
+public class IBMQObjResetInstruction: IBMQObjInstruction {
+    public override string name => "reset";
+    /// <summary>
+    /// List of qubits to apply the gate
+    /// </summary>
+    public int[] qubits {get; set;}
+}
+
 public abstract class IBMQObjInstruction {
     public abstract string name {get;}
 }
@@ -159,8 +176,13 @@ public class IBMQObjExperiment {
     public IBMQObjUserConfig config {get; set;}
     /// <summary>
     /// List of sequence commands that define the experiment
+    /// Elements must be of type IBMQObjInstruction but `object` is used for JSON serialization as per microsoft's documentation here https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-how-to
     /// </summary>
-    public IBMQObjInstruction[] instructions {get; set;}
+    public object[] instructions {get; private set;}
+
+    public void SetInstructions(IBMQObjInstruction[] _instructions) {
+        this.instructions = _instructions;        
+    }
 }
 
 /// <summary>
@@ -174,7 +196,7 @@ public class IBMQObj {
     /// <summary>
     /// Type of experiment, can be either “QASM” for openQASM experiments or “PULSE” for OpenPulse experiments
     /// </summary>
-    public IBMQObjType type {get; protected set;}
+    public IBMQObjType type {get; set;}
     /// <summary>
     /// Version of the schema that was used to generate and validate this Qob
     /// </summary>
