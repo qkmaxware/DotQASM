@@ -25,7 +25,7 @@ type 'exit' to quit, 'help' for information, 'print' for state info"
         Simulator sim = new Simulator(Qubits);
         OpenQasm2CircuitVisitor builder = new OpenQasm2CircuitVisitor();
 
-        // Register default gates
+        // Register default gates (U and CX gates already exist in the OpenQASM spec)
         builder.RegisterGate(Gate.Hadamard);
         builder.RegisterGate(Gate.Identity);
         builder.RegisterGate(Gate.PauliX);
