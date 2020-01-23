@@ -9,7 +9,7 @@ using DotQasm.Scheduling;
 
 namespace DotQasm.Tools.Commands {
 
-[Verb("stat", HelpText="")]
+[Verb("stat", HelpText="Verify structure and gather statistics about a given quantum program")]
 public class Stat : ICommand {
 
     [Value(0, MetaName = "file", HelpText = "OpenQASM file path")]

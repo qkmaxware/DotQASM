@@ -17,6 +17,11 @@ public class IBMArmonk : IBMBackend {
     };
     public override IEnumerable<string> SupportedGates => Array.AsReadOnly(_supportedGates);
 
+    private static KeyValuePair<int, int>[] _connectivity = new KeyValuePair<int, int>[]{
+
+    };
+    public override IEnumerable<KeyValuePair<int, int>> QubitConnectivity => Array.AsReadOnly(_connectivity);
+
     public IBMArmonk(string key): base(key) {}
 
 }

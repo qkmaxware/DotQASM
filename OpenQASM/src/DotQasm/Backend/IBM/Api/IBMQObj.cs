@@ -65,6 +65,13 @@ public class IBMQObjSnapshotInstruction: IBMQObjInstruction {
     public string type {get; set;}
 }
 
+public class IBMQObjConditionalMeasureInstruction: IBMQObjMeasureInstruction {
+    /// <summary>
+    /// Apply measurement if the condition is true
+    /// </summary>
+    public int conditional {get; set;}
+}
+
 public class IBMQObjMeasureInstruction: IBMQObjInstruction {
     public override string name => "measure";
     /// <summary>
@@ -110,7 +117,7 @@ public class IBMQObjGateInstruction: IBMQObjInstruction {
     /// <summary>
     /// List of parameters for the gate
     /// </summary>
-    public float[] @params {get; set;}
+    public double[] @params {get; set;}
 
     public IBMQObjGateInstruction(string gate_name){
         this.gate_name = gate_name;
@@ -151,6 +158,13 @@ public class IBMQObjBfuncInstruction: IBMQObjInstruction {
     /// Memory slot in which to store the boolean function result
     /// </summary>
     public int memory {get; set;}
+}
+
+public class IBMQObjConditionalResetInstruction: IBMQObjResetInstruction {
+    /// <summary>
+    /// Apply reset if the condition is true
+    /// </summary>
+    public int conditional {get; set;}
 }
 
 public class IBMQObjResetInstruction: IBMQObjInstruction {

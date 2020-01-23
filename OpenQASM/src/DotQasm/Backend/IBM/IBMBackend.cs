@@ -37,6 +37,7 @@ public abstract class IBMBackend : IBackend {
     public int Retries = 60;
 
     public abstract IEnumerable<string> SupportedGates {get;}
+    public abstract IEnumerable<KeyValuePair<int, int>> QubitConnectivity {get;}
 
     public IBMBackend(string key) {
         this.key = key;
@@ -55,13 +56,17 @@ public abstract class IBMBackend : IBackend {
         return SupportedGates.Contains(gate.Symbol);
     }
 
+    public bool AreQubitsAdjacent(int from, int to) {
+        return QubitConnectivity.Contains(new KeyValuePair<int, int>(from, to));
+    }
+
     public Task<BackendResult> Exec(Circuit circuit) {
         return new Task<BackendResult>(() => {
             // Start timer
             var total = System.Diagnostics.Stopwatch.StartNew();
 
             // Convert circuit to quantum object
-            var qobj = Convert(circuit, Shots);
+            var qobj = convert(circuit, Shots);
             
             // Submit the job
             var job = this.api.SubmitJob(this.BackendName, circuit.Name, qobj, Shots);
@@ -75,60 +80,130 @@ public abstract class IBMBackend : IBackend {
             }
 
             // process results
-            return new IBMJobResults(this, job.id, total.Elapsed, job);
+            return new IBMJobResults(this, total.Elapsed, job);
         });
     }
 
-    private IEnumerable<IBMQObjInstruction> Convert(IEvent evt) {
+    private int makeMask(IEnumerable<int> spots) {
+        int mask = 0;
+        foreach (int position in spots) {
+            mask |= 1 << position;
+        }
+        return mask;
+    }
+
+    private IEnumerable<IBMQObjInstruction> convert(int qubits, int cbits, IEvent evt) {
         switch (evt) {
             case BarrierEvent be: {
                 var inst =  new IBMQObjBarrierInstruction();
                 inst.qubits = be.QuantumDependencies.Select(qubit => qubit.QubitId).ToArray();
-                return new IBMQObjInstruction[]{inst};
+                return new IBMQObjInstruction[]{ inst };
             } break;
             case ControlledGateEvent cge: {
-                return null;
                 if (this.SupportsControlledX() && cge.Operator.Symbol == "x") {
+                    List<IBMQObjInstruction> insts = new List<IBMQObjInstruction>();
+                    foreach (var qubit in cge.TargetQubits) {
+                        if (!AreQubitsAdjacent(cge.ControlQubit.QubitId, qubit.QubitId)) {
+                            throw new InvalidOperationException("no connectivity between qubits " + cge.ControlQubit.QubitId + " and " + qubit.QubitId);
+                        }
 
+                        var inst = new IBMQObjGateInstruction("cx");
+                        inst.qubits = new int[]{ cge.ControlQubit.QubitId, qubit.QubitId };
+                        insts.Add(inst);
+                    }
+                    return insts;
                 } else {
                     throw new InvalidOperationException("controlled-" + cge.Operator.Name + " is not supported on IBM Backends");
                 }
             } break;
             case GateEvent ge: {
                 if (SupportsGate(ge.Operator)) {
-                    var inst = new IBMQObjGateInstruction(ge.Operator.Symbol);
-                    inst.qubits = ge.QuantumDependencies.Select(qubit => qubit.QubitId).ToArray();
-                    inst.@params = new float[]{ ge.Operator.Parametres.Item1, ge.Operator.Parametres.Item2, ge.Operator.Parametres.Item3 };
-                    return new IBMQObjInstruction[]{inst};
+                    List<IBMQObjInstruction> insts = new List<IBMQObjInstruction>();
+                    foreach (var qubit in ge.QuantumDependencies) {
+                        var inst = new IBMQObjGateInstruction(ge.Operator.Symbol);
+                        inst.qubits = new int[]{ qubit.QubitId };
+                        inst.@params = new double[]{ ge.Operator.Parametres.Item1, ge.Operator.Parametres.Item2, ge.Operator.Parametres.Item3 };
+                        insts.Add(inst);
+                    }
+                    return insts;
                 } else {
                     throw new InvalidOperationException(ge.Operator.Name + " is not supported on IBM Backends");
                 }
             } break;
             case IfEvent ife: {
-                return null;
-
-                /*var inst1 = new IBMQObjBfuncInstruction();
+                // TODO MEASURE, RESET, UNITARY OPERATOR
+                var inst1 = new IBMQObjBfuncInstruction();
                 inst1.relation = "==";
-                inst1.mask = ;
+                inst1.mask = makeMask(ife.ClassicalDependencies.Select(cbit => cbit.ClassicalBitId));
                 inst1.val = ife.LiteralValue;
-                inst1.register = 0; // Store tmp value always in the 0 register
+                inst1.register = cbits; // Store tmp value always in the last unused register
+                
+                List<IBMQObjInstruction> insts = new List<IBMQObjInstruction>();
+                insts.Add(inst1);
 
-                var inst2 = new IBMQObjConditionalGateInstruction();
-                inst2.conditional = 0; // Store tmp value always in the 0 register
-                inst2.qubits = ife.QuantumDependencies.Select(qubit => qubit.QubitId).ToArray();
-                return new IBMQObjInstruction[]{inst1, inst2};*/
+                switch (ife.Event) {
+                    case GateEvent ge: {
+                        if (SupportsGate(ge.Operator)) {
+                            foreach (var qubit in ge.QuantumDependencies) {
+                                var inst = new IBMQObjConditionalGateInstruction(ge.Operator.Symbol);
+                                inst.conditional = cbits;
+                                inst.qubits = new int[]{ qubit.QubitId };
+                                inst.@params = new double[]{ ge.Operator.Parametres.Item1, ge.Operator.Parametres.Item2, ge.Operator.Parametres.Item3 };
+                                insts.Add(inst);
+                            }
+                            return insts;
+                        } else {
+                            throw new InvalidOperationException(ge.Operator.Name + " is not supported on IBM Backends");
+                        }
+                    } break;
+                    case ControlledGateEvent cge: {
+                        if (this.SupportsControlledX() && cge.Operator.Symbol == "x") {
+                            foreach (var qubit in cge.TargetQubits) {
+                                if (!AreQubitsAdjacent(cge.ControlQubit.QubitId, qubit.QubitId)) {
+                                    throw new InvalidOperationException("no connectivity between qubits " + cge.ControlQubit.QubitId + " and " + qubit.QubitId);
+                                }
+
+                                var inst = new IBMQObjConditionalGateInstruction("cx");
+                                inst.conditional = cbits;
+                                inst.qubits = new int[]{ cge.ControlQubit.QubitId, qubit.QubitId };
+                                insts.Add(inst);
+                            }
+                            return insts;
+                        } else {
+                            throw new InvalidOperationException("controlled-" + cge.Operator.Name + " is not supported on IBM Backends");
+                        }
+                    } break;
+                    case MeasurementEvent me: {
+                        var inst = new IBMQObjConditionalMeasureInstruction();
+                        inst.conditional = cbits;
+                        inst.qubits = me.QuantumDependencies.Select(qubit => qubit.QubitId).ToArray();
+                        inst.memory = me.ClassicalDependencies.Select(cbit => cbit.ClassicalBitId).ToArray();
+                        inst.register = me.ClassicalDependencies.Select(cbit => cbit.ClassicalBitId).ToArray(); 
+                        insts.Add(inst);
+                    } break;
+                    case ResetEvent re: {
+                        var inst = new IBMQObjConditionalResetInstruction();
+                        inst.conditional = cbits;
+                        inst.qubits = re.QuantumDependencies.Select(qubit => qubit.QubitId).ToArray();
+                        insts.Add(inst);
+                    } break;
+                    default: {
+                        throw new InvalidOperationException(ife.Event.GetType() + " is not supported on with 'if' statements on IBM Backends");
+                    } break;
+                }
+                return insts;
             } break;
             case MeasurementEvent me: {
                 var inst = new IBMQObjMeasureInstruction();
                 inst.qubits = me.QuantumDependencies.Select(qubit => qubit.QubitId).ToArray();
                 inst.memory = me.ClassicalDependencies.Select(cbit => cbit.ClassicalBitId).ToArray();
-                //inst.register = ; // Store values in anything other that the 0 register
-                return new IBMQObjInstruction[]{inst};
+                inst.register = me.ClassicalDependencies.Select(cbit => cbit.ClassicalBitId).ToArray(); 
+                return new IBMQObjInstruction[]{ inst };
             } break;
             case ResetEvent re: {
                 var inst = new IBMQObjResetInstruction();
                 inst.qubits = re.QuantumDependencies.Select(qubit => qubit.QubitId).ToArray();
-                return new IBMQObjInstruction[]{inst};
+                return new IBMQObjInstruction[]{ inst };
             } break;
             default: {
                 throw new InvalidOperationException(evt.GetType() + " is not supported on IBM Backends");
@@ -136,7 +211,7 @@ public abstract class IBMBackend : IBackend {
         }
     }
 
-    private IBMQObj Convert(Circuit circuit, int shots = 1024) {
+    private IBMQObj convert(Circuit circuit, int shots = 1024) {
         IBMQObj qobj = new IBMQObj();
         qobj.type = IBMQObjType.QASM;
         
@@ -157,7 +232,7 @@ public abstract class IBMBackend : IBackend {
         List<IBMQObjInstruction> instructions = new List<IBMQObjInstruction>();
 
         foreach (var evt in circuit.GateSchedule) {
-            var inst = Convert(evt);
+            var inst = convert(circuit.QubitCount, circuit.BitCount, evt);
             if (inst != null) {
                 instructions.AddRange(inst);
             }

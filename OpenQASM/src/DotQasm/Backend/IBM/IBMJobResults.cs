@@ -1,18 +1,20 @@
 using System;
 using System.Text;
 using System.Linq;
+using System.Text.Json;
 
 namespace DotQasm.Backend.IBM {
 
 public class IBMJobResults : BackendResult {
-    public string JobId {get; private set;}
+    public string JobId => Job.id;
     public bool Success {get; private set;}
 
+    private Api.IBMApiJob Job {get; set;}
     public Api.IBMApiQObjectResult RawResult {get; private set;}
 
-    public IBMJobResults(IBackend backend, string jobid, TimeSpan taskTime, Api.IBMApiJob job) {
+    public IBMJobResults(IBackend backend, TimeSpan taskTime, Api.IBMApiJob job) {
         // Custom stuff
-        this.JobId = jobid;
+        this.Job = job;
         this.RawResult = job.qObjectResult;
 
         // Inherited stuff
@@ -30,8 +32,12 @@ public class IBMJobResults : BackendResult {
     }
 
     public override string ToString() {
-        // Custom stuff
         StringBuilder sb = new StringBuilder();
+
+        // Inherited stuff
+        sb.Append(base.ToString());
+
+        // Custom stuff
         int col1 = 32;
         sb.AppendLine(new string('-', col1 + 4));
         sb.AppendLine(string.Format("| {0,-"+col1+"} |", "Job"));
@@ -39,8 +45,10 @@ public class IBMJobResults : BackendResult {
         sb.AppendLine(JobId);
         sb.AppendLine();
 
-        // Inherited stuff
-        sb.Append(base.ToString());
+        sb.AppendLine(string.Format("| {0,-"+col1+"} |", "Quantum Object"));
+        sb.AppendLine(new string('-', col1 + 4));
+        sb.AppendLine(JsonSerializer.Serialize(Job.qObject));
+        sb.AppendLine();
 
         return sb.ToString();
     }

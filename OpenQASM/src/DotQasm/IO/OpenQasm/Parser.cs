@@ -14,40 +14,40 @@ productionlist::
     mainprogram: "OPENQASM" real ";" program
     program: statement | program statement
     statement: decl
-                                            :| gatedecl goplist }
-                                            :| gatedecl }
-                                            :| "opaque" id idlist ";"
-                                            :| "opaque" id "( )" idlist ";"
-                                            :| "opaque" id "(" idlist ")" idlist ";"
-                                            :| qop
-                                            :| "if (" id "==" nninteger ")" qop
-                                            :| "barrier" anylist ";"
+        :| gatedecl goplist }
+        :| gatedecl }
+        :| "opaque" id idlist ";"
+        :| "opaque" id "( )" idlist ";"
+        :| "opaque" id "(" idlist ")" idlist ";"
+        :| qop
+        :| "if (" id "==" nninteger ")" qop
+        :| "barrier" anylist ";"
     decl: "qreg" id [ nninteger ] ";" | "creg" id [ nninteger ] ";"
     gatedecl: "gate" id idlist {
-                                    :| "gate" id "( )" idlist {
-                                    :| "gate" id "(" idlist ")" idlist {
+        :| "gate" id "( )" idlist {
+        :| "gate" id "(" idlist ")" idlist {
     goplist: uop
-                                    :| "barrier" idlist ";"
-                                    :| goplist uop
-                                    :| goplist "barrier" idlist ";"
+        :| "barrier" idlist ";"
+        :| goplist uop
+        :| goplist "barrier" idlist ";"
     qop: uop
-                    :| "measure" argument "->" argument ";"
-                    :| "reset" argument ";"
+        :| "measure" argument "->" argument ";"
+        :| "reset" argument ";"
     uop: "U (" explist ")" argument ";"
-                    :| "CX" argument "," argument ";"
-                    :| id anylist ";" | id "( )" anylist ";"
-                    :| id "(" explist ")" anylist ";"
+        :| "CX" argument "," argument ";"
+        :| id anylist ";" | id "( )" anylist ";"
+        :| id "(" explist ")" anylist ";"
     anylist: idlist | mixedlist
     idlist: id | idlist "," id
     mixedlist: id [ nninteger ] | mixedlist "," id
-                                            :| mixedlist "," id [ nninteger ]
-                                            :| idlist "," id [ nninteger ]
+        :| mixedlist "," id [ nninteger ]
+        :| idlist "," id [ nninteger ]
     argument: id | id [ nninteger ]
     explist: exp | explist "," exp
     exp: real | nninteger | "pi" | id
-                    :| exp + exp | exp - exp | exp * exp
-                    :| exp / exp | -exp | exp ^ exp
-                    :| "(" exp ")" | unaryop "(" exp ")"
+        :| exp + exp | exp - exp | exp * exp
+        :| exp / exp | -exp | exp ^ exp
+        :| "(" exp ")" | unaryop "(" exp ")"
     unaryop: "sin" | "cos" | "tan" | "exp" | "ln" | "sqrt"
 */
 

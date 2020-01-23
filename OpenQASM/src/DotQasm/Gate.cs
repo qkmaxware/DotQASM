@@ -9,7 +9,7 @@ public class Gate {
     public string Symbol {get; protected set;}
     public Complex[,] Matrix {get; protected set;} 
 
-    public (float, float, float) Parametres {get; private set;}
+    public (double, double, double) Parametres {get; private set;}
 
     public static readonly Gate Identity = new Gate(
         "Identity",
@@ -113,8 +113,8 @@ public class Gate {
         return g;
     }
 
-    private static (float, float, float) U1Params (double lambda) {
-        return ((float)0, (float)0, (float)lambda);
+    private static (double, double, double) U1Params (double lambda) {
+        return (0, 0, lambda);
     }
 
     public static Gate U2(double phi, double lambda) {
@@ -123,8 +123,8 @@ public class Gate {
         return g;
     }
 
-    private static (float, float, float) U2Params (double phi, double lambda) {
-        return ((float)(Math.PI / 2), (float)phi, (float)lambda);
+    private static (double, double, double) U2Params (double phi, double lambda) {
+        return ((Math.PI / 2), phi, lambda);
     }
 
     public static Gate U3(double theta, double phi, double lambda) {
@@ -133,8 +133,8 @@ public class Gate {
         return g;
     }
 
-    private static (float, float, float) U3Params (double theta, double phi, double lambda) {
-        return ((float)theta, (float)phi, (float)lambda);
+    private static (double, double, double) U3Params (double theta, double phi, double lambda) {
+        return (theta, phi, lambda);
     }
 
     public static Gate U(double theta, double phi, double lambda) {
@@ -176,7 +176,7 @@ public class Gate {
         this.Symbol = symbol;
         this.Matrix = matrix;
 
-        this.Parametres = ((float)parametres.Item1, (float)parametres.Item2, (float)parametres.Item3);
+        this.Parametres = parametres;
         
         if (this.Matrix.GetLength(0) != this.Matrix.GetLength(1)) {
             throw new MatrixRepresentationException("Unitary matrix must be square");

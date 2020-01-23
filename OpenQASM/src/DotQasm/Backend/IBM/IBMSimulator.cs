@@ -33,6 +33,19 @@ public class IBMSimulator : IBMBackend {
     };
     public override IEnumerable<string> SupportedGates => Array.AsReadOnly(_supportedGates);
 
+    private static KeyValuePair<int, int>[] _connectivity;
+    public override IEnumerable<KeyValuePair<int, int>> QubitConnectivity => Array.AsReadOnly(_connectivity);
+
+    static IBMSimulator() {
+        _connectivity = new KeyValuePair<int, int>[32 * 32];
+        int k = 0;
+        for(int i = 0; i < 32; i++) {
+            for(int j = 0; j < 32; j++) {
+                _connectivity[k++] = new KeyValuePair<int, int>(i, j);
+            } 
+        }   
+    }
+
     public IBMSimulator(string key): base(key) {}
 
 }
