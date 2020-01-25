@@ -17,7 +17,9 @@ public class Repl : ICommand {
 
     public Status Exec() {
         Console.WriteLine(
-@"OpenQASM interactive console
+@"-----------------------------------------------------------------------
+| OpenQASM interactive console                                        |
+-----------------------------------------------------------------------
 type 'exit' to quit, 'help' for information, 'print' for state info"
         );
         Console.WriteLine();

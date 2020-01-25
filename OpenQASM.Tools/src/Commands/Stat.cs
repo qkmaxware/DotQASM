@@ -68,14 +68,6 @@ public class Stat : ICommand {
                 circuit.GateSchedule.Last
             );
 
-            // Print analysis results
-            if (ShowMatrix) {
-                Console.WriteLine("Connectivity Matrix:");
-                Console.WriteLine(circuit.GateSchedule.ToString());
-                Console.WriteLine();
-            }
-
-            Console.WriteLine("QASM Properties:");
             int[] widths = new int[]{24, 42};
             var fmt ="{0,-"+widths[0]+"} {1,-"+widths[1]+"}";
             Console.WriteLine(string.Format(fmt, "Property", "Value"));
@@ -93,6 +85,13 @@ public class Stat : ICommand {
             Console.WriteLine(string.Format(fmt, "Conditionals", semanticAnalyser.ClassicalConditionCount));
             Console.WriteLine(string.Format(fmt, "Est. Time.", (longTime.HasValue ? "~" + longTime.Value.TotalMilliseconds.ToString("0.00") + "ms" : "?")));
             
+            // Print analysis results
+            if (ShowMatrix) {
+                Console.WriteLine();
+                Console.WriteLine("Connectivity Matrix:");
+                Console.WriteLine(circuit.GateSchedule.ToString());
+            }
+
         } catch (OpenQasmException ex) {
             Console.WriteLine(ex.Format(filename, contents));
             return Status.Failure;

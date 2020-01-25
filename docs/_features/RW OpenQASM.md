@@ -1,12 +1,13 @@
 ---
 title: Read & Write Open Quantum Assembly
 ---
+The dotQASM libraries allow users to load quantum assembly files from disk, manipulate quantum circuits, and save the resultant quantum assembly back to disk.  
 ```cs
 // Read OpenQASM files
-var circuit = DotQasm.IO.OpenQasm.Parser.ParseCircuit(qasm);
+var circuit = DotQASM.IO.OpenQasm.Parser.ParseCircuit(qasm);
 
 // Write OpenQASM files
 using (var writer = new StreamWriter("myCircuit.qasm")) {
-    DotQasm.IO.OpenQasm.Emitter.EmitCircuit(circuit, writer);
+    DotQASM.IO.OpenQasm.Emitter.EmitCircuit(circuit, writer);
 }
 ```

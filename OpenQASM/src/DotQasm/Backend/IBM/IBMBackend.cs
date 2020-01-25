@@ -98,7 +98,7 @@ public abstract class IBMBackend : IBackend {
                 var inst =  new IBMQObjBarrierInstruction();
                 inst.qubits = be.QuantumDependencies.Select(qubit => qubit.QubitId).ToArray();
                 return new IBMQObjInstruction[]{ inst };
-            } break;
+            } 
             case ControlledGateEvent cge: {
                 if (this.SupportsControlledX() && cge.Operator.Symbol == "x") {
                     List<IBMQObjInstruction> insts = new List<IBMQObjInstruction>();
@@ -115,7 +115,7 @@ public abstract class IBMBackend : IBackend {
                 } else {
                     throw new InvalidOperationException("controlled-" + cge.Operator.Name + " is not supported on IBM Backends");
                 }
-            } break;
+            } 
             case GateEvent ge: {
                 if (SupportsGate(ge.Operator)) {
                     List<IBMQObjInstruction> insts = new List<IBMQObjInstruction>();
@@ -129,7 +129,7 @@ public abstract class IBMBackend : IBackend {
                 } else {
                     throw new InvalidOperationException(ge.Operator.Name + " is not supported on IBM Backends");
                 }
-            } break;
+            } 
             case IfEvent ife: {
                 // TODO MEASURE, RESET, UNITARY OPERATOR
                 var inst1 = new IBMQObjBfuncInstruction();
@@ -151,7 +151,6 @@ public abstract class IBMBackend : IBackend {
                                 inst.@params = new double[]{ ge.Operator.Parametres.Item1, ge.Operator.Parametres.Item2, ge.Operator.Parametres.Item3 };
                                 insts.Add(inst);
                             }
-                            return insts;
                         } else {
                             throw new InvalidOperationException(ge.Operator.Name + " is not supported on IBM Backends");
                         }
@@ -168,7 +167,6 @@ public abstract class IBMBackend : IBackend {
                                 inst.qubits = new int[]{ cge.ControlQubit.QubitId, qubit.QubitId };
                                 insts.Add(inst);
                             }
-                            return insts;
                         } else {
                             throw new InvalidOperationException("controlled-" + cge.Operator.Name + " is not supported on IBM Backends");
                         }
@@ -189,22 +187,22 @@ public abstract class IBMBackend : IBackend {
                     } break;
                     default: {
                         throw new InvalidOperationException(ife.Event.GetType() + " is not supported on with 'if' statements on IBM Backends");
-                    } break;
+                    }
                 }
                 return insts;
-            } break;
+            }
             case MeasurementEvent me: {
                 var inst = new IBMQObjMeasureInstruction();
                 inst.qubits = me.QuantumDependencies.Select(qubit => qubit.QubitId).ToArray();
                 inst.memory = me.ClassicalDependencies.Select(cbit => cbit.ClassicalBitId).ToArray();
                 inst.register = me.ClassicalDependencies.Select(cbit => cbit.ClassicalBitId).ToArray(); 
                 return new IBMQObjInstruction[]{ inst };
-            } break;
+            }
             case ResetEvent re: {
                 var inst = new IBMQObjResetInstruction();
                 inst.qubits = re.QuantumDependencies.Select(qubit => qubit.QubitId).ToArray();
                 return new IBMQObjInstruction[]{ inst };
-            } break;
+            } 
             default: {
                 throw new InvalidOperationException(evt.GetType() + " is not supported on IBM Backends");
             }
