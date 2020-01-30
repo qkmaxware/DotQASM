@@ -5,21 +5,21 @@ namespace DotQasm.Scheduling {
 
 public class ControlledGateEvent: IEvent {
 
-    public IEnumerable<Circuit.Qubit> QuantumDependencies {get; private set;}
-    public Circuit.Qubit ControlQubit => QuantumDependencies.FirstOrDefault();
-    public IEnumerable<Circuit.Qubit> TargetQubits => QuantumDependencies.Skip(1);
-    public virtual IEnumerable<Circuit.Cbit> ClassicalDependencies { 
+    public IEnumerable<Qubit> QuantumDependencies {get; private set;}
+    public Qubit ControlQubit => QuantumDependencies.FirstOrDefault();
+    public IEnumerable<Qubit> TargetQubits => QuantumDependencies.Skip(1);
+    public virtual IEnumerable<Cbit> ClassicalDependencies { 
         get => null;
         protected set {}
     }
     public Gate Operator {get; private set;}
 
-    public ControlledGateEvent (Gate gate, Circuit.Qubit control, IEnumerable<Circuit.Qubit> targets) {
+    public ControlledGateEvent (Gate gate, Qubit control, IEnumerable<Qubit> targets) {
         this.QuantumDependencies = targets.Prepend(control);
         this.Operator = gate;
     }
 
-    public ControlledGateEvent (Gate gate, IEnumerable<Circuit.Qubit> dependencies) {
+    public ControlledGateEvent (Gate gate, IEnumerable<Qubit> dependencies) {
         this.QuantumDependencies = dependencies;
         this.Operator = gate;
     }

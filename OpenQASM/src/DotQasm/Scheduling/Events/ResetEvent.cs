@@ -3,10 +3,10 @@ using System.Collections.Generic;
 namespace DotQasm.Scheduling {
 
 public class ResetEvent: IEvent {
-    public IEnumerable<Circuit.Cbit> ClassicalDependencies => null;
-    public IEnumerable<Circuit.Qubit> QuantumDependencies {get; protected set;}
+    public IEnumerable<Cbit> ClassicalDependencies => null;
+    public IEnumerable<Qubit> QuantumDependencies {get; protected set;}
 
-    public ResetEvent(IEnumerable<Circuit.Qubit> dependencies) {
+    public ResetEvent(IEnumerable<Qubit> dependencies) {
         this.QuantumDependencies = dependencies;
     }
 }

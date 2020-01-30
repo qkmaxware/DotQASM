@@ -12,7 +12,7 @@ public interface IEmitter<C> {
     /// </summary>
     /// <param name="program">program to convert</param>
     /// <param name="writer">stream to write to</param>
-    void Stringify(C program, TextWriter writer);
+    void Emit(C program, TextWriter writer);
 }
 
 }

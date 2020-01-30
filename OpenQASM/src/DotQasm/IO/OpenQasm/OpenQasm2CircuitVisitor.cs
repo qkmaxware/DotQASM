@@ -15,8 +15,8 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
 
     public OpenQasmSemanticAnalyser Analyser {get; private set;}
 
-    private Dictionary<string, IEnumerable<Circuit.Qubit>> qubitMap = new Dictionary<string, IEnumerable<Circuit.Qubit>>();
-    private Dictionary<string, IEnumerable<Circuit.Cbit>> cbitMap = new Dictionary<string, IEnumerable<Circuit.Cbit>>();
+    private Dictionary<string, IEnumerable<Qubit>> qubitMap = new Dictionary<string, IEnumerable<Qubit>>();
+    private Dictionary<string, IEnumerable<Cbit>> cbitMap = new Dictionary<string, IEnumerable<Cbit>>();
 
     private Dictionary<string, Gate> pre_declared_gates = new Dictionary<string, Gate>();
 
@@ -30,47 +30,47 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
         this.Analyser = new OpenQasmSemanticAnalyser();
     }
 
-    protected IEnumerable<Circuit.Qubit> GetQRegister(string varname) {
+    protected IEnumerable<Qubit> GetQRegister(string varname) {
         return qubitMap[varname];
     }
 
-    protected IEnumerable<Circuit.Cbit> GetCRegister(string varname) {
+    protected IEnumerable<Cbit> GetCRegister(string varname) {
         return cbitMap[varname];
     }
 
-    private Circuit.Qubit GetQubit(string varname) {
+    private Qubit GetQubit(string varname) {
         return qubitMap[varname].ElementAt(0);
     }
 
-    private Circuit.Cbit GetCbit(string varname) {
+    private Cbit GetCbit(string varname) {
         return cbitMap[varname].ElementAt(0);
     }
 
-    private Circuit.Qubit GetQubit(string varname, int element) {
+    private Qubit GetQubit(string varname, int element) {
         return qubitMap[varname].ElementAt(element);
     }
 
-    private Circuit.Cbit GetCbit(string varname, int element) {
+    private Cbit GetCbit(string varname, int element) {
         return cbitMap[varname].ElementAt(element);
     }
 
-    private IEnumerable<Circuit.Qubit> GetQubitsForArgument(ArgumentContext ctx) {
+    private IEnumerable<Qubit> GetQubitsForArgument(ArgumentContext ctx) {
         if (ctx.IsArrayMember) {
-            return new Circuit.Qubit[]{ GetQubit(ctx.ArgumentName, ctx.ArgumentOffset.Value) };
+            return new Qubit[]{ GetQubit(ctx.ArgumentName, ctx.ArgumentOffset.Value) };
         } else {
             return GetQRegister(ctx.ArgumentName);
         }
     }
 
-    private IEnumerable<Circuit.Cbit> GetCbitsForArgument(ArgumentContext ctx) {
+    private IEnumerable<Cbit> GetCbitsForArgument(ArgumentContext ctx) {
         if (ctx.IsArrayMember) {
-            return new Circuit.Cbit[]{ GetCbit(ctx.ArgumentName, ctx.ArgumentOffset.Value) };
+            return new Cbit[]{ GetCbit(ctx.ArgumentName, ctx.ArgumentOffset.Value) };
         } else {
             return GetCRegister(ctx.ArgumentName);
         }
     }
 
-    private Circuit.Qubit GetQubitForArgument(ArgumentContext ctx) {
+    private Qubit GetQubitForArgument(ArgumentContext ctx) {
         if (ctx.IsArrayMember) {
             return GetQubit(ctx.ArgumentName, ctx.ArgumentOffset.Value);
         } else {
@@ -78,7 +78,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
         }
     }
 
-    private Circuit.Cbit GetCbitForArgument(ArgumentContext ctx) {
+    private Cbit GetCbitForArgument(ArgumentContext ctx) {
         if (ctx.IsArrayMember) {
             return GetCbit(ctx.ArgumentName, ctx.ArgumentOffset.Value);
         } else {
@@ -91,11 +91,11 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
 
         switch (declaration.Type) {
             case DeclType.Classical: 
-                Circuit.Cbit[] register = Circuit.CreateRegister(declaration.Amount);
+                var register = Circuit.AllocateCbits(declaration.Amount);
                 cbitMap.Add(declaration.VariableName, register);
                 break;
             case DeclType.Quantum:
-                Circuit.Qubit[] qubits = Circuit.Allocate(declaration.Amount);
+                var qubits = Circuit.AllocateQubits(declaration.Amount);
                 qubitMap.Add(declaration.VariableName, qubits); 
                 break;
         }
@@ -253,7 +253,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     private IEvent GetResetEvent(ResetContext reset) {
-        IEnumerable<Circuit.Qubit> qubits = GetQubitsForArgument(reset.Argument);
+        IEnumerable<Qubit> qubits = GetQubitsForArgument(reset.Argument);
 
         return new ResetEvent(qubits);
     }
@@ -267,7 +267,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     private IEvent GetBarrierEvent(BarrierContext barrier) {
-        IEnumerable<Circuit.Qubit> qubits = barrier.Arguments.SelectMany((x) => GetQubitsForArgument(x));
+        IEnumerable<Qubit> qubits = barrier.Arguments.SelectMany((x) => GetQubitsForArgument(x));
         return new BarrierEvent(qubits);
     }
 
