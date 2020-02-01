@@ -80,8 +80,18 @@ public class Emitter: IEmitter<Circuit> {
         Emit(evt.Event, writer);
     }
 
+    private IEnumerable<Register<Qubit>> GetWholeRegisters(IEnumerable<Qubit> qubits) {
+        var potentialRegisters = qubits.Select(qubit => qubit.Owner).Distinct();
+        return potentialRegisters.Where(reg => reg.All(qubit => qubits.Contains(qubit)));
+    }
+    private IEnumerable<Qubit> GetIndividualQubits(IEnumerable<Register<Qubit>> registers, IEnumerable<Qubit> qubits) {
+        return qubits.Where(qubit => registers.Any(reg => reg.Contains(qubit)));
+    }
+
     private void EmitMeasure(MeasurementEvent evt, TextWriter writer) {
         // Measurement events and IFs use register ids (or id[index]) for qubits, we only have one register
+        //var registersToMeasure  = GetWholeRegisters(evt.QuantumDependencies);
+        //var qubitsToMeasure     = GetIndividualQubits(registersToMeasure, evt.QuantumDependencies);
         for (int i = 0; i < evt.QuantumDependencies.Count(); i++) {
             writer.Write("measure ");
             writer.Write(ConvertQubit(evt.QuantumDependencies.ElementAt(i)));
