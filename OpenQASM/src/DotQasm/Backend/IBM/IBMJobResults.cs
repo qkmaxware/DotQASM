@@ -35,7 +35,7 @@ public class IBMJobResults : BackendResult {
         StringBuilder sb = new StringBuilder();
 
         // Inherited stuff
-        sb.Append(base.ToString());
+        sb.AppendLine(base.ToString());
 
         // Custom stuff
         int col1 = 32;
@@ -45,6 +45,7 @@ public class IBMJobResults : BackendResult {
         sb.AppendLine(JobId);
         sb.AppendLine();
 
+        sb.AppendLine(new string('-', col1 + 4));
         sb.AppendLine(string.Format("| {0,-"+col1+"} |", "Quantum Object"));
         sb.AppendLine(new string('-', col1 + 4));
         sb.AppendLine(JsonSerializer.Serialize(Job.qObject));

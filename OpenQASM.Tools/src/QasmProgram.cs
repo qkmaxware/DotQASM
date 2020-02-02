@@ -11,15 +11,17 @@ namespace DotQasm.Tools {
             });
             
             return (int)parser
-            .ParseArguments<Stat, Repl, Run, Transpile, Optimize, BackendLs>(args)
+            .ParseArguments<New, Stat, Repl, Run, Transpile, Optimize, BackendLs, OptimizationsLs>(args)
             .MapResult(
-                (Stat opts)         =>  opts.Exec(),
-                (Repl opts)         =>  opts.Exec(),
-                (Run opts)          =>  opts.Exec(),
-                (Transpile opts)    =>  opts.Exec(),
-                (Optimize opts)     =>  opts.Exec(),
-                (BackendLs opts)    =>  opts.Exec(), 
-                errs                =>  Status.Failure
+                (New opts)              =>  opts.Exec(),
+                (Stat opts)             =>  opts.Exec(),
+                (Repl opts)             =>  opts.Exec(),
+                (Run opts)              =>  opts.Exec(),
+                (Transpile opts)        =>  opts.Exec(),
+                (Optimize opts)         =>  opts.Exec(),
+                (BackendLs opts)        =>  opts.Exec(), 
+                (OptimizationsLs opts)  => opts.Exec(),
+                errs                    =>  Status.Failure
             );
         }
     }

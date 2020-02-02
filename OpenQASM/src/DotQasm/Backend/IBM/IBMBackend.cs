@@ -31,6 +31,12 @@ public abstract class IBMBackend : IBackend {
     public int Shots {get; set;}
 
     public abstract string BackendName {get;}
+
+    public BackendInformation Information => new BackendInformation(){
+        Name = BackendName,
+        Description = QubitCount + " qubit computer"
+    };
+    
     public abstract int QubitCount {get;}
 
     public TimeSpan RetryDelay = TimeSpan.FromSeconds(2);

@@ -31,13 +31,13 @@ public class BackendResult {
             int stateCol = Convert.ToString(StateProbabilityHistogram.Keys.Max(), 2).Length;
 
             string histogramFormat = "{0} |{1} {2:0.##} %";
-            for (int i = 0; i < StateProbabilityHistogram.Count; i++) {
-                var probability = StateProbabilityHistogram[i];
+            foreach (var state in StateProbabilityHistogram) {
+                var probability = state.Value;
                 var percent = probability * 100;
                 sb.AppendLine(
                     string.Format(
                         histogramFormat, 
-                        Convert.ToString(i, 2).PadLeft(stateCol, '0'), 
+                        Convert.ToString(state.Key, 2).PadLeft(stateCol, '0'), 
                         new string('|', (int)percent / 2), 
                         percent
                     )

@@ -15,10 +15,16 @@ namespace DotQasm.Backend.Local {
             };
         }
 
-        public IEnumerable<string> ListBackends() {
-            return new string[]{
-                "simulator",
-                "qx"
+        public IEnumerable<BackendInformation> ListBackends() {
+            return new BackendInformation[]{
+                new BackendInformation(){
+                    Name = "simulator",
+                    Description = "Fully connected quantum computer simulator"
+                },
+                new BackendInformation(){
+                    Name = "qx",
+                    Description = "Local install of QX quantum computer simulator"
+                }
             };
         }
     }

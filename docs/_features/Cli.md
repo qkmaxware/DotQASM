@@ -7,8 +7,9 @@ dotQASM comes with a fully featured command line utility for handing operations 
 
 ```sh
 > qasm stat ./teleport.qasm
-Property                 Value
------------------------- ------------------------------------------
+---------------------------------------------------------------------
+| Property               | Value                                    |
+---------------------------------------------------------------------
 QASM Statements          40
 Quantum Bits             3
 Classic Bits             3
@@ -26,26 +27,16 @@ Est. Time.               ~5.00ms
 **2)** Optimize open quantum assembly files using a variety of optimization strategies and output the optimized code to a new file by using the optimize command
 
 ```sh
+> qasm optimizations
+--------------------------------------------------------------------
+| Optimization Strategies                                          |
+--------------------------------------------------------------------
+commutativity_check
+
 > qasm optimize -o "commutativity_check" ./teleport.qasm ./teleport.optimized.qasm
 ```
 
 **3)** Execute quantum programs on a variety of quantum hardware including hardware from IBM's quantum experience as well as on a variety of simulators.
-
-```sh
-> qasm run --provider ibm --backend ibmq_qasm_simulator --api-key $Env:IBM_KEY ./coinflip.qasm
---------------------------------------------------------------------------------------------------------------------
-| Backend                          | Total Time                                         | Execution Time           |
---------------------------------------------------------------------------------------------------------------------
-| DotQASM.Backend.IBM.IBMSimulator | 00:00:05.5699385                                   | 00:00:00.0022656         |
-
-------------------------------------
-| Histogram                        |
-------------------------------------
-0 |||||||||||||||||||||||||| 51.66 %
-1 ||||||||||||||||||||||||| 48.34 %
-```
-
-**4)** List all installed providers and backends which can execute quantum circuits
 
 ```sh
 > qasm backends
@@ -66,9 +57,21 @@ ibmq_ourense
 ibmq_qasm_simulator
 ibmq_vigo
 ibmqx2
+
+> qasm run --provider ibm --backend ibmq_qasm_simulator --api-key $Env:IBM_KEY ./coinflip.qasm
+--------------------------------------------------------------------------------------------------------------------
+| Backend                          | Total Time                                         | Execution Time           |
+--------------------------------------------------------------------------------------------------------------------
+| DotQASM.Backend.IBM.IBMSimulator | 00:00:05.5699385                                   | 00:00:00.0022656         |
+
+------------------------------------
+| Histogram                        |
+------------------------------------
+0 |||||||||||||||||||||||||| 51.66 %
+1 ||||||||||||||||||||||||| 48.34 %
 ```
 
-**5)** Execute quantum instructions in a read-print-evaluate-loop (repl) against a locally simulated quantum machine and view ths results after each instruction.
+**4)** Execute quantum instructions in a read-print-evaluate-loop (repl) against a locally simulated quantum machine and view ths results after each instruction.
 
 ```sh
 > qasm repl --qubits 2

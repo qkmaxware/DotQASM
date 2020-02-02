@@ -9,7 +9,7 @@ using DotQasm.Scheduling;
 
 namespace DotQasm.Tools.Commands {
 
-[Verb("stat", HelpText="Verify structure and gather statistics about a given quantum program")]
+[Verb("describe", HelpText="Verify structure and gather statistics about a given quantum program")]
 public class Stat : ICommand {
 
     [Value(0, MetaName = "file", HelpText = "OpenQASM file path")]
@@ -69,9 +69,12 @@ public class Stat : ICommand {
             );
 
             int[] widths = new int[]{24, 42};
+
+            Console.WriteLine(new string('-', widths[0] + widths[1] + 3));
             var fmt ="{0,-"+widths[0]+"} {1,-"+widths[1]+"}";
-            Console.WriteLine(string.Format(fmt, "Property", "Value"));
-            Console.WriteLine(string.Format(fmt, new string('-', widths[0]), new string('-', widths[1])));
+            Console.WriteLine(string.Format(fmt, "| Property", "| Value") + " |");
+            Console.WriteLine(new string('-', widths[0] + widths[1] + 3));
+
             Console.WriteLine(string.Format(fmt, "QASM Statements", semanticAnalyser.StatementCount));
             Console.WriteLine(string.Format(fmt, "Quantum Bits", semanticAnalyser.QubitCount));
             Console.WriteLine(string.Format(fmt, "Classic Bits", semanticAnalyser.CbitCount));

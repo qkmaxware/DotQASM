@@ -14,6 +14,7 @@ public class BackendLs : ICommand {
 
     public Status Exec() {
         int col1 = 64;
+        var fmt = "{0,-"+(col1 >> 1)+"} {1}";
 
         foreach (var provider in Run.Providers) {
             Console.WriteLine(new string('-', col1 + 4));
@@ -21,7 +22,7 @@ public class BackendLs : ICommand {
             Console.WriteLine(new string('-', col1 + 4));
 
             foreach (var backend in provider.ListBackends()) {
-                Console.WriteLine(backend);
+                Console.WriteLine(string.Format(fmt, backend.Name, backend.Description));
             }
 
             Console.WriteLine();

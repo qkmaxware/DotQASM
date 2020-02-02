@@ -27,6 +27,8 @@ public class Optimize : ICommand {
 
     };
 
+    public static IEnumerable<IOptimization<LinearSchedule, LinearSchedule>> AvailableOptimizations => optimizationList.AsReadOnly();
+
     public Status Exec() {
         // Read source file
         if (!File.Exists(QasmFile)) {
