@@ -12,7 +12,6 @@ public class OpenQasmTest {
     public void TestParser() {
         string script = 
 @"OPENQASM 2.0; 
-include ""qelib1.inc"";
 qreg q[3];
 creg c0[1];
 creg c1[1];

@@ -44,5 +44,5 @@ These algorithms are able to be run on the **ibmqx2** device.
 - `iswap.qasm`: Implements the two-qubit entangling gate iSWAP, defined by the matrix: `[1 0 0 0],[0,0,i,0],[0,i,0,0],[0,0,0,1]`.
 - `W3test.qasm`: Implements the three-qubit maximally entangled W state |001> + |010> + |100>.
 - `Deutsch_Algorithm.qasm`: A two-qubit example of Deutsch to determine whether a function is constant (in which case the algorithm returns 0) or balanced (returns 1). In this example the algorithm looks at the function f(x) = x, which is balanced.
-- `011_3_qubit_grover_50_.qasm`: This circuit demonstrate Grover's search algorithm over three qubits. In this case it searchs for the state 110 with probability of success > 50%.
+- `011_3_qubit_grover_50_.qasm`: This circuit demonstrate Grover's search algorithm over three qubits. In this case it searches for the state 110 with probability of success > 50%.
 - `qe_qft_3(4)(5).qasm`: Quantum Fourier transforms with 3, 4, and 5 qubits.

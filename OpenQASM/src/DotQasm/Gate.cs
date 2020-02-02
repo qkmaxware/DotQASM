@@ -186,6 +186,39 @@ public class Gate {
         }
     }
 
+    private bool CloseEnough(double a, double b, double epsilon = 0.0001) {
+        double absA = Math.Abs (a);
+        double absB = Math.Abs (b);
+        double diff = Math.Abs (a - b);
+
+        if (a == b) {
+            return true;
+        } else if (a == 0 || b == 0 || diff < double.Epsilon) {
+            // a or b is zero or both are extremely close to it
+            // relative error is less meaningful here
+            return diff < epsilon;
+        } else { // use relative error
+            return diff / (absA + absB) < epsilon;
+        }
+    }
+
+    private bool CloseEnough(Complex a, Complex b, double epsilon = 0.0001) {
+        return CloseEnough(a.Real, b.Real, epsilon) && CloseEnough(a.Imaginary, b.Imaginary, epsilon);
+    }
+
+    /// <summary>
+    /// Check if this quantum gate commutes with another
+    /// </summary>
+    /// <param name="other">other quantum gate</param>
+    public bool Commutes(Gate other) {
+        // det[AB - BA] == 0 if gates commute. 
+        var AB = this.Matrix.Multiply(other.Matrix);
+        var BA = other.Matrix.Multiply(this.Matrix);
+        var sub = AB.Subtract(BA);
+        var det = sub[0,0] * sub[1,1] - sub[0,1] * sub[1,0];
+        return CloseEnough(det, Complex.Zero);
+    }
+
 }
 
 }
