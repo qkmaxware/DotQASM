@@ -3,10 +3,10 @@ title: Command Line Tooling
 ---
 dotQASM comes with a fully featured command line utility for handing operations related to quantum assembly files. The command line utility includes functionality such as:
 
-**1)** Verify if your quantum assembly files are syntactically and semantically valid by using the stat command
+**1)** Verify if your quantum assembly files are syntactically and semantically valid by using the describe command
 
 ```sh
-> qasm stat ./teleport.qasm
+> qasm describe ./teleport.qasm
 ---------------------------------------------------------------------
 | Property               | Value                                    |
 ---------------------------------------------------------------------
