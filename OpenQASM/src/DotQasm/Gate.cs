@@ -150,12 +150,18 @@ public class Gate {
         double PmL2 = phi - lambda / 2;
 
         u.Matrix = new Complex[,]{
-            {Complex.Exp( (-PpL2).i() ) * ct2, -Complex.Exp( (-PmL2).i() ) * st2 },
-            {Complex.Exp(   PmL2.i()  ) * st2,  Complex.Exp(   PpL2.i()  ) * ct2}
+            { Complex.Exp( (-PpL2).i() ) * ct2, -Complex.Exp( (-PmL2).i() ) * st2 },
+            { Complex.Exp(   PmL2.i()  ) * st2,  Complex.Exp(   PpL2.i()  ) * ct2 }
         };
         u.Parametres = U3Params(theta, phi, lambda);
 
         return u;
+    }
+
+    public static Gate UnitaryMatrix(Complex e00, Complex e01, Complex e10, Complex e11) {
+        // Compute theta, phi, lambda
+
+        return U(theta, phi, lambda);
     }
 
     private static int IPow(int x, int pow) {
@@ -217,6 +223,17 @@ public class Gate {
         var sub = AB.Subtract(BA);
         var det = sub[0,0] * sub[1,1] - sub[0,1] * sub[1,0];
         return CloseEnough(det, Complex.Zero);
+    }
+
+    public Gate Multiply(Gate other) {
+        var mat = this.Matrix.Multiply(other.Matrix);
+        var params = (); // Compute params from matrix
+
+        this.Name = "Parametric Rotation Gate (" + params.Item1 + "," + params.Item2 + "," + params.Item3 + ")";
+        this.Symbol = "U";
+
+        this.Matrix = mat;
+        this.Parametres = params;
     }
 
 }

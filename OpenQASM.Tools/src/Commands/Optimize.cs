@@ -8,6 +8,7 @@ using DotQasm;
 using DotQasm.Scheduling;
 using DotQasm.Optimization;
 using DotQasm.IO.OpenQasm;
+using System.Diagnostics;
 
 namespace DotQasm.Tools.Commands {
 
@@ -24,7 +25,7 @@ public class Optimize : ICommand {
     public IEnumerable<string> Optimizations { get; set; }
 
     private static List<IOptimization<LinearSchedule, LinearSchedule>> optimizationList = new List<IOptimization<LinearSchedule, LinearSchedule>>(){
-
+        new Optimization.Strategies.CombineGates()
     };
 
     public static IEnumerable<IOptimization<LinearSchedule, LinearSchedule>> AvailableOptimizations => optimizationList.AsReadOnly();
@@ -52,9 +53,12 @@ public class Optimize : ICommand {
         // Get optimizations
         var opts = Optimizations.SelectMany((x) => optimizationList.Where((y) => x == y.Name));
 
-        // Run optimizations
+        // Run optimizations (print how long each one takes)
         foreach (var opt in opts) {
+            Stopwatch st = Stopwatch.StartNew();
+            Console.Write(opt.Name + "... ");
             circuit.GateSchedule = opt.Transform((LinearSchedule)circuit.GateSchedule);
+            Console.WriteLine(st.Elapsed);
         }
 
         // Output results to file
