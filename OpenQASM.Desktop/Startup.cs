@@ -77,13 +77,9 @@ namespace OpenQASM.Desktop {
                     Width = 1152,
                     Height = 864,
                     Show = false,
-                    AutoHideMenuBar = true,
+                    AutoHideMenuBar = IsDevelopment ? false : true,
                 }
             );
-
-            if (IsDevelopment) {
-                window.WebContents.OpenDevTools();
-            }
 
             window.OnReadyToShow += () => window.Show();
             window.SetTitle("dotQASM Desktop");
