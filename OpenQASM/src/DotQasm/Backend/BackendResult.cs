@@ -13,6 +13,10 @@ public class BackendResult {
 
     public BackendResult() {}
 
+    public virtual string ResultIdentifier() {
+        return this.GetHashCode().ToString();
+    }
+
     public override string ToString() {
         StringBuilder sb = new StringBuilder();
         

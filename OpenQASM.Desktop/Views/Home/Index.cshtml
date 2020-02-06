@@ -1,0 +1,169 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model ApplicationConfigModel
+
+<div>
+    <header class="w3-bar w3-blue" style="margin: auto;">
+        
+        <!-- -->
+        <a href="@(Url.Action("Settings", "Home"))" target="_blank" class="w3-bar-item w3-button w3-right">Settings</a>
+        <button class="w3-bar-item w3-button w3-right" onclick="showProviderSelection();">Run</button>
+    </header>
+</div>
+
+<div style="position: absolute; left: 0; right: 0; top: 38px; bottom: 0;">
+    <form id="code-form" action="@(Url.Action("SubmitQasm", "Home"))" method="post" target="_blank" style="width: 100%; height: 100%;">
+        <textarea id="code" name="qasms[]">OPENQASM 2.0;&#13;&#10;include "qelib1.inc";</textarea>
+        <div id="provider-modal" class="w3-modal">
+            <div class="w3-modal-content">
+                <header class="w3-container w3-blue">
+                    <h2>Select Backend</h2>
+                </header>
+                <div class="w3-container">
+                    <label for="provider-name">Provider</label>
+                    <select id="provider-name" name="provider" class="w3-input w3-border">
+                        @foreach (var provider in Model.Providers) {
+                            <option value="@(provider.Name)">@(provider.Name)</option>
+                        }
+                    </select>
+                    <label for="backend-name">Backend</label>
+                    <select id="backend-name" name="backend" class="w3-input w3-border">
+                        @foreach (var backend in (Model.Providers.FirstOrDefault()?.Backends ?? new string[0])) {
+                            <option value="@(backend)">@(backend)</option>
+                        }
+                    </select>
+                </div>
+                <footer class="w3-container w3-margin-top w3-blue">
+                    <button type="button" class="w3-button w3-left w3-red" onclick="hideProviderSelection();">Cancel</button>
+                    <button type="button" class="w3-button w3-right w3-green" onclick="runAllQasms();">Run</button>
+                </footer>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="notice-modal" class="w3-modal">
+    <div class="w3-modal-content">
+        <header class="w3-container w3-red">
+            <h2>Notice<button class="w3-button w3-medium w3-right" onclick="hideNotice();">x</button></h2>
+        </header>
+        <div id="notice-message" class="w3-container w3-white">
+            Notice
+        </div>
+    </div>
+</div>
+
+<script>
+    var AppConfig = JSON.parse('@Html.Raw(Json.Serialize(Model))');
+
+    function showProviderSelection() {
+        $("#provider-modal").show();
+    }
+
+    function hideProviderSelection() {
+        $("#provider-modal").hide();
+    }
+
+    function getBackendsForProvider(provider) {
+        console.log(provider);
+        var providers = AppConfig.providers.filter(e => e.name == provider);
+        console.log(providers);
+        var providerConfig = (providers != null && providers.length > 0) ? providers[0] : null;
+        console.log(providerConfig);
+        if (providerConfig) {
+            return providerConfig.backends;
+        } else {
+            return [];
+        }
+    }
+
+    $("#provider-name").on('change', function () {
+        var value = $(this).val();
+        var backendList = $("#backend-name");
+        backendList.empty();
+
+        var backends = getBackendsForProvider(value);
+        for (var i = 0; i < backends.length; i++) {
+            backendList.append(`<option value="${backends[i]}">${backends[i]}</option>`)
+        }
+    });
+
+    CodeMirror.defineSimpleMode(
+        "qasm",
+        {
+            start: [
+                { regex: /(OPENQASM|include|gate|creg|qreg|measure|barrier|reset)/, token: "keyword" },
+                { regex: /(CX|U)/, token: "atom" },
+                { regex: /\-\>|\;/, token: "operator" },
+                { regex: /\s*[a-zA-Z$][\w$]*/, token: "variable", sol: true },
+                { regex: /\s*[a-zA-Z][a-zA-Z0-9$][\w$]*/, token: "identifier" },
+                { regex: /0x[a-f\d]+|[-+]?(?:\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/i, token: "number" },
+                { regex: /\/\/.*/, token: "comment" },
+                { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: "string" },
+            ],
+            meta: {
+                dontIndentStates: ["comment"],
+                lineComment: "//"
+            }
+        }
+    );
+
+    var CodeEditor = CodeMirror.fromTextArea(
+        document.getElementById("code"),
+        {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            theme: "material-darker",
+            mode: "qasm"
+        }
+    );
+    CodeEditor.setSize("100%", "100%");
+
+    function showNotice(message) {
+        $("#notice-modal").show();
+        $("#notice-modal #notice-message").text(message);
+        window.setTimeout(function() {
+            $("#notice-modal").hide(); 
+        }, 60000);
+    }
+
+    function hideNotice() {
+        $("#notice-modal").hide();
+    }
+
+    function checkSyntax() {
+        var retvalue = false;
+        var response = $.ajax({
+            type: "POST",
+            url: '@Url.Action("ValidateQasm", "Home")',
+            dataType: "json",
+            async: false,
+            data: {
+                qasm: CodeEditor.getValue(),
+            },
+            success: function(data, status, jqXHR) {
+                console.log(data);
+                if (!data.error) {
+                    retvalue = true;
+                } else{
+                    showNotice(data.error);
+                }
+            },
+            error: function(jqXHR, status, error) {
+                showNotice(error.toString());
+            }
+        });
+        return retvalue; // TODO
+    }
+
+    function runAllQasms() {
+        hideProviderSelection();
+        CodeEditor.save();
+        var good = checkSyntax();
+        if (good) {
+            $("#code-form").submit();
+        }
+    }
+</script>

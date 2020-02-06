@@ -1,0 +1,59 @@
+@{
+    ViewData["Title"] = "Settings";
+}
+@model ServerConfigModel
+
+<div id="settings-classes" class="w3-sidebar w3-bar-block w3-blue" style="width: 25%;">
+    <h1 class="w3-bar-item w3-center">
+        App Settings
+    </h1>
+    @if (Model.Regions != null) {
+        @foreach (var region in Model.Regions) {
+        <button class="w3-bar-item w3-button" onclick="openTab('@(region.Name)')">@(region.Name)</button>
+        }
+    }
+
+    <div class="w3-bar-item w3-row">
+        <button onclick="window.close();" class="w3-half w3-button w3-red">x Close</button>
+        <button onclick="saveAndClose();" class="w3-half w3-button w3-green">Save</button>
+    </div>
+</div>
+<form id="settings-form" action="@(Url.Action("UpdateSettings", "Home"))" onsubmit='return false;' class="w3-dark-grey" style="margin-left:25%">
+    @if (Model.Regions != null) {
+        @foreach (var region in Model.Regions) {
+        <div id="@(region.Name)" style="display: none;">
+            <div class="w3-container">
+                <h1>@(region.Name)</h1>
+            </div>
+            @if (region.Sections != null) {
+                @foreach (var section in region.Sections) {
+                    <div id="@(region.Name).@(section.Name)" class="w3-margin w3-container">
+                        <div class="w3-container w3-blue">
+                            <h2>@(section.Name)</h2>
+                        </div>
+                        <div class="w3-container w3-padding w3-border">
+                            @if (section.Properties != null) {
+                                @foreach (var property in section.Properties) {
+                                    <label for="@(region.Name).@(section.Name).@(property.Name)">@(property.Name)</label>
+                                    <input name="@(region.Name).@(section.Name).@(property.Name)" class="w3-input" type="text"/>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        }
+    }
+</form>
+
+<script>
+    function openTab(tabid) {
+        $("#settings-form > div").hide();            // Hide all tabs
+        $("#settings-form #" + tabid).show();      // Show desired tab
+    }
+
+    function saveAndClose() {
+        $("#settings-form").submit();
+    }
+</script>

@@ -1,0 +1,113 @@
+@{
+    ViewData["Title"] = "Results";
+}
+@model System.Collections.Generic.IEnumerable<DotQasm.Backend.BackendResult>
+
+<div>
+    <!-- Navigation -->
+    <div id="navbar" class="w3-bar w3-blue">
+        <button class="w3-button w3-bar-item w3-red" onclick="window.close();">x</button>
+        @foreach (var result in Model) {
+            <button id="btn@(result.ResultIdentifier())" class="w3-button w3-bar-item" onclick="openTab('@(result.ResultIdentifier())')">@(result.ResultIdentifier())</button>
+        }
+    </div>
+    <!-- Draw Results / Graphs / Tables -->
+    <div id="results" class="w3-container">
+        @foreach (var result in Model) {
+            <div id="@(result.ResultIdentifier())" class="w3-margin" style="display: none;">
+                <table class="w3-table-all w3-white">
+                    <thead>
+                        <tr class="w3-blue">
+                            <th>Backend</th>
+                            <th>Total Time</th>
+                            <th>Running Time</th>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td>@(result.BackendName)</td>
+                        <td>@(result.TotalTime)</td>
+                        <td>@(result.ExecutionTime)</td>
+                    </tr>
+                </table>
+                <div style="width: 100%;" class="w3-container w3-white">
+                    <h2>
+                        Histogram
+                    </h2>
+                    <canvas id="hist@(result.ResultIdentifier())"></canvas>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function openTab(tabid) {
+        // Change highlighting
+        $("#navbar > button").removeClass("w3-green");
+        $("#navbar #btn"+tabid).addClass("w3-green");
+        // Show tab
+        $("#results > div").hide();            // Hide all tabs
+        $("#results #" + tabid).show();      // Show desired tab
+    }
+    var color = Chart.helpers.color;
+</script>
+
+@foreach (var result in Model) {
+<script type="application/javascript">
+{
+    var chartData = {
+        labels: [ @(string.Join(",", result.StateProbabilityHistogram.Keys.Select(key => Convert.ToString(key, 2)))) ],
+        datasets: [{
+            backgroundColor: color("1d70f5").alpha(0.5).rgbString(),
+            borderColor: color("1d70f5"),
+            borderWidth: 1,
+            data: [
+                @(string.Join(",", result.StateProbabilityHistogram.Values.Select(x => (x * 100))))
+            ]
+        }]
+    }
+
+    var ctx = document.getElementById("hist@(result.ResultIdentifier())").getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'horizontalBar',
+        data: chartData,
+        options: {
+            elements: {
+                rectangle: {
+                    borderWidth: 2,
+                }
+            },
+            legend: {
+                display: false
+            },
+            tooltips: {
+                enabled: true,
+                callbacks: {
+                    label: function(tooltipItems, data) { 
+                        return tooltipItems.yLabel + '%';
+                    }
+                }
+            },
+            responsive: true,
+            title: {
+                display: false,
+            },
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "state"
+                    }
+                }],
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "probability"
+                    }
+                }]
+            }
+        }
+    });
+}
+</script>
+}
