@@ -78,7 +78,7 @@ public class Parser {
     /// <summary>
     /// Directory to search when including files
     /// </summary>
-    public string IncludeSearchPath;
+    public IDirectoryHandle IncludeSearchPath;
 
     /// <summary>
     /// Create a new parser for the given token stream
@@ -89,13 +89,13 @@ public class Parser {
         this.Position = 0;
     }
 
-    public static Circuit ParseCircuit(string str, string searchPath = null) {
+    public static Circuit ParseCircuit(string str, IDirectoryHandle searchPath = null) {
         using (StringReader reader = new StringReader(str)) {
             return ParseCircuit(reader, searchPath);
         }
     }
 
-    public static Circuit ParseCircuit(TextReader content, string searchPath = null) {
+    public static Circuit ParseCircuit(TextReader content, IDirectoryHandle searchPath = null) {
         var tokens = Lexer.Tokenize(content);
         var parser = new Parser(tokens);
         parser.IncludeSearchPath = searchPath;
@@ -762,18 +762,18 @@ public class Parser {
             var inc = ParseInclude();
             if (inc != null) {
                 if (IncludeSearchPath != null) {
-                    var path = Path.Join(IncludeSearchPath, inc);
-                    if (File.Exists(path)) {
-                        using (var reader = new StreamReader(path)) {
+                    var handle = IncludeSearchPath != null ? IncludeSearchPath.ResolvePath(inc) : null;
+                    if (handle != null && handle is IFileHandle) {
+                        using ( var reader = new StringReader( ((IFileHandle)handle).Contents ) ) {
                             try {
                                 Parser sub = new Parser(Lexer.Tokenize(reader));
                                 ctx.Statements.AddRange(sub.ParseProgram().Statements);
                             } catch (OpenQasmException ex) {
-                                throw new OpenQasmSyntaxException(pos, string.Format("Syntax error in include '{0}' at pos '{2}', '{1}'", path, ex.Message, ex.Position));
+                                throw new OpenQasmSyntaxException(pos, string.Format("Syntax error in include '{0}' at pos '{2}', '{1}'", inc, ex.Message, ex.Position));
                             }
                         }
                     } else {
-                        throw new OpenQasmIncludeException(pos, path);
+                        throw new OpenQasmIncludeException(pos, inc);
                     }
                 } else {
                     throw new OpenQasmSyntaxException(pos, string.Format("Files cannot be included without specifying a search path"));

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using CommandLine;
+using DotQasm.IO;
 using DotQasm.Backend;
 using DotQasm.IO.OpenQasm;
 
@@ -30,10 +31,30 @@ public class Run : ICommand {
 
     public static IEnumerable<IBackendProvider> Providers => providers;
 
-    public Status Exec(){
-        string lowerProvider = Provider.ToLower();
-        string lowerBackend = Backend.ToLower();
+    public static object GetBackend(string providerName, string backendName, string apikey, int qubits) {
+        var lowerProvider = providerName.ToLower();
+        var lowerBackend = backendName.ToLower();
 
+        // Get provider matching the name given
+        var provider = providers.Where(
+            (provider) => 
+            provider.ProviderName.ToLower() == lowerProvider 
+            || provider.ProviderAbbreviation.ToLower() == lowerProvider
+        ).FirstOrDefault();
+        if (provider == null) {
+            return new Exception(string.Format("No provider '{0}'", providerName));
+        }
+
+        // Create backend instance
+        var backend = provider.CreateBackendInterface(lowerBackend, qubits, apikey);
+        if (backend == null) {
+            return new Exception(string.Format("No backend '{0}' from provider '{1}'", backendName, providerName));
+        }
+
+        return backend;
+    }
+
+    public Status Exec(){
         // Read source file
         if (!File.Exists(QasmFile)) {
             Console.WriteLine(string.Format("File `{0}` does not exist", QasmFile));
@@ -43,7 +64,7 @@ public class Run : ICommand {
         Circuit circuit = null;
         var source = File.ReadAllText(QasmFile);
         try {
-            circuit = DotQasm.IO.OpenQasm.Parser.ParseCircuit(source, Path.GetDirectoryName(QasmFile));
+            circuit = DotQasm.IO.OpenQasm.Parser.ParseCircuit(source, new PhysicalDirectory(Path.GetDirectoryName(QasmFile)));
         } catch (OpenQasmException ex) {
             Console.WriteLine(ex.Format(QasmFile, source));
             return Status.Failure;
@@ -53,23 +74,13 @@ public class Run : ICommand {
         }
         circuit.Name = Path.GetFileNameWithoutExtension(QasmFile);
 
-        // Get provider matching the name given
-        var provider = providers.Where(
-            (provider) => 
-            provider.ProviderName.ToLower() == lowerProvider 
-            || provider.ProviderAbbreviation.ToLower() == lowerProvider
-        ).FirstOrDefault();
-        if (provider == null) {
-            Console.Error.WriteLine(string.Format("No provider '{0}'", Provider));
+        var backendOrError = GetBackend(Provider, Backend, ApiKey, circuit.QubitCount);
+        if (backendOrError is Exception) {
+            Console.Error.WriteLine(((Exception)backendOrError).Message);
             return Status.Failure;
         }
-
-        // Create backend instance
-        var backend = provider.CreateBackendInterface(lowerBackend, circuit.QubitCount, ApiKey);
-        if (backend == null) {
-            Console.Error.WriteLine(string.Format("No backend '{0}' from provider '{1}'", Backend, Provider));
-            return Status.Failure;
-        }
+        
+        var backend = (IBackend)backendOrError;
         if (!backend.IsAvailable()) {
             Console.Error.WriteLine(string.Format("Backend '{0}' is not available at this time. Please verify the API key if applicable.", Backend));
             return Status.Failure;

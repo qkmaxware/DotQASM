@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Update="electron.manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Update="Assets\electron.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\electron_32x32.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OpenQASM.Tools\qasm.csproj" />
+    <PackageReference Include="ElectronNET.API" Version="7.30.2" />
+    <!--<DotNetCliToolReference Include="ElectronNET.CLI" Version="7.30.2" />-->
+  </ItemGroup>
+
+  <!--<Target Name="DesktopDeployment" AfterTargets="AfterPublish">
+    <Exec Command="electronize build /target win" />
+  </Target>-->
+
+</Project>

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenQASM.Tools", "OpenQASM.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenQasm.Tests", "OpenQASM.Tests\OpenQasm.Tests.csproj", "{69CF7647-FE58-42DC-BD58-2237D0A4AB21}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenQASM.Desktop", "OpenQASM.Desktop\OpenQASM.Desktop.csproj", "{28FCDCBB-DEDA-4648-A408-BC6680CE037D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,5 +60,17 @@ Global
 		{69CF7647-FE58-42DC-BD58-2237D0A4AB21}.Release|x64.Build.0 = Release|Any CPU
 		{69CF7647-FE58-42DC-BD58-2237D0A4AB21}.Release|x86.ActiveCfg = Release|Any CPU
 		{69CF7647-FE58-42DC-BD58-2237D0A4AB21}.Release|x86.Build.0 = Release|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Debug|x64.Build.0 = Debug|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Debug|x86.Build.0 = Debug|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Release|x64.ActiveCfg = Release|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Release|x64.Build.0 = Release|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Release|x86.ActiveCfg = Release|Any CPU
+		{28FCDCBB-DEDA-4648-A408-BC6680CE037D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using CommandLine;
 
-using DotQasm;
+using DotQasm.IO;
 using DotQasm.IO.OpenQasm;
 using DotQasm.Scheduling;
 
@@ -44,7 +44,7 @@ public class Stat : ICommand {
 
             // Verify syntatic analysis
             IO.OpenQasm.Parser parser = new IO.OpenQasm.Parser(tokens);
-            parser.IncludeSearchPath = directory;
+            parser.IncludeSearchPath = new PhysicalDirectory(directory);
 
             var program = ext switch {
                 ".qasm"=> parser.ParseFile(),           // QASM files must start with QASM

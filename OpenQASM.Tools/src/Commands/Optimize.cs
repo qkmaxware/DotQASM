@@ -4,7 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Collections.Generic;
 using CommandLine;
-using DotQasm;
+using DotQasm.IO;
 using DotQasm.Scheduling;
 using DotQasm.Optimization;
 using DotQasm.IO.OpenQasm;
@@ -40,7 +40,7 @@ public class Optimize : ICommand {
         Circuit circuit = null; // By default schedule is a LinearSchedule
         var source = File.ReadAllText(QasmFile);
         try {
-            circuit = DotQasm.IO.OpenQasm.Parser.ParseCircuit(source, Path.GetDirectoryName(QasmFile));
+            circuit = DotQasm.IO.OpenQasm.Parser.ParseCircuit(source, new PhysicalDirectory(Path.GetDirectoryName(QasmFile)));
         } catch (OpenQasmException ex) {
             Console.WriteLine(ex.Format(QasmFile, source));
             return Status.Failure;
