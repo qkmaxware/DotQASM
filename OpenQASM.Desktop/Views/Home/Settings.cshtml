@@ -18,24 +18,47 @@
         <button onclick="saveAndClose();" class="w3-half w3-button w3-green">Save</button>
     </div>
 </div>
-<form id="settings-form" action="@(Url.Action("UpdateSettings", "Home"))" onsubmit='return false;' class="w3-dark-grey" style="margin-left:25%">
+<form id="settings-form" method="POST" action="@(Url.Action("UpdateSettings", "Home"))" class="w3-dark-grey" style="margin-left:25%">
     @if (Model.Regions != null) {
-        @foreach (var region in Model.Regions) {
+        @foreach (var (regionId, region) in Model.Regions.Select((obj, i) => (i, obj)) ) {
         <div id="@(region.Name)" style="display: none;">
             <div class="w3-container">
                 <h1>@(region.Name)</h1>
             </div>
+            <input 
+                name="Regions[@(regionId)].Name" 
+                type="hidden"
+                value="@(region.Name)"
+            />
             @if (region.Sections != null) {
-                @foreach (var section in region.Sections) {
+                @foreach (var (sectionId, section) in region.Sections.Select((obj, i) => (i, obj)) ) {
                     <div id="@(region.Name).@(section.Name)" class="w3-margin w3-container">
                         <div class="w3-container w3-blue">
                             <h2>@(section.Name)</h2>
                         </div>
+                        <input 
+                            name="Regions[@(regionId)].Sections[@(sectionId)].Name" 
+                            type="hidden"
+                            value="@(section.Name)"
+                        />
                         <div class="w3-container w3-padding w3-border">
                             @if (section.Properties != null) {
-                                @foreach (var property in section.Properties) {
-                                    <label for="@(region.Name).@(section.Name).@(property.Name)">@(property.Name)</label>
-                                    <input name="@(region.Name).@(section.Name).@(property.Name)" class="w3-input" type="text"/>
+                                @foreach (var (propertyId, property) in section.Properties.Select((obj, i) => (i, obj)) ) {
+                                    <input 
+                                        name="Regions[@(regionId)].Sections[@(sectionId)].Properties[@propertyId].Name" 
+                                        type="hidden"
+                                        value="@(property.Name)"
+                                    />
+                                    <label for="Regions[@(regionId)].Sections[@(sectionId)].Properties[@propertyId].Value">
+                                         @(property.Name)
+                                    </label>
+                                    <input 
+                                        name="Regions[@(regionId)].Sections[@(sectionId)].Properties[@propertyId].Value" 
+                                        class="w3-input" 
+                                        type="text" 
+                                        defaultValue="@(property.Value)"
+                                        value="@(property.Value)"
+                                    />
                                 }
                             }
                         </div>
@@ -54,6 +77,13 @@
     }
 
     function saveAndClose() {
-        $("#settings-form").submit();
+        $.ajax({
+            url: '@(Url.Action("UpdateSettings", "Home"))',
+            type:'POST',
+            data:$("#settings-form").serialize(),
+            success: function(){
+                window.close();
+            }
+        });
     }
 </script>

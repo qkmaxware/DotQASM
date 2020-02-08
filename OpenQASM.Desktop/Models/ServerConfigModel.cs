@@ -8,6 +8,8 @@ namespace DotQASM.Desktop.Models {
         public string Name {get; set;}
         public string Value {get; set;}
 
+        public PropertyModel() {}
+
         public PropertyModel(string name) {
             this.Name = name;
         }
@@ -17,9 +19,12 @@ namespace DotQASM.Desktop.Models {
         public List<PropertyModel> Properties {get; set;}
         public string Name {get; set;}
 
-        public SectionModel(string section) {
-            this.Name = section;
+        public SectionModel() {
             this.Properties = new List<PropertyModel>();
+        }
+
+        public SectionModel(string section): this() {
+            this.Name = section;
         }
     }
 
@@ -27,9 +32,12 @@ namespace DotQASM.Desktop.Models {
         public List<SectionModel> Sections {get; set;}
         public string Name {get; set;}
 
-        public RegionModel(string region) {
-            this.Name = region;
+        public RegionModel() {
             this.Sections = new List<SectionModel>();
+        }
+
+        public RegionModel(string region): this() {
+            this.Name = region;
         }
     }
 

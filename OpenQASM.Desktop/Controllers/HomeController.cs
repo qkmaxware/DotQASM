@@ -1,27 +1,31 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using DotQASM.Desktop.Models;
 using DotQasm.IO;
 using DotQasm.Backend;
+using System.Text.Json;
 
 namespace DotQASM.Desktop.Controllers {
 
     public class HomeController : Controller {
         
-        private ServerConfigModel settings = new ServerConfigModel();
-        private IDirectoryHandle buildContext;
+        private static ServerConfigModel settings = new ServerConfigModel();
+        private static VirtualDirectory buildContext;
 
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger) {
             _logger = logger;
-            var buildContext = new VirtualDirectory(".");
+            LoadSettings();
 
+            HomeController.buildContext = new VirtualDirectory(".");
             var qelib1_inc = new VirtualFile(
                 "qelib1.inc", 
 @"// Quantum Experience (QE) Standard Header
@@ -119,9 +123,40 @@ gate cu3(theta,phi,lambda) c, t
   cx c,t;
   u3(theta/2,phi,0) t;
 }");
-            buildContext.AddFile(qelib1_inc);
+            HomeController.buildContext.AddFile(qelib1_inc);
+        }
 
-            // TODO load settings
+        private void LoadSettings() {
+            var path = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
+                System.Reflection.Assembly.GetExecutingAssembly().GetName().Name
+            );
+
+            var settings = Path.Combine(path, "appconfig.json");
+
+            if (System.IO.File.Exists(settings)) {
+                HomeController.settings = JsonSerializer.Deserialize<ServerConfigModel>(System.IO.File.ReadAllText(settings));
+                _logger.LogInformation(string.Format("App config loaded '{0}'", settings));
+            }   
+        }
+
+        private void SaveSettings() {
+            var json = JsonSerializer.Serialize<ServerConfigModel>(HomeController.settings);
+
+            var path = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
+                System.Reflection.Assembly.GetExecutingAssembly().GetName().Name
+            );
+
+            var settings = Path.Combine(path, "appconfig.json");
+
+            if (!Directory.Exists(path)) {
+                Directory.CreateDirectory(path);
+            }
+            using (StreamWriter writer = new StreamWriter(settings)) {
+                writer.Write(json);
+            }
+             _logger.LogInformation(string.Format("App config updated '{0}'", settings));
         }
 
         public IActionResult Index() {
@@ -142,11 +177,13 @@ gate cu3(theta,phi,lambda) c, t
         }
 
         public IActionResult UpdateSettings(ServerConfigModel settings) {
-            this.settings = settings;
+            HomeController.settings = settings;
             
-            // TODO Persist settings
+            SaveSettings();
 
-            return null;
+            return Json(new {
+                success = true,
+            });
         }
 
         [HttpPost]
