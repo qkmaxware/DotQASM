@@ -6,7 +6,7 @@
   "singleInstance": false,
   "build": {
     "appId": "com.dotQASM.Desktop.app",
-    "productName": "otQASM.Desktop",
+    "productName": "dotQASM.Desktop",
     "copyright": "Copyright © 2020",
     "buildVersion": "1.0.0",
     "compression": "maximum",
@@ -27,6 +27,16 @@
         "filter": ["**/*"]
       },
       "**/*"
-    ]
+    ],
+    "mac": {
+      "category": "public.app-category.education",
+      "target": "dmg"
+    },
+    "win": {
+      "target": "portable"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }

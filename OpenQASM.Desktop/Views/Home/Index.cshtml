@@ -78,17 +78,6 @@
         }
     }
 
-    $("#provider-name").on('change', function () {
-        var value = $(this).val();
-        var backendList = $("#backend-name");
-        backendList.empty();
-
-        var backends = getBackendsForProvider(value);
-        for (var i = 0; i < backends.length; i++) {
-            backendList.append(`<option value="${backends[i]}">${backends[i]}</option>`)
-        }
-    });
-
     CodeMirror.defineSimpleMode(
         "qasm",
         {
@@ -166,4 +155,17 @@
             $("#code-form").submit();
         }
     }
+
+    $(document).ready(function () {
+        $("#provider-name").on('change', function () {
+            var value = $(this).val();
+            var backendList = $("#backend-name");
+            backendList.empty();
+
+            var backends = getBackendsForProvider(value);
+            for (var i = 0; i < backends.length; i++) {
+                backendList.append(`<option value="${backends[i]}">${backends[i]}</option>`)
+            }
+        });
+    });
 </script>

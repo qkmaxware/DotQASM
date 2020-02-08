@@ -4,25 +4,26 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
+
     <link rel="stylesheet" href="~/lib/w3css/w3.css" />
     <link rel="stylesheet" href="~/lib/Chart.js/Chart.min.css" />
     <link rel="stylesheet" href="~/lib/codemirror/codemirror.css" />
     <link rel="stylesheet" href="~/lib/codemirror/theme.material-darker.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+
+    <script type="text/javascript" src="~/lib/Chart.js/Chart.bundle.min.js"></script>
+    <script type="text/javascript" src="~/lib/codemirror/codemirror.js"></script>
+    <script type="text/javascript" src="~/lib/codemirror/addons/simple.js"></script>
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="~/js/site.js" asp-append-version="true"></script>
 </head>
 <body class="w3-dark-gray">
-
-    <script src="~/lib/Chart.js/Chart.bundle.min.js"></script>
-    <script src="~/lib/codemirror/codemirror.js"></script>
-    <script src="~/lib/codemirror/addons/simple.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
 
     <div id="page" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;">
         <main id="content" role="main" style="position: absolute; left: 0; right: 0; top: 0px; bottom: 0;">
              @RenderBody()
         </main>
     </div>
-    
+
 </body>
 </html>

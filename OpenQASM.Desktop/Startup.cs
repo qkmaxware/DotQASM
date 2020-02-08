@@ -73,7 +73,7 @@ namespace OpenQASM.Desktop {
 
         public async void ElectronBootstrap(bool IsDevelopment) {
             var window = await Electron.WindowManager.CreateWindowAsync(
-                new BrowserWindowOptions{
+                new BrowserWindowOptions {
                     Width = 1152,
                     Height = 864,
                     Show = false,
