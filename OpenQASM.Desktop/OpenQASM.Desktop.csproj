@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OpenQASM.Tools\qasm.csproj" />
+    <ProjectReference Include="..\OpenQASM.Tools\OpenQASM.Tools.csproj" />
     <PackageReference Include="ElectronNET.API" Version="7.30.2" />
     <!--<DotNetCliToolReference Include="ElectronNET.CLI" Version="7.30.2" />-->
   </ItemGroup>

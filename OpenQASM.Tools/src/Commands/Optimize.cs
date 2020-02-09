@@ -15,10 +15,10 @@ namespace DotQasm.Tools.Commands {
 [Verb("optimize", HelpText="Optimize an OpenQASM file")]
 public class Optimize : ICommand {
 
-    [Value(0, MetaName = "input file", HelpText = "input OpenQASM file path")]
+    [Value(0, MetaName = "input file", Required=true, HelpText = "input OpenQASM file path")]
     public string QasmFile {get; set;}
 
-    [Value(1, MetaName = "output file", HelpText = "output OpenQASM file path")]
+    [Value(1, MetaName = "output file", Required=true, HelpText = "output OpenQASM file path")]
     public string OutputQasmFile {get; set;}
 
     [Option('o', "optimization", Required = false, HelpText = "Apply optimization strategy")]
@@ -63,8 +63,10 @@ public class Optimize : ICommand {
 
         // Output results to file
         using (var writer = new StreamWriter(OutputQasmFile)) {
-            IO.OpenQasm.Emitter.EmitCircuit(circuit, writer);
+            IO.OpenQasm.OpenQasmEmitter.EmitCircuit(circuit, writer);
         }
+
+        Console.WriteLine(string.Format("Wrote optimized contents to '{0}'", OutputQasmFile));
 
         return Status.Success;
     }

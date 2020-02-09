@@ -12,7 +12,7 @@ namespace DotQasm.Tools.Commands {
 [Verb("describe", HelpText="Verify structure and gather statistics about a given quantum program")]
 public class Stat : ICommand {
 
-    [Value(0, MetaName = "file", HelpText = "OpenQASM file path")]
+    [Value(0, MetaName = "file", Required=true, HelpText = "OpenQASM file path")]
     public string QasmFile {get; set;}
 
     [Option('m', "show-matrix", Required = false, HelpText = "Show instruction dependency matrix")]

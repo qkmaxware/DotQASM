@@ -6,13 +6,13 @@ using System.Collections.Generic;
 
 namespace DotQasm.IO.OpenQasm {
 
-public class Emitter: IEmitter<Circuit> {
+public class OpenQasmEmitter: IEmitter<Circuit> {
 
     private static string space = " ";
     private static string stop = ";";
 
     public static void EmitCircuit(Circuit circuit, TextWriter writer) {
-        (new Emitter()).Emit(circuit, writer);
+        (new OpenQasmEmitter()).Emit(circuit, writer);
     }
 
     private string ConvertQubit(Qubit qubit) {

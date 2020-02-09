@@ -142,26 +142,10 @@ public class Gate {
         Gate u = new Gate();
         u.Name = "Parametric Rotation Gate (" + theta + "," + phi + "," + lambda + ")";
         u.Symbol = "U";
-
-        double t2 = theta/2;
-        double st2 = Math.Sin(t2);
-        double ct2 = Math.Cos(t2);
-        double PpL2 = phi + lambda / 2;
-        double PmL2 = phi - lambda / 2;
-
-        u.Matrix = new Complex[,]{
-            { Complex.Exp( (-PpL2).i() ) * ct2, -Complex.Exp( (-PmL2).i() ) * st2 },
-            { Complex.Exp(   PmL2.i()  ) * st2,  Complex.Exp(   PpL2.i()  ) * ct2 }
-        };
         u.Parametres = U3Params(theta, phi, lambda);
+        u.RecomputeMatrix(theta, phi, lambda);
 
         return u;
-    }
-
-    public static Gate UnitaryMatrix(Complex e00, Complex e01, Complex e10, Complex e11) {
-        // Compute theta, phi, lambda
-
-        return U(theta, phi, lambda);
     }
 
     private static int IPow(int x, int pow) {
@@ -190,6 +174,19 @@ public class Gate {
         if (this.Matrix.GetLength(0) != 2) {
             throw new MatrixRepresentationException("Size of unitary matrix must be 2");
         }
+    }
+
+    private void RecomputeMatrix(double theta, double phi, double lambda) {
+        double t2 = theta/2;
+        double st2 = Math.Sin(t2);
+        double ct2 = Math.Cos(t2);
+        double PpL2 = phi + lambda / 2;
+        double PmL2 = phi - lambda / 2;
+
+        this.Matrix = new Complex[,]{
+            { Complex.Exp( (-PpL2).i() ) * ct2, -Complex.Exp( (-PmL2).i() ) * st2 },
+            { Complex.Exp(   PmL2.i()  ) * st2,  Complex.Exp(   PpL2.i()  ) * ct2 }
+        };
     }
 
     private bool CloseEnough(double a, double b, double epsilon = 0.0001) {
@@ -225,15 +222,36 @@ public class Gate {
         return CloseEnough(det, Complex.Zero);
     }
 
+    /// <summary>
+    /// Multiply two quantum operators to create a new operator
+    /// </summary>
+    /// <param name="other">gate to multiply with</param>
+    /// <returns>New quantum gate</returns>
     public Gate Multiply(Gate other) {
-        var mat = this.Matrix.Multiply(other.Matrix);
-        var params = (); // Compute params from matrix
+        var lhs = this.Parametres;
+        var rhs = other.Parametres;
 
-        this.Name = "Parametric Rotation Gate (" + params.Item1 + "," + params.Item2 + "," + params.Item3 + ")";
-        this.Symbol = "U";
+        var pars = (lhs.Item1 + rhs.Item1, lhs.Item2 + rhs.Item2, lhs.Item3 + rhs.Item3); // Just add rotation angles?
+        // Multiply(lhs, rhs);
+        
+        Gate u = new Gate();
+        u.Name = "Parametric Rotation Gate (" + pars.Item1 + "," + pars.Item2 + "," + pars.Item3 + ")";
+        u.Symbol = "U";
 
-        this.Matrix = mat;
-        this.Parametres = params;
+        u.Parametres = pars;
+        u.RecomputeMatrix(pars.Item1, pars.Item2, pars.Item3);
+
+        return u;
+    }
+
+    /// <summary>
+    /// Operator for quantum operator multiplication
+    /// </summary>
+    /// <param name="lhs">left hand operator</param>
+    /// <param name="rhs">right hand operator</param>
+    /// <returns>quantum operator</returns>
+    public static Gate operator * (Gate lhs, Gate rhs) {
+        return lhs.Multiply(rhs);
     }
 
 }

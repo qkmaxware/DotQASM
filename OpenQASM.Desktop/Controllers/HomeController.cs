@@ -21,12 +21,10 @@ namespace DotQASM.Desktop.Controllers {
 
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger) {
-            _logger = logger;
-            LoadSettings();
-
-            HomeController.buildContext = new VirtualDirectory(".");
-            var qelib1_inc = new VirtualFile(
+        static HomeController() {
+            if (HomeController.buildContext == null) {
+                HomeController.buildContext = new VirtualDirectory(".");
+                var qelib1_inc = new VirtualFile(
                 "qelib1.inc", 
 @"// Quantum Experience (QE) Standard Header
 // file: qelib1.inc
@@ -79,11 +77,11 @@ gate cz a,b { h b; cx a,b; h b; }
 gate cy a,b { sdg b; cx a,b; s b; }
 // controlled-H
 gate ch a,b {
-h b; sdg b;
-cx a,b;
-h b; t b;
-cx a,b;
-t b; h b; s b; x b; s a;
+    h b; sdg b;
+    cx a,b;
+    h b; t b;
+    cx a,b;
+    t b; h b; s b; x b; s a;
 }
 // C3 gate: Toffoli
 gate ccx a,b,c
@@ -123,7 +121,13 @@ gate cu3(theta,phi,lambda) c, t
   cx c,t;
   u3(theta/2,phi,0) t;
 }");
-            HomeController.buildContext.AddFile(qelib1_inc);
+                HomeController.buildContext.AddFile(qelib1_inc);
+            }
+        }
+
+        public HomeController(ILogger<HomeController> logger) {
+            _logger = logger;
+            LoadSettings();
         }
 
         private void LoadSettings() {

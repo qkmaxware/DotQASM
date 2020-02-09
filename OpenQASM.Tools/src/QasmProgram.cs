@@ -11,7 +11,7 @@ namespace DotQasm.Tools {
             });
             
             return (int)parser
-            .ParseArguments<New, Stat, Repl, Run, Transpile, Optimize, BackendLs, OptimizationsLs>(args)
+            .ParseArguments<New, Stat, Repl, Run, Transpile, Optimize, Render, BackendLs, OptimizationsLs>(args)
             .MapResult(
                 (New opts)              =>  opts.Exec(),
                 (Stat opts)             =>  opts.Exec(),
@@ -19,8 +19,9 @@ namespace DotQasm.Tools {
                 (Run opts)              =>  opts.Exec(),
                 (Transpile opts)        =>  opts.Exec(),
                 (Optimize opts)         =>  opts.Exec(),
+                (Render opts)           =>  opts.Exec(),
                 (BackendLs opts)        =>  opts.Exec(), 
-                (OptimizationsLs opts)  => opts.Exec(),
+                (OptimizationsLs opts)  =>  opts.Exec(),
                 errs                    =>  Status.Failure
             );
         }

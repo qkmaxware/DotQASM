@@ -21,7 +21,7 @@ public class Run : ICommand {
     [Option('k', "api-key", Default="", HelpText="Api key for backends requiring one")]
     public string ApiKey {get; set;}
 
-    [Value(0, MetaName="file", HelpText="OpenQASM file path")]
+    [Value(0, MetaName="file", Required=true, HelpText="OpenQASM file path")]
     public string QasmFile {get; set;}
 
     private static List<IBackendProvider> providers = new List<IBackendProvider>(){

@@ -30,7 +30,7 @@ public class Transpile : ICommand {
         }
     }
 
-    [Value(0, MetaName="file", HelpText="OpenQASM file path")]
+    [Value(0, MetaName="file", Required=true, HelpText="OpenQASM file path")]
     public string QasmFile {get; set;}
 
     public Status Exec(){
