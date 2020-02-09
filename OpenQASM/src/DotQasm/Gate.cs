@@ -244,6 +244,30 @@ public class Gate {
         return u;
     }
 
+    // override object.Equals
+    public override bool Equals(object obj) {
+        if (obj == null || GetType() != obj.GetType()) {
+            return false;
+        }
+        var other = (Gate)obj;
+
+        if (
+            CloseEnough(this.Matrix[0,0], other.Matrix[0,0]) 
+            && CloseEnough(this.Matrix[0,1], other.Matrix[0,1])
+            && CloseEnough(this.Matrix[1,0], other.Matrix[1,0])
+            && CloseEnough(this.Matrix[1,1], other.Matrix[1,1])
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    // override object.GetHashCode
+    public override int GetHashCode() {
+        return this.Matrix[0,0].GetHashCode() ^ this.Matrix[0,1].GetHashCode() ^ this.Matrix[1,0].GetHashCode() ^ this.Matrix[1,1].GetHashCode();
+    }
+
     /// <summary>
     /// Operator for quantum operator multiplication
     /// </summary>
