@@ -42,10 +42,9 @@ public class Render : ICommand {
         circuit.Name = Path.GetFileNameWithoutExtension(QasmFile);
 
         var emitter = new DotQasm.IO.Svg.SvgEmitter();
-        var svg = emitter.Emit(circuit);
 
         using (StreamWriter writer = new StreamWriter(SvgPath)) {
-            svg.Stringify(writer);
+            emitter.Emit(circuit, writer);
         }
 
         Console.WriteLine(string.Format("Rendered circuit to '{0}'", SvgPath));

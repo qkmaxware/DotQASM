@@ -1,7 +1,7 @@
 using System.Numerics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace msharp.test {
+namespace Tests.System.Numerics {
     [TestClass]
     public class Matrix {
         [TestMethod]

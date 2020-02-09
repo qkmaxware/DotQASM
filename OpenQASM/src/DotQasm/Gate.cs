@@ -213,7 +213,7 @@ public class Gate {
     /// Check if this quantum gate commutes with another
     /// </summary>
     /// <param name="other">other quantum gate</param>
-    public bool Commutes(Gate other) {
+    public bool CommutesWith(Gate other) {
         // det[AB - BA] == 0 if gates commute. 
         var AB = this.Matrix.Multiply(other.Matrix);
         var BA = other.Matrix.Multiply(this.Matrix);

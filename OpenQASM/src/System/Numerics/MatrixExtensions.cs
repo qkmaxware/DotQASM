@@ -37,7 +37,19 @@ public static class MatrixExtensions {
             return false;
         for(int k=0;k < m1.GetLength(0); k++) {
             for(int l=0;l < m1.GetLength(1); l++) {
-                if(m1[k,l].Equals(m2[k,l]))
+                if( !m1[k,l].Equals(m2[k,l]) )
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public static bool ApproximatelyEquivalent<T1,T2>(this T1[,] m1, T2[,] m2, Func<T1, T2, bool> fn) {
+        if(m1.Rows() != m2.Rows() || m1.Columns() != m2.Columns())
+            return false;
+        for(int k=0;k < m1.GetLength(0); k++) {
+            for(int l=0;l < m1.GetLength(1); l++) {
+                if( !fn(m1[k,l], m2[k,l]) )
                     return false;
             }
         }

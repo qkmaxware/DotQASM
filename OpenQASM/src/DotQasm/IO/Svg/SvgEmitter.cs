@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace DotQasm.IO.Svg {
 
-public class SvgEmitter {
+public class SvgEmitter : IEmitter<Circuit>, IConverter<Circuit, Svg> {
 
     private int cellHeight = 32;
     private int cellWidth = 32;
@@ -19,7 +19,7 @@ public class SvgEmitter {
             "x" => Colour.Teal,
             "y" => Colour.Teal,
             "z" => Colour.Teal,
-            "id" => Colour.Teal,
+            "i" => Colour.Teal,
             "u1" => Colour.Pink,
             "u2" => Colour.Pink,
             "u3" => Colour.Pink,
@@ -32,7 +32,11 @@ public class SvgEmitter {
         return Colour.DarkGray;
     }
 
-    public Svg Emit(Circuit circuit) {
+    public void Emit(Circuit program, TextWriter writer) {
+        Convert(program).Stringify(writer);
+    }
+
+    public Svg Convert(Circuit circuit) {
         var qubits = circuit.QubitCount;
         var svg = new Svg();
 
@@ -84,8 +88,8 @@ public class SvgEmitter {
                             new BoundingBox(
                                 (depth + 1) * cellWidth + 2,
                                 (qubit.QubitId) * cellHeight + 2,
-                                cellWidth - 4,
-                                cellHeight - 4
+                                cellWidth - 2,
+                                cellHeight - 2
                             )
                         );
                         rect.FillColour = GetColorFor(gevt.Operator);
@@ -134,8 +138,8 @@ public class SvgEmitter {
                             new BoundingBox(
                                 (depth + 1) * cellWidth + 2,
                                 (qubit.QubitId) * cellHeight + 2,
-                                cellWidth - 4,
-                                cellHeight - 4
+                                cellWidth - 2,
+                                cellHeight - 2
                             )
                         );
                         rect.FillColour = colour;
@@ -171,8 +175,8 @@ public class SvgEmitter {
                             new BoundingBox(
                                 (depth + 1) * cellWidth + 2,
                                 (qubit.QubitId) * cellHeight + 2,
-                                cellWidth - 4,
-                                cellHeight - 4
+                                cellWidth - 2,
+                                cellHeight - 2
                             )
                         );
                         rect.FillColour = GetEventColor();
@@ -195,8 +199,8 @@ public class SvgEmitter {
                             new BoundingBox(
                                 (depth + 1) * cellWidth + 2,
                                 (qubit.QubitId) * cellHeight + 2,
-                                cellWidth - 4,
-                                cellHeight - 4
+                                cellWidth - 2,
+                                cellHeight - 2
                             )
                         );
                         rect.FillColour = GetEventColor();
@@ -219,8 +223,8 @@ public class SvgEmitter {
                             new BoundingBox(
                                 (depth + 1) * cellWidth + 2,
                                 (qubit.QubitId) * cellHeight + 2,
-                                cellWidth - 4,
-                                cellHeight - 4
+                                cellWidth - 2,
+                                cellHeight - 2
                             )
                         );
                         rect.FillColour = GetEventColor();

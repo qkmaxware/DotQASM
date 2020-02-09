@@ -34,7 +34,7 @@ public abstract class IBMBackend : IBackend {
 
     public BackendInformation Information => new BackendInformation(){
         Name = BackendName,
-        Description = QubitCount + " qubit computer"
+        Description = QubitCount + " qubit " + (BackendName.Contains("simulator") ? "simulator" : "computer")
     };
     
     public abstract int QubitCount {get;}
