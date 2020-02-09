@@ -135,10 +135,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
-     inkscape:cx="106.94118"
+     inkscape:cx="20.825676"
      inkscape:cy="92.206436"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g2776"
      showgrid="false"
      units="px"
      inkscape:window-width="1680"
@@ -154,7 +154,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -178,19 +178,18 @@
          transform="matrix(0.55918837,0,0,0.55918837,6.362733,123.23916)"
          inkscape:label="Bloch Sphere"
          id="g2776">
-        <text
-           xml:space="preserve"
-           style="font-style:normal;font-weight:normal;font-size:39.98413086px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.99960315"
-           x="0.045821238"
-           y="295.42719"
-           id="text851"
+        <g
+           aria-label="Q"
            transform="scale(1.0030126,0.99699645)"
-           inkscape:label="Q"><tspan
-             sodipodi:role="line"
-             id="tspan849"
-             x="0.045821238"
-             y="295.42719"
-             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:39.98413086px;font-family:'Century Gothic';-inkscape-font-specification:'Century Gothic, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#808080;stroke-width:0.99960315">Q</tspan></text>
+           style="font-style:normal;font-weight:normal;font-size:39.98413086px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#808080;fill-opacity:1;stroke:none;stroke-width:0.99960315"
+           id="text851"
+           inkscape:label="Q">
+          <path
+             d="m 27.964428,291.22963 4.998017,6.46228 h -6.481803 l -2.538055,-3.26042 q -3.143284,1.71806 -7.008937,1.71806 -6.462279,0 -10.7379258,-4.45135 -4.2756468,-4.47089 -4.2756468,-10.64031 0,-4.11946 1.9913971,-7.5556 1.9913972,-3.45566 5.4665804,-5.4861 3.4947071,-2.03045 7.4970241,-2.03045 6.110856,0 10.484121,4.41232 4.392788,4.41231 4.392788,10.75745 0,5.83752 -3.78756,10.07412 z m -3.416613,-4.41231 q 1.737592,-2.5771 1.737592,-5.70086 0,-4.08041 -2.752814,-6.93084 -2.752813,-2.85044 -6.657514,-2.85044 -4.021841,0 -6.735608,2.77234 -2.7137662,2.77234 -2.7137662,7.04799 0,4.76373 3.4166132,7.53607 2.674719,2.16711 6.071808,2.16711 1.952351,0 3.670419,-0.76142 l -5.134681,-6.61847 h 6.520849 z"
+             style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:39.98413086px;font-family:'Century Gothic';-inkscape-font-specification:'Century Gothic, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#808080;stroke-width:0.99960315"
+             id="path894"
+             inkscape:connector-curvature="0" />
+        </g>
         <ellipse
            style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.37764725;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.37764725, 1.13294174;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
            id="path1803"
