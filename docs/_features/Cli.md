@@ -23,8 +23,13 @@ Barriers                 1
 Conditionals             2
 Est. Time.               ~5.00ms
 ```
+**2)** Render quantum circuits to scalable vector graphics (svg) circuit diagrams
+```sh
+> qasm render ./qft.qasm
+Rendered circuit to 'qft.svg'
+```
 
-**2)** Optimize open quantum assembly files using a variety of optimization strategies and output the optimized code to a new file by using the optimize command
+**3)** Optimize open quantum assembly files using a variety of optimization strategies and output the optimized code to a new file by using the optimize command
 
 ```sh
 > qasm optimizations
@@ -36,7 +41,7 @@ commutativity_check
 > qasm optimize -o "commutativity_check" ./teleport.qasm ./teleport.optimized.qasm
 ```
 
-**3)** Execute quantum programs on a variety of quantum hardware including hardware from IBM's quantum experience as well as on a variety of simulators.
+**4)** Execute quantum programs on a variety of quantum hardware including hardware from IBM's quantum experience as well as on a variety of simulators.
 
 ```sh
 > qasm backends
@@ -71,7 +76,7 @@ ibmqx2
 1 ||||||||||||||||||||||||| 48.34 %
 ```
 
-**4)** Execute quantum instructions in a read-print-evaluate-loop (repl) against a locally simulated quantum machine and view ths results after each instruction.
+**5)** Execute quantum instructions in a read-print-evaluate-loop (repl) against a locally simulated quantum machine and view ths results after each instruction.
 
 ```sh
 > qasm repl --qubits 2
