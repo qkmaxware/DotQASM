@@ -9,6 +9,7 @@
         <!-- -->
         <a href="@(Url.Action("Settings", "Home"))" target="_blank" class="w3-bar-item w3-button w3-right">Settings</a>
         <button class="w3-bar-item w3-button w3-right" onclick="showProviderSelection();">Run</button>
+        <button class="w3-bar-item w3-button w3-right" onclick="renderSvg();">Render</button>
     </header>
 </div>
 
@@ -154,6 +155,25 @@
         if (good) {
             $("#code-form").submit();
         }
+    }
+
+    function renderSvg() {
+        var response = $.ajax({
+            type: "POST",
+            url: '@Url.Action("RenderQasm", "Home")',
+            async: true,
+            dataType: "text",
+            target: "_blank",
+            data: {
+                qasm: CodeEditor.getValue(),
+            },
+            success: function(data, status, jqXHR) {
+                var doc = window.open('about:blank', '_blank');
+                doc.document.write(data);
+                doc.document.close();
+            },
+            error: function(jqXHR, status, error) {}
+        });
     }
 
     $(document).ready(function () {

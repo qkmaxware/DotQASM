@@ -163,9 +163,26 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
         switch (qop.OperationName) {
             case "U": {
                 IEnumerable<double> values = qop.ClassicalParametres.Select((x) => x.Evaluate(vars)); 
+                var realGate = Gate.U3(values.ElementAt(0), values.ElementAt(1), values.ElementAt(2));
+
+                // ----
+                // See if the gate is one of the "base" gates
+                // ----
+                /*if (realGate.Equals(Gate.Hadamard)) {
+                    realGate = Gate.Hadamard;
+                } else if (realGate.Equals(Gate.Identity)) {
+                    realGate = Gate.Identity;
+                } else if (realGate.Equals(Gate.PauliX)) {
+                    realGate = Gate.PauliX;
+                } else if (realGate.Equals(Gate.PauliY)) {
+                    realGate = Gate.PauliY;
+                } else if (realGate.Equals(Gate.PauliZ)) {
+                    realGate = Gate.PauliZ;
+                }*/
+                // ----
 
                 list.Add(new GateEvent(
-                    Gate.U3(values.ElementAt(0), values.ElementAt(1), values.ElementAt(2)),
+                    realGate,
                     (actualParametres ?? declaredParametres).SelectMany((x) => GetQubitsForArgument(x))
                 ));
             } break;

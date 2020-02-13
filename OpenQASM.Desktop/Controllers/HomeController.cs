@@ -217,6 +217,21 @@ gate cu3(theta,phi,lambda) c, t
             return View("Results", tasks.Select(task => task.Result));
         }
 
+        public IActionResult RenderQasm (CodeModel code) {
+            try {
+                var circ = DotQasm.IO.OpenQasm.Parser.ParseCircuit(code.qasm, buildContext);
+                var emitter = new DotQasm.IO.Svg.SvgEmitter();
+                var memory = new MemoryStream();
+                var writer = new StreamWriter(memory);
+                emitter.Emit(circ, writer);
+                writer.Flush();
+                memory.Position = 0;
+                return File(memory, "image/svg+xml");
+            } catch {
+                return Error();
+            } 
+        }
+
         public IActionResult ValidateQasm (CodeModel code) {
             try {
                 var circ = DotQasm.IO.OpenQasm.Parser.ParseCircuit(code.qasm, buildContext);

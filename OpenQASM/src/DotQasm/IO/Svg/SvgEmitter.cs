@@ -15,7 +15,7 @@ public class SvgEmitter : IEmitter<Circuit>, IConverter<Circuit, Svg> {
 
     private Colour GetColorFor(Gate gate) {
         return gate.Symbol switch {
-            "h" => Colour.AliceBlue,
+            "h" => Colour.Blue,
             "x" => Colour.Teal,
             "y" => Colour.Teal,
             "z" => Colour.Teal,
@@ -34,6 +34,218 @@ public class SvgEmitter : IEmitter<Circuit>, IConverter<Circuit, Svg> {
 
     public void Emit(Circuit program, TextWriter writer) {
         Convert(program).Stringify(writer);
+    }
+
+    private void DrawEvent(Svg svg, int qubits, int depth, IEvent scheduled) {
+        switch (scheduled) {
+            case GateEvent gevt: {
+                foreach (var qubit in gevt.QuantumDependencies) {
+                    var rect = new Rect(
+                        new BoundingBox(
+                            (depth + 1) * cellWidth + 2,
+                            (qubit.QubitId) * cellHeight + 2,
+                            cellWidth - 2,
+                            cellHeight - 2
+                        )
+                    );
+                    rect.FillColour = GetColorFor(gevt.Operator);
+                    svg.Add(rect);
+                    var text = new Text(
+                        new Vector2(
+                            (depth + 1) * cellWidth + 2 + cellWidth/2,
+                            (qubit.QubitId) * cellHeight + cellHeight/2
+                        ),
+                        gevt.Operator.Symbol
+                    );
+                    text.HorizontalAnchor = HorizontalTextAnchor.middle;
+                    svg.Add(text);
+                }
+                break;
+            }
+            case ControlledGateEvent cevt: {
+                // Draw control bit sphere
+                var colour = GetColorFor(cevt.Operator);
+                var ctrlPosition = new Vector2(
+                    (depth + 1) * cellWidth + cellWidth/ 2,
+                    cevt.ControlQubit.QubitId * cellHeight + cellHeight/2
+                );
+                var ctrl = new Circle(
+                    ctrlPosition,
+                    4
+                );
+                ctrl.FillColour = colour;
+                svg.Add(ctrl);
+                // Draw lines to control bit
+                foreach (var qubit in cevt.TargetQubits) {
+                    var mid = new Vector2(
+                        (depth + 1) * cellWidth + cellWidth/2,
+                        (qubit.QubitId) * cellHeight + cellHeight/2
+                    );
+                    var line = new Line(
+                        ctrlPosition, 
+                        mid
+                    );
+                    line.StrokeColour = colour;
+                    svg.Add(line);
+                }
+                // Draw qubit gate
+                foreach (var qubit in cevt.TargetQubits) {
+                    var rect = new Rect(
+                        new BoundingBox(
+                            (depth + 1) * cellWidth + 2,
+                            (qubit.QubitId) * cellHeight + 2,
+                            cellWidth - 2,
+                            cellHeight - 2
+                        )
+                    );
+                    rect.FillColour = colour;
+                    svg.Add(rect);
+                    var text = new Text(
+                        new Vector2(
+                            (depth + 1) * cellWidth + 2 + cellWidth/2,
+                            (qubit.QubitId) * cellHeight + cellHeight/2
+                        ),
+                        cevt.Operator.Symbol
+                    );
+                    text.HorizontalAnchor = HorizontalTextAnchor.middle;
+                    svg.Add(text);
+                }
+                break;
+            }
+            case MeasurementEvent mevt: {
+                // Draw lines
+                var classicalLine = new Vector2(
+                    (depth + 1) * cellWidth + 2 + cellWidth/2,
+                    (qubits) * cellHeight + cellHeight/2
+                );
+                foreach (var qubit in mevt.QuantumDependencies) {
+                    var centre = new Vector2(
+                        (depth + 1) * cellWidth + 2 + cellWidth/2,
+                        (qubit.QubitId) * cellHeight + cellHeight/2
+                    );
+                    svg.Add(new Line(centre, classicalLine));
+                }
+                // Draw Boxes
+                var colour = GetEventColor();
+                foreach (var qubit in mevt.QuantumDependencies) {
+                    var rect = new Rect(
+                        new BoundingBox(
+                            (depth + 1) * cellWidth + 2,
+                            (qubit.QubitId) * cellHeight + 2,
+                            cellWidth - 2,
+                            cellHeight - 2
+                        )
+                    );
+                    rect.FillColour = colour;
+                    svg.Add(rect);
+                    var text = new Text(
+                        new Vector2(
+                            (depth + 1) * cellWidth + 2 + cellWidth/2,
+                            (qubit.QubitId) * cellHeight + cellHeight/2
+                        ),
+                        "\u2221"
+                    );
+                    text.HorizontalAnchor = HorizontalTextAnchor.middle;
+                    svg.Add(text);
+                }
+                // Draw anchor
+                var ctrl = new Circle(
+                    classicalLine,
+                    2
+                );
+                ctrl.FillColour = ctrl.StrokeColour;
+                svg.Add(ctrl);
+                break;
+            }
+            case ResetEvent revt: {
+                foreach (var qubit in revt.QuantumDependencies) {
+                    var rect = new Rect(
+                        new BoundingBox(
+                            (depth + 1) * cellWidth + 2,
+                            (qubit.QubitId) * cellHeight + 2,
+                            cellWidth - 2,
+                            cellHeight - 2
+                        )
+                    );
+                    rect.FillColour = GetEventColor();
+                    svg.Add(rect);
+                    var text = new Text(
+                        new Vector2(
+                            (depth + 1) * cellWidth + 2 + cellWidth/2,
+                            (qubit.QubitId) * cellHeight + cellHeight/2
+                        ),
+                        "|0\u3009"
+                    );
+                    text.HorizontalAnchor = HorizontalTextAnchor.middle;
+                    svg.Add(text);
+                }
+                break;
+            }
+            case BarrierEvent bevt: {
+                foreach (var qubit in bevt.QuantumDependencies) {
+                    var rect = new Rect(
+                        new BoundingBox(
+                            (depth + 1) * cellWidth + 2,
+                            (qubit.QubitId) * cellHeight + 2,
+                            cellWidth - 2,
+                            cellHeight - 2
+                        )
+                    );
+                    rect.FillColour = GetEventColor();
+                    svg.Add(rect);
+                    var text = new Text(
+                        new Vector2(
+                            (depth + 1) * cellWidth + 2 + cellWidth/2,
+                            (qubit.QubitId) * cellHeight + cellHeight/2
+                        ),
+                        "\u00A6"
+                    );
+                    text.HorizontalAnchor = HorizontalTextAnchor.middle;
+                    svg.Add(text);
+                }
+                break;
+            }
+            case IfEvent ife: {
+                var background = new Rect(
+                    new BoundingBox(
+                        (depth + 1) * cellWidth + 2,
+                        0,
+                        cellWidth - 2,
+                        qubits * cellHeight + cellHeight / 2
+                    )
+                );
+                background.FillColour = Colour.FromArgb(80, Colour.AliceBlue.R, Colour.AliceBlue.G, Colour.AliceBlue.B);
+                svg.Add(background);
+
+                var box = new Rect(
+                    new BoundingBox(
+                        (depth + 1) * cellWidth + 2,
+                        (qubits) * cellHeight + 5,
+                        cellWidth - 2,
+                        cellHeight - 12
+                    )
+                );
+                box.FillColour = Colour.DeepSkyBlue;
+                svg.Add(box);
+
+                var text = new Text(
+                    new Vector2(
+                        (depth + 1) * cellWidth + 2 + cellWidth/2,
+                        (qubits) * cellHeight + cellHeight/2
+                    ),
+                    "=" + ife.LiteralValue
+                );
+                text.HorizontalAnchor = HorizontalTextAnchor.middle;
+                svg.Add(text);
+                
+                DrawEvent(svg, qubits, depth, ife.Event);
+
+                break;
+            }
+            default: {
+                break;
+            }
+        }
     }
 
     public Svg Convert(Circuit circuit) {
@@ -81,170 +293,7 @@ public class SvgEmitter : IEmitter<Circuit>, IConverter<Circuit, Svg> {
 
         // Add events
         foreach (var scheduled in circuit.GateSchedule) {
-            switch (scheduled) {
-                case GateEvent gevt: {
-                    foreach (var qubit in gevt.QuantumDependencies) {
-                        var rect = new Rect(
-                            new BoundingBox(
-                                (depth + 1) * cellWidth + 2,
-                                (qubit.QubitId) * cellHeight + 2,
-                                cellWidth - 2,
-                                cellHeight - 2
-                            )
-                        );
-                        rect.FillColour = GetColorFor(gevt.Operator);
-                        svg.Add(rect);
-                        var text = new Text(
-                            new Vector2(
-                                (depth + 1) * cellWidth + 2 + cellWidth/2,
-                                (qubit.QubitId) * cellHeight + cellHeight/2
-                            ),
-                            gevt.Operator.Symbol
-                        );
-                        text.HorizontalAnchor = HorizontalTextAnchor.middle;
-                        svg.Add(text);
-                    }
-                    break;
-                }
-                case ControlledGateEvent cevt: {
-                    // Draw control bit sphere
-                    var colour = GetColorFor(cevt.Operator);
-                    var ctrlPosition = new Vector2(
-                        (depth + 1) * cellWidth + cellWidth/ 2,
-                        cevt.ControlQubit.QubitId * cellHeight + cellHeight/2
-                    );
-                    var ctrl = new Circle(
-                        ctrlPosition,
-                        4
-                    );
-                    ctrl.FillColour = colour;
-                    svg.Add(ctrl);
-                    // Draw lines to control bit
-                    foreach (var qubit in cevt.TargetQubits) {
-                        var mid = new Vector2(
-                            (depth + 1) * cellWidth + 2 + cellWidth/2,
-                            (qubit.QubitId) * cellHeight + cellHeight/2
-                        );
-                        var line = new Line(
-                            ctrlPosition, 
-                            mid
-                        );
-                        line.StrokeColour = colour;
-                        svg.Add(line);
-                    }
-                    // Draw qubit gate
-                    foreach (var qubit in cevt.TargetQubits) {
-                        var rect = new Rect(
-                            new BoundingBox(
-                                (depth + 1) * cellWidth + 2,
-                                (qubit.QubitId) * cellHeight + 2,
-                                cellWidth - 2,
-                                cellHeight - 2
-                            )
-                        );
-                        rect.FillColour = colour;
-                        svg.Add(rect);
-                        var text = new Text(
-                            new Vector2(
-                                (depth + 1) * cellWidth + 2 + cellWidth/2,
-                                (qubit.QubitId) * cellHeight + cellHeight/2
-                            ),
-                            cevt.Operator.Symbol
-                        );
-                        text.HorizontalAnchor = HorizontalTextAnchor.middle;
-                        svg.Add(text);
-                    }
-                    break;
-                }
-                case MeasurementEvent mevt: {
-                    // Draw lines
-                    var classicalLine = new Vector2(
-                        (depth + 1) * cellWidth + 2 + cellWidth/2,
-                        (qubits) * cellHeight + cellHeight/2
-                    );
-                    foreach (var qubit in mevt.QuantumDependencies) {
-                        var centre = new Vector2(
-                            (depth + 1) * cellWidth + 2 + cellWidth/2,
-                            (qubit.QubitId) * cellHeight + cellHeight/2
-                        );
-                        svg.Add(new Line(centre, classicalLine));
-                    }
-                    // Draw Boxes
-                    foreach (var qubit in mevt.QuantumDependencies) {
-                        var rect = new Rect(
-                            new BoundingBox(
-                                (depth + 1) * cellWidth + 2,
-                                (qubit.QubitId) * cellHeight + 2,
-                                cellWidth - 2,
-                                cellHeight - 2
-                            )
-                        );
-                        rect.FillColour = GetEventColor();
-                        svg.Add(rect);
-                        var text = new Text(
-                            new Vector2(
-                                (depth + 1) * cellWidth + 2 + cellWidth/2,
-                                (qubit.QubitId) * cellHeight + cellHeight/2
-                            ),
-                            "\u2221"
-                        );
-                        text.HorizontalAnchor = HorizontalTextAnchor.middle;
-                        svg.Add(text);
-                    }
-                    break;
-                }
-                case ResetEvent revt: {
-                    foreach (var qubit in revt.QuantumDependencies) {
-                        var rect = new Rect(
-                            new BoundingBox(
-                                (depth + 1) * cellWidth + 2,
-                                (qubit.QubitId) * cellHeight + 2,
-                                cellWidth - 2,
-                                cellHeight - 2
-                            )
-                        );
-                        rect.FillColour = GetEventColor();
-                        svg.Add(rect);
-                        var text = new Text(
-                            new Vector2(
-                                (depth + 1) * cellWidth + 2 + cellWidth/2,
-                                (qubit.QubitId) * cellHeight + cellHeight/2
-                            ),
-                            "|0\u3009"
-                        );
-                        text.HorizontalAnchor = HorizontalTextAnchor.middle;
-                        svg.Add(text);
-                    }
-                    break;
-                }
-                case BarrierEvent bevt: {
-                    foreach (var qubit in bevt.QuantumDependencies) {
-                        var rect = new Rect(
-                            new BoundingBox(
-                                (depth + 1) * cellWidth + 2,
-                                (qubit.QubitId) * cellHeight + 2,
-                                cellWidth - 2,
-                                cellHeight - 2
-                            )
-                        );
-                        rect.FillColour = GetEventColor();
-                        svg.Add(rect);
-                        var text = new Text(
-                            new Vector2(
-                                (depth + 1) * cellWidth + 2 + cellWidth/2,
-                                (qubit.QubitId) * cellHeight + cellHeight/2
-                            ),
-                            "|"
-                        );
-                        text.HorizontalAnchor = HorizontalTextAnchor.middle;
-                        svg.Add(text);
-                    }
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
+            DrawEvent(svg, qubits, depth, scheduled);
             depth ++;
         }
 

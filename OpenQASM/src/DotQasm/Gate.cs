@@ -190,19 +190,11 @@ public class Gate {
     }
 
     private bool CloseEnough(double a, double b, double epsilon = 0.0001) {
-        double absA = Math.Abs (a);
-        double absB = Math.Abs (b);
-        double diff = Math.Abs (a - b);
-
-        if (a == b) {
-            return true;
-        } else if (a == 0 || b == 0 || diff < double.Epsilon) {
-            // a or b is zero or both are extremely close to it
-            // relative error is less meaningful here
-            return diff < epsilon;
-        } else { // use relative error
-            return diff / (absA + absB) < epsilon;
+        if (a != b) {
+            return Math.Abs(a - b) < epsilon;
         }
+
+        return true;
     }
 
     private bool CloseEnough(Complex a, Complex b, double epsilon = 0.0001) {
@@ -252,7 +244,7 @@ public class Gate {
         var other = (Gate)obj;
 
         if (
-            CloseEnough(this.Matrix[0,0], other.Matrix[0,0]) 
+               CloseEnough(this.Matrix[0,0], other.Matrix[0,0]) 
             && CloseEnough(this.Matrix[0,1], other.Matrix[0,1])
             && CloseEnough(this.Matrix[1,0], other.Matrix[1,0])
             && CloseEnough(this.Matrix[1,1], other.Matrix[1,1])

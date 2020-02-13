@@ -18,8 +18,20 @@ public class Render : ICommand {
     [Value(0, MetaName="file", Required=true, HelpText="OpenQASM file path")]
     public string QasmFile {get; set;}
 
-    [Value(1, MetaName="output", Default="circuit.svg", HelpText="SVG output file path")]
-    public string SvgPath {get; set;}
+    private string outf = null;
+    [Value(1, MetaName="output", HelpText="SVG output file path")]
+    public string SvgPath {
+        get {
+            if (outf != null) {
+                return outf;
+            } else {
+                return Path.GetFileNameWithoutExtension(QasmFile) + ".svg";
+            }
+        } 
+        set {
+            outf = value;
+        }
+    }
 
     public Status Exec() {
         // Read source file
