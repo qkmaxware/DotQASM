@@ -8,6 +8,9 @@ using System.Collections.Generic;
 
 namespace DotQasm.IO.Svg {
 
+/// <summary>
+/// Class which can convert a quantum circuit into a scalable vector graphics image
+/// </summary>
 public class SvgEmitter : IEmitter<Circuit>, IConverter<Circuit, Svg> {
 
     private int cellHeight = 32;
@@ -32,6 +35,11 @@ public class SvgEmitter : IEmitter<Circuit>, IConverter<Circuit, Svg> {
         return Colour.DarkGray;
     }
 
+    /// <summary>
+    /// Emit an SVG for the given circuit to a text stream
+    /// </summary>
+    /// <param name="program">quantum circuit</param>
+    /// <param name="writer">text stream</param>
     public void Emit(Circuit program, TextWriter writer) {
         Convert(program).Stringify(writer);
     }
@@ -248,6 +256,11 @@ public class SvgEmitter : IEmitter<Circuit>, IConverter<Circuit, Svg> {
         }
     }
 
+    /// <summary>
+    /// Convert a quantum circuit to an SVG
+    /// </summary>
+    /// <param name="circuit">quantum circuit</param>
+    /// <returns>scalable vector graphics</returns>
     public Svg Convert(Circuit circuit) {
         var qubits = circuit.QubitCount;
         var svg = new Svg();

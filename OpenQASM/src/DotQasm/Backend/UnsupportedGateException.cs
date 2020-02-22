@@ -1,5 +1,8 @@
 namespace DotQasm.Backend {
 
+/// <summary>
+/// Class representing an error when an unsupported gate is used 
+/// </summary>
 public class UnsupportedGateException: System.Exception {
 
     public UnsupportedGateException(Gate gate): base(

@@ -3,14 +3,30 @@ using System.Numerics;
 
 namespace DotQasm {
 
+/// <summary>
+/// Single qubit quantum gate
+/// </summary>
 public class Gate {
-
+    /// <summary>
+    /// Quantum gate name
+    /// </summary>
     public string Name {get; protected set;}
+    /// <summary>
+    /// Quantum gate abbreviated symbol
+    /// </summary>
     public string Symbol {get; protected set;}
+    /// <summary>
+    /// Operation's 2x2 matrix representation
+    /// </summary>
     public Complex[,] Matrix {get; protected set;} 
-
+    /// <summary>
+    /// Classical rotation parametres 
+    /// </summary>
     public (double, double, double) Parametres {get; private set;}
 
+    /// <summary>
+    /// The identity gate
+    /// </summary>
     public static readonly Gate Identity = new Gate(
         "Identity",
         "i",
@@ -21,6 +37,9 @@ public class Gate {
         (0, 0, 0)
     );
 
+    /// <summary>
+    /// The hadamard gate
+    /// </summary>  
     public static readonly Gate Hadamard = new Gate(
         "Hadamard",
         "h",
@@ -31,6 +50,9 @@ public class Gate {
         U2Params(0, Math.PI)
     );
 
+    /// <summary>
+    /// The Pauli X rotation gate
+    /// </summary>
     public static readonly Gate PauliX = new Gate(
         "Pauli-X",
         "x",
@@ -41,6 +63,9 @@ public class Gate {
         U3Params(Math.PI, 0, Math.PI)
     );
 
+    /// <summary>
+    /// The Pauli Y rotation gate
+    /// </summary>
     public static readonly Gate PauliY = new Gate(
         "Pauli-Y",
         "y",
@@ -51,6 +76,9 @@ public class Gate {
         U3Params(Math.PI, Math.PI/2, Math.PI/2)
     );
 
+    /// <summary>
+    /// The Pauli Z rotation gate
+    /// </summary>
     public static readonly Gate PauliZ = new Gate(
         "Pauli-Z",
         "z",
@@ -86,6 +114,11 @@ public class Gate {
         }
     );*/
 
+    /// <summary>
+    /// Create an X-Axis rotation gate
+    /// </summary>
+    /// <param name="theta">rotation angle</param>
+    /// <returns>quantum gate</returns>
     public static Gate Rx(double theta) {
         var gate = U3(theta, -Math.PI/2, Math.PI/2);
         gate.Name = "rx(" + theta + ")";
@@ -93,6 +126,11 @@ public class Gate {
         return gate;
     }
 
+    /// <summary>
+    /// Create an Y-Axis rotation gate
+    /// </summary>
+    /// <param name="theta">rotation angle</param>
+    /// <returns>quantum gate</returns>
     public static Gate Ry(double theta) {
         var gate = U3(theta,0,0);
         gate.Name = "ry(" + theta + ")";
@@ -100,6 +138,11 @@ public class Gate {
         return gate;
     }
 
+    /// <summary>
+    /// Create an Z-Axis rotation gate
+    /// </summary>
+    /// <param name="theta">rotation angle</param>
+    /// <returns>quantum gate</returns>
     public static Gate Rz(double phi) {
         var gate = U1(phi);
         gate.Name = "rz(" + phi + ")";
@@ -107,6 +150,11 @@ public class Gate {
         return gate;
     }
 
+    /// <summary>
+    /// 1-parameter 0-pulse single qubit gate
+    /// </summary>
+    /// <param name="lambda">rotation</param>
+    /// <returns>quantum gate</returns>
     public static Gate U1(double lambda) {
         var g = U(0, 0, lambda);
         g.Symbol = "u1";
@@ -117,6 +165,11 @@ public class Gate {
         return (0, 0, lambda);
     }
 
+    /// <summary>
+    /// 2-parameter 1-pulse single qubit gate
+    /// </summary>
+    /// <param name="lambda">rotation</param>
+    /// <returns>quantum gate</returns>
     public static Gate U2(double phi, double lambda) {
         var g = U(Math.PI / 2, phi, lambda);
         g.Symbol = "u2";
@@ -127,6 +180,11 @@ public class Gate {
         return ((Math.PI / 2), phi, lambda);
     }
 
+    /// <summary>
+    /// 3-parameter 2-pulse single qubit gate
+    /// </summary>
+    /// <param name="lambda">rotation</param>
+    /// <returns>quantum gate</returns>
     public static Gate U3(double theta, double phi, double lambda) {
         var g = U(theta, phi, lambda);
         g.Symbol = "u3";
@@ -137,6 +195,11 @@ public class Gate {
         return (theta, phi, lambda);
     }
 
+    /// <summary>
+    /// 3-parameter 2-pulse single qubit gate
+    /// </summary>
+    /// <param name="lambda">rotation</param>
+    /// <returns>quantum gate</returns>
     public static Gate U(double theta, double phi, double lambda) {
         // https://github.com/Qiskit/openqasm/blob/master/spec/qasm2.rst
         Gate u = new Gate();

@@ -5,18 +5,43 @@ using System.Collections.Generic;
 
 namespace DotQasm.Backend {
 
+/// <summary>
+/// Base class for the results of a quantum circuit's execution
+/// </summary>
 public class BackendResult {
+    /// <summary>
+    /// Name of the backend the results came from
+    /// </summary>
     public string BackendName {get; protected set;}
+    /// <summary>
+    /// Total time spent being processed
+    /// </summary>
     public TimeSpan TotalTime {get; protected set;}
+    /// <summary>
+    /// Total time spend being run
+    /// </summary>
     public TimeSpan ExecutionTime {get; protected set;}
+    /// <summary>
+    /// Probabilities per each potential state
+    /// </summary>
     public Dictionary<int, double> StateProbabilityHistogram {get; protected set;}
 
+    /// <summary>
+    /// Create an empty backend result
+    /// </summary>
     public BackendResult() {}
 
+    /// <summary>
+    /// Unique identifier for this result
+    /// </summary>
     public virtual string ResultIdentifier() {
         return this.GetHashCode().ToString();
     }
 
+    /// <summary>
+    /// Create a summary report for these results
+    /// </summary>
+    /// <returns>stringified report</returns>
     public override string ToString() {
         StringBuilder sb = new StringBuilder();
         

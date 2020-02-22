@@ -5,6 +5,9 @@ using System.Text.Json;
 
 namespace DotQasm.Backend.IBM {
 
+/// <summary>
+/// Results of quantum circuit execution specific to the IBM backends
+/// </summary>
 public class IBMJobResults : BackendResult {
     public string JobId => Job.id;
     public bool Success {get; private set;}

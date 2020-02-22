@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace DotQasm.Search {
 
+/// <summary>
+/// Priority queue 
+/// </summary>
+/// <typeparam name="T">stored type</typeparam>
 public class PriorityQueue<T> {
 
     private List<T> data; 

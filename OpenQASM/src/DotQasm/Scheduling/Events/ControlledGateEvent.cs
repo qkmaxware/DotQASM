@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DotQasm.Scheduling {
 
+/// <summary>
+/// Event for a applying a controlled quantum gate
+/// </summary>
 public class ControlledGateEvent: IEvent {
 
     public IEnumerable<Qubit> QuantumDependencies {get; private set;}

@@ -3,6 +3,9 @@ using System.Linq;
 
 namespace DotQasm.Scheduling {
 
+/// <summary>
+/// Estimate the time of a schedule using basic timings
+/// </summary>
 public class BasicTimeEstimator : ITimeEstimator {
 
     private static readonly double ns = 1e-6;

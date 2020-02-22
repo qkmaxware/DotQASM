@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 namespace DotQasm.Scheduling {
 
+/// <summary>
+/// Event for applying a single qubit gate
+/// </summary>
 public class GateEvent: IEvent {
 
     public IEnumerable<Qubit> QuantumDependencies {get; private set;}

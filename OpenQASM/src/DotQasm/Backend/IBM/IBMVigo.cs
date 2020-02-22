@@ -2,6 +2,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
+/// <summary>
+/// Backend representing the 5-qubit ibm quantum experience Vigo device
+/// </summary>
 namespace DotQasm.Backend.IBM {
 
 public class IBMVigo : IBMBackend {

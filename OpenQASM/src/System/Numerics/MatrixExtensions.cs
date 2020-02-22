@@ -2,15 +2,27 @@ using System.Text;
 
 namespace System.Numerics {
     
+/// <summary>
+/// Matrix dimension mismatch
+/// </summary>
 public class DimensionMismatchException : ArithmeticException {
     public DimensionMismatchException() : base() {}
 }
 
+/// <summary>
+/// Generator interface
+/// </summary>
+/// <typeparam name="T">type to generate</typeparam>
 public interface IGenerator<T> {
     T Next();
     T Next(T min, T max);
 }
 
+/// <summary>
+/// Interface indicating that a class supports basis arithmetic operations
+/// </summary>
+/// <typeparam name="T">first type</typeparam>
+/// <typeparam name="R">second type</typeparam>
 public interface IArithmetic<T, R> {
     R Add(T b);
     R Subtract(T b);
@@ -18,6 +30,9 @@ public interface IArithmetic<T, R> {
     R Divide(T b);
 }
 
+/// <summary>
+/// Extension methods for treating rectangular arrays as matrices
+/// </summary>
 public static class MatrixExtensions {
 
     private static readonly Random generator = new Random();

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DotQasm.Scheduling {
 
+/// <summary>
+/// Event for classical conditional checking 
+/// </summary>
 public class IfEvent: IEvent {
 
     public int LiteralValue {get; private set;}

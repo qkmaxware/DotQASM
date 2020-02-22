@@ -34,7 +34,7 @@ public class Transpile : ICommand {
     public string QasmFile {get; set;}
 
     public Status Exec(){
-        ITranspiler<OpenQasmAstContext, string> transpiler = null;
+        IConverter<OpenQasmAstContext, string> transpiler = null;
         switch (Language) {
             case SupportedLanguages.OpenQASM:
                 // transpiler = transpiler ?? new IO.OpenQASM.Transpiler();
@@ -43,7 +43,7 @@ public class Transpile : ICommand {
             case SupportedLanguages.QISkit:
                 // transpiler = transpiler ?? new IO.QISkit.Transpiler();
             case SupportedLanguages.QSharp:
-                transpiler = transpiler ?? (ITranspiler<OpenQasmAstContext, string>)new IO.QSharp.QSharpTranspiler();
+                transpiler = transpiler ?? (IConverter<OpenQasmAstContext, string>)new IO.QSharp.QSharpTranspiler();
                 goto case SupportedLanguages.Scaffold;
             case SupportedLanguages.Quil:
                 // transpiler = transpiler ?? new IO.Quil.Transpiler();
@@ -54,7 +54,7 @@ public class Transpile : ICommand {
                 Console.Write(QasmFile + " -> " + OutputNameOnly + " ... ");
 
                 // var node = ...
-                // var content = transpiler?.Transpile(node);
+                // var content = transpiler?.Convert(node);
                 // using (StreamWriter writer = new StreamWriter(OutputFile)) { writer.Write(content) }
 
                 Console.WriteLine("Saved");

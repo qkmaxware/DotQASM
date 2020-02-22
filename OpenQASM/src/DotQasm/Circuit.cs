@@ -6,14 +6,30 @@ using DotQasm.Scheduling;
 
 namespace DotQasm {
 
+/// <summary>
+/// Interface representing on object that can be owned by another
+/// </summary>
+/// <typeparam name="T">Owner type</typeparam>
 public interface IOwnedBy<T> {
+    /// <summary>
+    /// Object that owns this one
+    /// </summary>
     T Owner {get;}
 }
 
+/// <summary>
+/// Register owned by a quantum circuit
+/// </summary>
 public interface IRegister<T>: System.Collections.Generic.IEnumerable<T>, IOwnedBy<Circuit> {
+    /// <summary>
+    /// Register ID
+    /// </summary>
     int RegisterId {get;}
 }
 
+/// <summary>
+/// Register owned by a quantum circuit
+/// </summary>
 public class Register<T> : IRegister<T> where T:IOwnedBy<Register<T>> {
     public Circuit Owner {get; private set;}
     public int RegisterId {get; private set;}
@@ -91,6 +107,9 @@ public class Cbit: IOwnedBy<Register<Cbit>> {
     }
 }   
 
+/// <summary>
+/// Quantum circuit
+/// </summary>
 [Serializable]
 public class Circuit {
 
@@ -114,17 +133,35 @@ public class Circuit {
     private List<Register<Qubit>> quantumRegisters = new List<Register<Qubit>>();
     private List<Register<Cbit>> classicalRegisters = new List<Register<Cbit>>();
 
+    /// <summary>
+    /// List of quantum registers
+    /// </summary>
     public IEnumerable<Register<Qubit>> QuantumRegisters => quantumRegisters.AsReadOnly();
+    /// <summary>
+    /// List of classical registers
+    /// </summary>
     public IEnumerable<Register<Cbit>> ClassicalRegisters => classicalRegisters.AsReadOnly();
 
+    /// <summary>
+    /// Empty quantum circuit
+    /// </summary>
     public Circuit() {
         this.GateSchedule = new LinearSchedule(); // Default to a simple empty linear schedule
     }
 
+    /// <summary>
+    /// Allocate a single classical bit
+    /// </summary>
+    /// <returns>classical bit</returns>
     public Cbit AllocateCbit() {
         return AllocateCbits(1)[0];
     }
 
+    /// <summary>
+    /// Allocate several classical bits
+    /// </summary>
+    /// <param name="classicalCount">bits</param>
+    /// <returns>register of classical bits</returns>
     public Register<Cbit> AllocateCbits(int classicalCount) {
         Cbit[] cbits = new Cbit[classicalCount];
         var reg = new Register<Cbit>(this, classicalRegisters.Count, cbits);
@@ -135,10 +172,19 @@ public class Circuit {
         return reg;
     }
 
+    /// <summary>
+    /// Allocate a single qubit
+    /// </summary>
+    /// <returns>qubit</returns>
     public Qubit AllocateQubit() {
         return AllocateQubits(1)[0];
     }
 
+    /// <summary>
+    /// Allocate several qubits
+    /// </summary>
+    /// <param name="qubitCount">number of qubits to allocate</param>
+    /// <returns>register of qubits</returns>
     public Register<Qubit> AllocateQubits(int qubitCount) {
         Qubit[] qubits = new Qubit[qubitCount];
         var reg = new Register<Qubit>(this,quantumRegisters.Count, qubits);

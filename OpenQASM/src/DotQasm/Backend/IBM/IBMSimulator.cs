@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace DotQasm.Backend.IBM {
 
+/// <summary>
+/// Backend representing the 5-qubit ibm quantum experience quantum simulator
+/// </summary>
 public class IBMSimulator : IBMBackend {
 
     public override string BackendName => "ibmq_qasm_simulator";

@@ -5,8 +5,10 @@ using System.Collections;
 
 namespace DotQasm.Scheduling {
 
-public class LinearSchedule: ISchedule, IEnumerable<IEvent>
-    {
+/// <summary>
+/// A schedule of events in which each event linearly follows the last
+/// </summary>
+public class LinearSchedule: ISchedule, IEnumerable<IEvent> {
 
     /// <summary>
     /// Iterator for linear schedules

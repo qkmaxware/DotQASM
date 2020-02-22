@@ -35,6 +35,9 @@ public class Simulator : IBackend {
  
     private List<Complex> amplitudes;
     private List<State> register;
+    /// <summary>
+    /// Size of the classical register
+    /// </summary>
     public int RegisterSize => register.Count;
 
     /// <summary>

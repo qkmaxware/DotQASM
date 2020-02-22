@@ -16,25 +16,64 @@ namespace DotQasm.Backend.IBM.Api {
 /// </summary>
 public class IBMApi {
 
+    /// <summary>
+    /// The http client used to interface with the backend
+    /// </summary>
     private HttpClient client;
 
+    /// <summary>
+    /// Url to the IBM quantum experience api
+    /// </summary>
     public string RootApiUrl => @"https://api.quantum-computing.ibm.com/api";
 
+    /// <summary>
+    /// Url to the login endpoint
+    /// </summary>
     public string LoginApiUrl => RootApiUrl + @"/users/login";
+    /// <summary>
+    /// Url to the login with api token endpoint
+    /// </summary>
     public string TokenLoginApiUrl => RootApiUrl + @"/users/loginWithToken";
 
+    /// <summary>
+    /// Url to the jobs endpoint
+    /// </summary>
     public string JobsApiUrl => RootApiUrl + @"/jobs/";
+    /// <summary>
+    /// Url to the job upload endpoint
+    /// </summary>
     public string GetJobUploadUrlUpload => JobsApiUrl + @"{0}/jobUploadUrl";
 
+    /// <summary>
+    /// Url to the network endpoint
+    /// </summary>
     public string NetworkApiUrl => RootApiUrl + @"/network";
 
+    /// <summary>
+    /// Url to the devices endpoint
+    /// </summary>
     public string DeviceApiUrl => RootApiUrl + @"/backends/{0}";
+    /// <summary>
+    /// Url to the device defaults endpoint
+    /// </summary>
     public string DeviceDefaultsApiUrl => DeviceApiUrl + @"/defaults";
+    /// <summary>
+    /// Url to the device status endpoint
+    /// </summary>
     public string DeviceStatusApiUrl => DeviceApiUrl + "/queue/status";
 
+    /// <summary>
+    /// Session representing the current user logged into the api
+    /// </summary>
     private IBMSession session = null;
+    /// <summary>
+    /// Check if the user has authenticated with the API
+    /// </summary>
     public bool IsAuthenticated => session != null && session.WasRequestSuccessful;
 
+    /// <summary>
+    /// Settings for serializing and deserializing json from the IBM api
+    /// </summary>
     private JsonSerializerOptions json_settings;
 
     /// <summary>
@@ -65,6 +104,11 @@ public class IBMApi {
         AuthenticateWithUsername(email, password);
     }
 
+    /// <summary>
+    /// Send a get request
+    /// </summary>
+    /// <param name="url">endpoint</param>
+    /// <returns>response string</returns>
     private string Get(string url) {
         var task = client.GetAsync(url);
         task.Wait();
@@ -75,6 +119,12 @@ public class IBMApi {
         return (content.Result);
     }
 
+    /// <summary>
+    /// Send a get request with content
+    /// </summary>
+    /// <param name="url">endpoint</param>
+    /// <param name="body">content</param>
+    /// <returns>response string</returns>
     private string Get(string url, HttpContent body) {
         var req = new HttpRequestMessage(HttpMethod.Get, url);
         req.Content = body;
@@ -88,6 +138,12 @@ public class IBMApi {
         return (content.Result);
     }
 
+    /// <summary>
+    /// Send a post request with content
+    /// </summary>
+    /// <param name="url">endpoint</param>
+    /// <param name="body">content</param>
+    /// <returns>response string</returns>
     private string Post(string url, HttpContent body) {
         var task = client.PostAsync(url, body);
         task.Wait();
@@ -136,6 +192,9 @@ public class IBMApi {
         session = JsonSerializer.Deserialize<IBMSession>(response, json_settings);
     }
 
+    /// <summary>
+    /// Check if authenticated and if not, throw an access violation exception
+    /// </summary>
     private void ForceAuth() {
         if (!IsAuthenticated)
             throw new AccessViolationException("Not logged in");
@@ -261,10 +320,22 @@ public class IBMApi {
         return GetJobInfo(jobId).status;
     }
 
+    /// <summary>
+    /// Cancel a running job
+    /// </summary>
+    /// <param name="jobId">unique job identifier</param>
     public void CancelJob(string jobId) {
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Submit a new quantum object for processing with the IBM quantum experience
+    /// </summary>
+    /// <param name="backendName">backend to run on</param>
+    /// <param name="jobName">name of the job</param>
+    /// <param name="obj">the quantum object</param>
+    /// <param name="shots">the number of times to repeat the experiment</param>
+    /// <returns>Reference to the submitted job</returns>
     public IBMApiJob SubmitJob (string backendName, string jobName, IBMQObj obj, int shots = 1024) {
         ForceAuth();
         

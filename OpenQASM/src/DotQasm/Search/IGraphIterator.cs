@@ -12,6 +12,10 @@ public class IGraphEdge<T> {
    }
 }
 
+/// <summary>
+/// An iterator for graph traversal
+/// </summary>
+/// <typeparam name="T">Stored node type</typeparam>
 public interface IGraphIterator<T> {
    IEnumerable<IGraphEdge<T>> Next {get;}
    T Current {get;}

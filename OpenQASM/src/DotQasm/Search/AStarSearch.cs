@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DotQasm.Search {
 
+/// <summary>
+/// Generic A* Heuristic search algorithm
+/// </summary>
 public static class AStarSearch {
 
     private class SearchNode<T> {

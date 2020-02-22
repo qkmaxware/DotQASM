@@ -8,6 +8,9 @@ using System.Collections;
 
 namespace DotQasm.IO.Svg {
 
+/// <summary>
+/// Vector graphics shape bounding rectangle
+/// </summary>
 public class BoundingBox {
     public float MinX {get; private set;}
     public float MinY {get; private set;}
@@ -39,6 +42,9 @@ public class BoundingBox {
     }
 }
 
+/// <summary>
+/// Generic SVG shape
+/// </summary>
 public abstract class SvgShape {
     public Colour StrokeColour = Colour.Black;
     public Colour FillColour = Colour.White;
@@ -53,6 +59,9 @@ public abstract class SvgShape {
     public abstract string SvgElement();
 }
 
+/// <summary>
+/// 2d SVG line
+/// </summary>
 public class Line : SvgShape {
 
     public Vector2 Start {get; private set;}
@@ -81,6 +90,9 @@ public class Line : SvgShape {
 
 }
 
+/// <summary>
+/// 2d SVG rectangle
+/// </summary>
 public class Rect : SvgShape {
 
     public Rect(BoundingBox box) {
@@ -101,6 +113,9 @@ public class Rect : SvgShape {
     }
 }
 
+/// <summary>
+/// 2d SVG circle
+/// </summary>
 public class Circle : SvgShape {
     public Vector2 Centre {get; set;}
     public float Radius {get; set;}
@@ -131,19 +146,27 @@ public class Circle : SvgShape {
     }
 }
 
+/// <summary>
+/// Horizontal text alignment
+/// </summary>
 public enum HorizontalTextAnchor {
     start,
     middle,
     end
 }
 
+/// <summary>
+/// Vertical text alignment
+/// </summary>
 public enum VerticalTextAnchor {
     hanging,
     middle,
     baseline,
 }
 
-
+/// <summary>
+/// 2d SVG text
+/// </summary>
 public class Text : SvgShape {
     public Vector2 Position {get; private set;}
     public float Rotation {get; private set;}
@@ -174,6 +197,9 @@ public class Text : SvgShape {
     }
 }
 
+/// <summary>
+/// Scalable vector graphic composed of many shapes
+/// </summary>
 public class Svg : IList<SvgShape> {
     private List<SvgShape> shapes = new List<SvgShape>();
 

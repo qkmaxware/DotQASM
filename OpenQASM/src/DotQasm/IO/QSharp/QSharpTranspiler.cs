@@ -3,8 +3,8 @@ using DotQasm.IO.OpenQasm.Ast;
 
 namespace DotQasm.IO.QSharp {
 
-public class QSharpTranspiler : ITranspiler<ProgramContext, string> {
-    public string Transpile(ProgramContext program) {
+public class QSharpTranspiler : IConverter<ProgramContext, string> {
+    public string Convert(ProgramContext program) {
         StringBuilder sb = new StringBuilder();
 
         sb.Append("// Code generated from DotQasm");

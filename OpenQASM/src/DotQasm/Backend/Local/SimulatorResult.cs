@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace DotQasm.Backend.Local {
 
+/// <summary>
+/// Results of quantum circuit execution specific to the local simulator
+/// </summary>
 public class SimulatorResult: BackendResult {
 
     public IEnumerable<Complex> State {get; private set;}

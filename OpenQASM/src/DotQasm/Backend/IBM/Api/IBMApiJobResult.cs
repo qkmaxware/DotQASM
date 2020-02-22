@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace DotQasm.Backend.IBM.Api {
 
+/// <summary>
+/// Measurement type as defined by the IBM api
+/// </summary>
 public enum IBMApiJobMeasurementDataType {
     None,
     Histogram, 
@@ -11,6 +14,9 @@ public enum IBMApiJobMeasurementDataType {
     UnitaryMatrix,
 }
 
+/// <summary>
+/// Measurement results as defined by the IBM api
+/// </summary>
 public class IBMApiJobMeasurementData {
     /// <summary>
     /// Histogram of counts in the different memory states
@@ -46,6 +52,9 @@ public class IBMApiJobMeasurementData {
     }
 }
 
+/// <summary>
+/// Experiment data as defined by the IBM api
+/// </summary>
 public class IBMApiJobExperimentResult {
     public int shots {get; set;}
     public string status {get; set;}
@@ -55,6 +64,9 @@ public class IBMApiJobExperimentResult {
     public IBMApiJobMeasurementData data {get; set;}
 }
 
+/// <summary>
+/// Quantum object results as defined by the IBM api
+/// </summary>
 public class IBMApiQObjectResult {
     /// <summary>
     /// Backend identifier name

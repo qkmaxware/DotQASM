@@ -4,20 +4,32 @@ using System;
 
 namespace DotQasm.IO {
 
+/// <summary>
+/// Interface representing an object stored within a filesystem
+/// </summary>
 public interface IFilesystemObject {
     string Name {get;}
 }
 
+/// <summary>
+/// Interface representing a directory within a filesystem
+/// </summary>
 public interface IDirectoryHandle: IFilesystemObject {
     IDirectoryHandle ResolveSubdir(string directory);
     IFileHandle ResolveFile(string filename);
     IFilesystemObject ResolvePath(string path);
 }
 
+/// <summary>
+/// Interface representing a file within a directory
+/// </summary>
 public interface IFileHandle: IFilesystemObject {
     string Contents {get;}
 }
 
+/// <summary>
+/// An in-memory file 
+/// </summary>
 public class VirtualFile: IFileHandle {
     public string Contents {get; private set;}
     public string Name {get; private set;}
@@ -27,6 +39,9 @@ public class VirtualFile: IFileHandle {
     }
 }
 
+/// <summary>
+/// A file on the local hard drive
+/// </summary>
 public class PhysicalFile: IFileHandle {
     private string path;
     public string Contents => File.ReadAllText(path);
@@ -37,6 +52,9 @@ public class PhysicalFile: IFileHandle {
     }
 }
 
+/// <summary>
+/// A directory on the local hard drive
+/// </summary>
 public class PhysicalDirectory : IDirectoryHandle {
     private string fspath;
     public string Name {get; private set;}
@@ -73,6 +91,9 @@ public class PhysicalDirectory : IDirectoryHandle {
     }
 }
 
+/// <summary>
+/// A directory stored in-memory
+/// </summary>
 public class VirtualDirectory: IDirectoryHandle {
 
     public string Name {get; private set;}    

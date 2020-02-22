@@ -14,9 +14,18 @@ using DotQasm.Scheduling;
 
 namespace DotQasm.Backend.IBM {
 
+/// <summary>
+/// Base class for all IBM Quantum Experience devices
+/// </summary>
 public abstract class IBMBackend : IBackend {
 
+    /// <summary>
+    /// Api key
+    /// </summary>
     private string key;
+    /// <summary>
+    /// Reference to the underlying API interface
+    /// </summary>
     private IBM.Api.IBMApi _api;
     protected IBM.Api.IBMApi api {
         get {
@@ -28,44 +37,97 @@ public abstract class IBMBackend : IBackend {
         }
     }
 
+    /// <summary>
+    /// Number of times to retry the quantum circuit
+    /// </summary>
     public int Shots {get; set;}
 
+    /// <summary>
+    /// Name of the device according to IBM's api
+    /// </summary>
     public abstract string BackendName {get;}
 
+    /// <summary>
+    /// Obtain device information
+    /// </summary>
     public BackendInformation Information => new BackendInformation(){
         Name = BackendName,
         Description = QubitCount + " qubit " + (BackendName.Contains("simulator") ? "simulator" : "computer")
     };
     
+    /// <summary>
+    /// Number of qubits supported by this device
+    /// </summary>
     public abstract int QubitCount {get;}
 
+    /// <summary>
+    /// Delay between each status check with the IBM api 
+    /// </summary>
     public TimeSpan RetryDelay = TimeSpan.FromSeconds(2);
+    /// <summary>
+    /// Number of times to check the IBM api before the job is considered failed
+    /// </summary>
     public int Retries = 60;
 
+    /// <summary>
+    /// Natively supported quantum gates
+    /// </summary>
     public abstract IEnumerable<string> SupportedGates {get;}
+
+    /// <summary>
+    /// List of connectivity between qubits
+    /// </summary>
     public abstract IEnumerable<KeyValuePair<int, int>> QubitConnectivity {get;}
 
+    /// <summary>
+    /// Create a new ibm backend with the given api key
+    /// </summary>
+    /// <param name="key">api key</param>
     public IBMBackend(string key) {
         this.key = key;
         this.Shots = 1024;
     }
 
+    /// <summary>
+    /// Check if the device is available to be used
+    /// </summary>
+    /// <returns>true if the device is available</returns>
     public bool IsAvailable() {
         return api.GetDeviceStatus(BackendName).IsActive();
     }
 
+    /// <summary>
+    /// True if the device supports the controlled-not operator
+    /// </summary>
+    /// <returns>true if the device supports the controlled-not operator</returns>
     protected bool SupportsControlledX() {
         return SupportedGates.Contains("cx");
     }
 
+    /// <summary>
+    /// Check if the backend supports the given quantum gate
+    /// </summary>
+    /// <param name="gate">quantum gate</param>
+    /// <returns>true if the gate's name is in the supported gates list</returns>
     public bool SupportsGate(Gate gate) {
         return SupportedGates.Contains(gate.Symbol);
     }
 
+    /// <summary>
+    /// Check if two qubits are physically adjacent
+    /// </summary>
+    /// <param name="from">starting qubit</param>
+    /// <param name="to">endinf qubit</param>
+    /// <returns>true if there is a qubit connection from a qubit to another</returns>
     public bool AreQubitsAdjacent(int from, int to) {
         return QubitConnectivity.Contains(new KeyValuePair<int, int>(from, to));
     }
 
+    /// <summary>
+    /// Execute the given quantum circuit against on this device
+    /// </summary>
+    /// <param name="circuit">quantum program</param>
+    /// <returns>Async task which eventually contain the results of the circuit</returns>
     public Task<BackendResult> Exec(Circuit circuit) {
         return new Task<BackendResult>(() => {
             // Start timer
@@ -90,6 +152,11 @@ public abstract class IBMBackend : IBackend {
         });
     }
 
+    /// <summary>
+    /// Convert a list of bit locations into a state mask
+    /// </summary>
+    /// <param name="spots">bits</param>
+    /// <returns>mask with '1' on each of the given bits</returns>
     private int makeMask(IEnumerable<int> spots) {
         int mask = 0;
         foreach (int position in spots) {
@@ -98,6 +165,13 @@ public abstract class IBMBackend : IBackend {
         return mask;
     }
 
+    /// <summary>
+    /// Convert a quantum event to a quantum object compatible list of instructions
+    /// </summary>
+    /// <param name="qubits">number of qubits in the circuit</param>
+    /// <param name="cbits">number of classical bits in the circuit</param>
+    /// <param name="evt">event to convert</param>
+    /// <returns>list of IBM compatible instructions</returns>
     private IEnumerable<IBMQObjInstruction> convert(int qubits, int cbits, IEvent evt) {
         switch (evt) {
             case BarrierEvent be: {
@@ -215,6 +289,12 @@ public abstract class IBMBackend : IBackend {
         }
     }
 
+    /// <summary>
+    /// Convert a quantum circuit to a quantum object compatible list of instructions
+    /// </summary>
+    /// <param name="circuit">circuit to convert</param>
+    /// <param name="shots">number of retries</param>
+    /// <returns>IBM api compatible quantum object</returns>
     private IBMQObj convert(Circuit circuit, int shots = 1024) {
         IBMQObj qobj = new IBMQObj();
         qobj.type = IBMQObjType.QASM;
