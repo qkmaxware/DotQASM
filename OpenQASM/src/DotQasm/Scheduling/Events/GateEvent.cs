@@ -14,6 +14,8 @@ public class GateEvent: IEvent {
     }
     public Gate Operator {get; private set;}
 
+    public string Name => Operator.Symbol;
+
     public GateEvent (Gate gate, IEnumerable<Qubit> members) {
         this.QuantumDependencies = members;
         this.Operator = gate;

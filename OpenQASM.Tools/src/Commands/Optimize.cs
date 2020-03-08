@@ -15,17 +15,18 @@ namespace DotQasm.Tools.Commands {
 [Verb("optimize", HelpText="Optimize an OpenQASM file")]
 public class Optimize : ICommand {
 
-    [Value(0, MetaName = "input file", Required=true, HelpText = "input OpenQASM file path")]
+    [Value(0, MetaName = "input file", Required=true, HelpText = "Input OpenQASM file path")]
     public string QasmFile {get; set;}
 
-    [Value(1, MetaName = "output file", Required=true, HelpText = "output OpenQASM file path")]
+    [Value(1, MetaName = "output file", Required=false, HelpText = "Output OpenQASM file path", Default=null)]
     public string OutputQasmFile {get; set;}
 
     [Option('o', "optimization", Required = false, HelpText = "Apply optimization strategy")]
     public IEnumerable<string> Optimizations { get; set; }
 
     private static List<IOptimization<LinearSchedule, LinearSchedule>> optimizationList = new List<IOptimization<LinearSchedule, LinearSchedule>>(){
-        new Optimization.Strategies.CombineGates()
+        new Optimization.Strategies.CombineGates(),
+        new Optimization.Strategies.HardwareScheduling()
     };
 
     public static IEnumerable<IOptimization<LinearSchedule, LinearSchedule>> AvailableOptimizations => optimizationList.AsReadOnly();
@@ -54,19 +55,29 @@ public class Optimize : ICommand {
         var opts = Optimizations.SelectMany((x) => optimizationList.Where((y) => x == y.Name));
 
         // Run optimizations (print how long each one takes)
+        TimeSpan totalTime = TimeSpan.FromSeconds(0);
+        var fmt = "{0,-24} {1}";
         foreach (var opt in opts) {
             Stopwatch st = Stopwatch.StartNew();
-            Console.Write(opt.Name + "... ");
             circuit.GateSchedule = opt.Transform((LinearSchedule)circuit.GateSchedule);
-            Console.WriteLine(st.Elapsed);
+            var stepTime = st.Elapsed;
+            totalTime += stepTime;
+            Console.WriteLine(string.Format(fmt ,opt.Name + "...", stepTime));
+        }
+
+        if (opts.Count() > 0) {
+            Console.WriteLine(new String('-', 42));
+            Console.WriteLine(string.Format(fmt, "=", totalTime));
         }
 
         // Output results to file
-        using (var writer = new StreamWriter(OutputQasmFile)) {
-            IO.OpenQasm.OpenQasmEmitter.EmitCircuit(circuit, writer);
+        if (OutputQasmFile != null) {
+            using (var writer = new StreamWriter(OutputQasmFile)) {
+                IO.OpenQasm.OpenQasmEmitter.EmitCircuit(circuit, writer);
+            }
+            Console.WriteLine();
+            Console.WriteLine(string.Format("Wrote optimized contents to '{0}'", OutputQasmFile));
         }
-
-        Console.WriteLine(string.Format("Wrote optimized contents to '{0}'", OutputQasmFile));
 
         return Status.Success;
     }

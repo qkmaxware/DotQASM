@@ -14,6 +14,8 @@ public class IfEvent: IEvent {
 
     public IEvent Event {get; private set;}
 
+    public string Name => "if " + LiteralValue + " then " + Event.Name;
+
     public IfEvent(IEnumerable<Cbit> ClassicalBits, int LiteralValue, IEvent evt) {
         this.ClassicalDependencies = ClassicalBits;
         this.LiteralValue = LiteralValue;

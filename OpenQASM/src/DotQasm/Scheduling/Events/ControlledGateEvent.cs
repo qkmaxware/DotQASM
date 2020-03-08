@@ -11,6 +11,8 @@ public class ControlledGateEvent: IEvent {
     public IEnumerable<Qubit> QuantumDependencies {get; private set;}
     public Qubit ControlQubit => QuantumDependencies.FirstOrDefault();
     public IEnumerable<Qubit> TargetQubits => QuantumDependencies.Skip(1);
+    public string Name => "c" + Operator.Symbol;
+
     public virtual IEnumerable<Cbit> ClassicalDependencies { 
         get => null;
         protected set {}

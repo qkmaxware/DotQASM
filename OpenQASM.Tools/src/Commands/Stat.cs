@@ -59,14 +59,8 @@ public class Stat : ICommand {
             OpenQasmSemanticAnalyser semanticAnalyser = builder.Analyser;
             Circuit circuit = builder.Circuit;
             var linearEventCount = circuit.GateSchedule.EventCount;
-            var first = circuit.GateSchedule.First;
+            var first = circuit.GateSchedule;
             var last = circuit.GateSchedule.Last;
-            // Before optimization time
-            var timer = new BasicTimeEstimator();
-            TimeSpan? longTime = timer.ShortestTimeBetween(
-                circuit.GateSchedule.First, 
-                circuit.GateSchedule.Last
-            );
 
             int[] widths = new int[]{24, 42};
 
@@ -79,15 +73,14 @@ public class Stat : ICommand {
             Console.WriteLine(string.Format(fmt, "Quantum Bits", semanticAnalyser.QubitCount));
             Console.WriteLine(string.Format(fmt, "Classic Bits", semanticAnalyser.CbitCount));
             Console.WriteLine(string.Format(fmt, "Scheduled Events", linearEventCount.ToString()));
-            Console.WriteLine(string.Format(fmt, "First Event", first.Current.GetType()));
-            Console.WriteLine(string.Format(fmt, "Last Event", last.Current.GetType()));
+            Console.WriteLine(string.Format(fmt, "First Event", first.GetType()));
+            Console.WriteLine(string.Format(fmt, "Last Event", last.GetType()));
             Console.WriteLine(string.Format(fmt, "Gate Uses", semanticAnalyser.GateUseCount));
             Console.WriteLine(string.Format(fmt, "Measurements", semanticAnalyser.MeasurementCount));
             Console.WriteLine(string.Format(fmt, "Resets", semanticAnalyser.ResetCount));
             Console.WriteLine(string.Format(fmt, "Barriers", semanticAnalyser.BarrierCount));
             Console.WriteLine(string.Format(fmt, "Conditionals", semanticAnalyser.ClassicalConditionCount));
-            Console.WriteLine(string.Format(fmt, "Est. Time.", (longTime.HasValue ? "~" + longTime.Value.TotalMilliseconds.ToString("0.00") + "ms" : "?")));
-            
+        
             // Print analysis results
             if (ShowMatrix) {
                 Console.WriteLine();

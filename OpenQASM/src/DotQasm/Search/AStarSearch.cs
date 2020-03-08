@@ -9,7 +9,7 @@ namespace DotQasm.Search {
 public static class AStarSearch {
 
     private class SearchNode<T> {
-        public IGraphIterator<T> Current;
+        public T Current;
         public double G = double.MaxValue;
         public double H = double.MaxValue;
         public double F => G + H;
@@ -38,8 +38,8 @@ public static class AStarSearch {
     /// <param name="node">end search node</param>
     /// <typeparam name="T">stored node value</typeparam>
     /// <returns>path from the start node to the end search node</returns>
-    private static IEnumerable<IGraphIterator<T>> Backtrack<T>(SearchNode<T> node) {
-        List<IGraphIterator<T>> path = new List<IGraphIterator<T>>();
+    private static IEnumerable<T> Backtrack<T>(SearchNode<T> node) {
+        List<T> path = new List<T>();
 
         SearchNode<T> p = node;
         while (p.Parent != null) {
@@ -54,27 +54,36 @@ public static class AStarSearch {
     /// <summary>
     /// Find the optimal path between two graph nodes
     /// </summary>
-    /// <param name="start">start iterator</param>
-    /// <param name="end">end iterator</param>
-    /// <param name="heuristic">comparison heuristic</param>
-    /// <typeparam name="T">iterator stored type</typeparam>
-    /// <returns>path from start to end iterator</returns>
-    public static IEnumerable<IGraphIterator<T>> Path<T> (IGraphIterator<T> start, IGraphIterator<T> end, Func<IGraphIterator<T>,double> heuristic) {
+    /// <param name="graph">Graph being searched</param>
+    /// <param name="start">Node to start with</param>
+    /// <param name="stopCondition">search condition</param>
+    /// <param name="weightFunction">edge weight function</param>
+    /// <param name="heuristicFunction">edge heuristic function</param>
+    /// <typeparam name="VertexType">type of vertex data</typeparam>
+    /// <typeparam name="EdgeType">type of edge data</typeparam>
+    /// <returns>path of vertices from the start to the node matching the search condition</returns>
+    public static IEnumerable<VertexType> Search<VertexType, EdgeType> (
+        IGraph<VertexType, EdgeType> graph,
+        VertexType start,
+        Func<VertexType, bool> stopCondition,
+        Func<EdgeType, double> weightFunction,
+        Func<EdgeType, double> heuristicFunction
+    ) {
         // Start is end
-        if (start == end) {
-            var x = new List<IGraphIterator<T>>(1);
+        if (stopCondition.Invoke(start)) {
+            var x = new List<VertexType>(1);
             x.Add(start);
             return x;
         } 
 
         // Already evaluated nodes
-        HashSet<SearchNode<T>> closed = new HashSet<SearchNode<T>>();
+        HashSet<SearchNode<VertexType>> closed = new HashSet<SearchNode<VertexType>>();
         // Current nodes
-        var comparer = new SmallestFirstComparison<T>();
-        PriorityQueue<SearchNode<T>> open = new PriorityQueue<SearchNode<T>>(comparer);
+        var comparer = new SmallestFirstComparison<VertexType>();
+        PriorityQueue<SearchNode<VertexType>> open = new PriorityQueue<SearchNode<VertexType>>(comparer);
 
         // Init
-        SearchNode<T> startNode = new SearchNode<T>();
+        SearchNode<VertexType> startNode = new SearchNode<VertexType>();
         startNode.Current = start;
         startNode.G = 0;
         startNode.H = 0;
@@ -83,27 +92,27 @@ public static class AStarSearch {
         // Loop
         while (!open.IsEmpty) {
             // Find the node with least F and pop it off the open list
-            SearchNode<T> current = open.Dequeue();
+            SearchNode<VertexType> current = open.Dequeue();
 
             // Generate the successors to current
-            var successors = current.Current.Next;
+            var successors = graph.IncidentEdges(current.Current);
 
             // Loop over successors
             foreach (var successor in successors) {
                 // If at goal, stop
-                SearchNode<T> node = new SearchNode<T>();
-                node.Current = successor.Node;
+                SearchNode<VertexType> node = new SearchNode<VertexType>();
+                node.Current = successor.Endpoint;
                 node.Parent = current;
 
-                if (node.Current.Equals(end)) {
-                    return Backtrack<T>(node);
+                if (stopCondition.Invoke(node.Current)) {
+                    return Backtrack<VertexType>(node);
                 }
 
-                node.G = current.G + successor.Weight;
-                node.H = heuristic(successor.Node);
+                node.G = current.G + weightFunction.Invoke(successor.Data);
+                node.H = heuristicFunction.Invoke(successor.Data);
 
                 // If a node with the same position is in the open list and has a lower F score, skip this one
-                SearchNode<T> equivalentPosition;
+                SearchNode<VertexType> equivalentPosition;
                 if (open.ContainsEquivalent(node, out equivalentPosition) && equivalentPosition.F <= node.F) {
                     continue;
                 }

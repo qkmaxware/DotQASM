@@ -36,9 +36,10 @@ Rendered circuit to 'qft.svg'
 --------------------------------------------------------------------
 | Optimization Strategies                                          |
 --------------------------------------------------------------------
-commutativity_check
+Combine                          Combine neighboring gates into a single gate
+Hardware Scheduling              Schedule gates for a given hardware configuration
 
-> qasm optimize -o "commutativity_check" ./teleport.qasm ./teleport.optimized.qasm
+> qasm optimize ./teleport.qasm ./teleport.optimized.qasm -o "Combine"
 ```
 
 **4)** Execute quantum programs on a variety of quantum hardware including hardware from IBM's quantum experience as well as on a variety of simulators.

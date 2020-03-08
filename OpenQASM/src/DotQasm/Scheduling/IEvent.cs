@@ -15,6 +15,10 @@ public interface IEvent {
     /// Classical dependencies for this event
     /// </summary>
     IEnumerable<Cbit> ClassicalDependencies { get; }
+    /// <summary>
+    /// Name of the event
+    /// </summary>
+    string Name {get;}
 }
 
 }

@@ -9,8 +9,6 @@ namespace DotQasm.Scheduling {
 /// </summary>
 public interface ISchedule: IEnumerable<IEvent> {
     int EventCount {get;}
-    IEventGraphIterator First {get;}
-    IEventGraphIterator Last {get;}
 
     void ScheduleEvent(IEvent evt);
     void ClearSchedule();

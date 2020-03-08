@@ -19,6 +19,9 @@ public class BoundingBox {
     public float Width {get; private set;}
     public float Height {get; private set;}
 
+    public float MidpointX => MinX + (Width / 2.0f);
+    public float MidpointY => MinY + (Height / 2.0f);
+
     public BoundingBox() {
         MinX = 0; MinY = 0; Width = 0; Height = 0;
     }
@@ -67,6 +70,9 @@ public class Line : SvgShape {
     public Vector2 Start {get; private set;}
     public Vector2 End {get; private set;}
 
+    public string EndMarker = "none";
+    public string StartMarker = "none";
+
     public Line(Vector2 start, Vector2 end) {
         this.Start = start;
         this.End = end;
@@ -79,12 +85,14 @@ public class Line : SvgShape {
 
     public override string SvgElement() {
         return string.Format(
-            "<line x1=\"{0}\" y1=\"{1}\" x2=\"{2}\" y2=\"{3}\" stroke=\"{4}\" stroke-width=\"{5}\" stroke-opacity=\"{6}\"/>",
+            "<line x1=\"{0}\" y1=\"{1}\" x2=\"{2}\" y2=\"{3}\" stroke=\"{4}\" stroke-width=\"{5}\" stroke-opacity=\"{6}\" marker-start=\"{7}\" marker-end=\"{8}\"/>",
             Start.X, Start.Y,
             End.X, End.Y,
             ToHex(StrokeColour),
             StrokeWidth,
-            StrokeColour.A
+            StrokeColour.A,
+            StartMarker,
+            EndMarker
         );
     }
 
@@ -96,6 +104,10 @@ public class Line : SvgShape {
 public class Rect : SvgShape {
 
     public Rect(BoundingBox box) {
+        this.Bounds = box;
+    }
+
+    public void Resize(BoundingBox box) {
         this.Bounds = box;
     }
 
@@ -198,10 +210,81 @@ public class Text : SvgShape {
 }
 
 /// <summary>
+/// 2d SVG Polygon
+/// </summary>
+public class Polygon : SvgShape {
+    public readonly List<Vector2> Points = new List<Vector2>();
+
+    public Polygon() {}
+    public Polygon(IEnumerable<Vector2> points) {
+        Points.AddRange(points);
+    }
+
+    public override string SvgElement() {
+        return string.Format(
+            "<polygon points=\"{0}\" stroke=\"{1}\" stroke-opacity=\"{2}\" stroke-width=\"{3}\" fill=\"{4}\" fill-opacity=\"{5}\"/>",
+            string.Join(' ', Points.Select(x => x.X + "," + x.Y)),
+            ToHex(StrokeColour),
+            StrokeColour.A,
+            StrokeWidth,
+            ToHex(FillColour),
+            FillColour.A
+        );
+    }
+}
+
+/// <summary>
+/// SVG definition
+/// </summary>
+public interface IDefinition {
+    string SvgElement();
+}
+
+public enum MarkerUnits {
+    strokeWidth
+}
+
+public enum MarkerOrientation {
+    auto
+}
+
+public class MarkerDefintion : IDefinition {
+
+    public string Id {get; set;}
+    public BoundingBox ViewBox {get; set;}
+    public int RefX {get; set;}
+    public int RefY {get; set;}
+    public int MarkerWidth {get; set;}
+    public int MarkerHeight {get; set;}
+    public SvgShape MarkerShape {get; set;}
+    public MarkerUnits MarkerUnits {get; set;}
+    public MarkerOrientation Orientation {get; set;}
+    public MarkerDefintion (string id, BoundingBox viewBox) {
+        this.Id = id;
+        this.ViewBox = viewBox;
+    }
+    public string SvgElement() {
+        return string.Format(
+            "<marker id=\"{1}\" viewBox=\"{2}\" refX=\"{3}\" refY=\"{4}\" markerWidth=\"{5}\" markerHeight=\"{6}\" markerUnits=\"{7}\" orient=\"{8}\">{0}</marker>",
+            MarkerShape.SvgElement(),
+            Id,
+            ViewBox.MinX + " " + ViewBox.MinY + " " + ViewBox.Width + " " + ViewBox.Height,
+            RefX,
+            RefY,
+            MarkerWidth,
+            MarkerHeight,
+            MarkerUnits,
+            Orientation
+        );
+    }
+}
+
+/// <summary>
 /// Scalable vector graphic composed of many shapes
 /// </summary>
 public class Svg : IList<SvgShape> {
     private List<SvgShape> shapes = new List<SvgShape>();
+    private List<IDefinition> definitions = new List<IDefinition>();
 
     public int Width => (int)Math.Ceiling(shapes.Select(x => x.Bounds?.MaxX ?? 0).Max());
     public int Height => (int)Math.Ceiling(shapes.Select(x => x.Bounds?.MaxY ?? 0).Max());
@@ -218,6 +301,10 @@ public class Svg : IList<SvgShape> {
     public int Count => shapes.Count;
 
     public bool IsReadOnly => false;
+
+    public void Define(IDefinition definition) {
+        this.definitions.Add(definition);
+    }
 
     public void Add(SvgShape item){
         shapes.Add(item);
@@ -262,9 +349,21 @@ public class Svg : IList<SvgShape> {
     public void Stringify(TextWriter writer) {
         writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
         writer.WriteLine(string.Format("<svg width=\"{0}\" height=\"{1}\" xmlns=\"http://www.w3.org/2000/svg\">", Width, Height));
+        
+        // Write definitions
+        if (definitions.Count > 0) {
+            writer.WriteLine("<defs>");
+            foreach (var def in definitions) {
+                writer.WriteLine(def.SvgElement());
+            }
+            writer.WriteLine("</defs>");
+        }
+
+        // Write shapes
         foreach (var shape in shapes) {
             writer.WriteLine(shape.SvgElement());
         }
+
         writer.WriteLine("</svg>");
     }
 }

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-
-namespace DotQasm.Search {
+namespace System.Collections.Generic {
 
 /// <summary>
 /// Priority queue 
