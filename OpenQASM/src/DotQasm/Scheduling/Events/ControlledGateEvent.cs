@@ -24,6 +24,8 @@ public class ControlledGateEvent: IEvent {
         this.Operator = gate;
     }
 
+    public ControlledGateEvent (Gate gate, Qubit control, Qubit target) : this(gate, control, new Qubit[] { target }) {}
+
     public ControlledGateEvent (Gate gate, IEnumerable<Qubit> dependencies) {
         this.QuantumDependencies = dependencies;
         this.Operator = gate;

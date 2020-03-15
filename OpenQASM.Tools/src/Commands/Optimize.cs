@@ -9,6 +9,7 @@ using DotQasm.Scheduling;
 using DotQasm.Optimization;
 using DotQasm.IO.OpenQasm;
 using System.Diagnostics;
+using DotQasm.Hardware;
 
 namespace DotQasm.Tools.Commands {
 
@@ -24,12 +25,25 @@ public class Optimize : ICommand {
     [Option('o', "optimization", Required = false, HelpText = "Apply optimization strategy")]
     public IEnumerable<string> Optimizations { get; set; }
 
+    [Option('h', "hardware-config", HelpText = "Specify a hardware configuration to optimize against")]
+    public string HardwareConfiguration {get; set;}
+
     private static List<IOptimization<LinearSchedule, LinearSchedule>> optimizationList = new List<IOptimization<LinearSchedule, LinearSchedule>>(){
         new Optimization.Strategies.CombineGates(),
-        new Optimization.Strategies.HardwareScheduling()
+        new Optimization.Strategies.HardwareScheduling(),
+        new Optimization.Strategies.SplitCombinedOperations()
     };
 
     public static IEnumerable<IOptimization<LinearSchedule, LinearSchedule>> AvailableOptimizations => optimizationList.AsReadOnly();
+
+    private YamlDotNet.Serialization.Deserializer yamlParser = (new YamlDotNet.Serialization.DeserializerBuilder()).IgnoreUnmatchedProperties().Build();
+    private T ParseYaml<T>(string path) {
+        if (path != null) {
+            return yamlParser.Deserialize<T>(File.ReadAllText(path));
+        } else {
+            return default(T);
+        }
+    }
 
     public Status Exec() {
         // Read source file
@@ -54,10 +68,19 @@ public class Optimize : ICommand {
         // Get optimizations
         var opts = Optimizations.SelectMany((x) => optimizationList.Where((y) => x == y.Name));
 
+        // Read other parameters
+        HardwareConfiguration hw = ParseYaml<HardwareConfiguration>(this.HardwareConfiguration);
+
         // Run optimizations (print how long each one takes)
         TimeSpan totalTime = TimeSpan.FromSeconds(0);
         var fmt = "{0,-24} {1}";
         foreach (var opt in opts) {
+            // Assing necessary values to optimizer
+            if (opt is IUsing<HardwareConfiguration> hardwareOpt) {
+                hardwareOpt.Use(hw);
+            }
+
+            // Run the optimizer
             Stopwatch st = Stopwatch.StartNew();
             circuit.GateSchedule = opt.Transform((LinearSchedule)circuit.GateSchedule);
             var stepTime = st.Elapsed;

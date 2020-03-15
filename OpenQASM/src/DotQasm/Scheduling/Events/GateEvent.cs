@@ -21,6 +21,8 @@ public class GateEvent: IEvent {
         this.Operator = gate;
     }
 
+    public GateEvent (Gate gate, Qubit member) : this(gate, new Qubit[]{ member }) {}
+
 }
 
 }

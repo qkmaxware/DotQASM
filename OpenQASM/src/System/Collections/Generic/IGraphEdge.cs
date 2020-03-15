@@ -22,6 +22,15 @@ public interface IGraphEdge<VertexType, EdgeType> {
 }
 
 /// <summary>
+/// Edge connecting vertices with additional attributes
+/// </summary>
+/// <typeparam name="VertexType">Type of data stored in each vertex</typeparam>
+/// <typeparam name="EdgeType">Type of data stored in each edge</typeparam>
+public interface IAttributedGraphEdge <VertexType, EdgeType> {
+    Dictionary<string, string> Attributes {get;}
+}
+
+/// <summary>
 /// Abstract class representing an graph edge
 /// </summary>
 /// <typeparam name="VertexType">Type of data stored in each vertex</typeparam>
@@ -31,7 +40,7 @@ public class AbstractGraphEdge<VertexType, EdgeType> : IGraphEdge<VertexType, Ed
     /// Vertex at the start of the edge connection
     /// </summary>
     /// <value></value>
-    public VertexType Startpoint {get;}
+    public VertexType Startpoint {get; protected set;}
     /// <summary>
     /// Stored edge data
     /// </summary>
@@ -39,7 +48,7 @@ public class AbstractGraphEdge<VertexType, EdgeType> : IGraphEdge<VertexType, Ed
     /// <summary>
     /// Vertex at the end of the edge connection
     /// </summary>
-    public VertexType Endpoint {get;}
+    public VertexType Endpoint {get; protected set;}
     /// <summary>
     /// Edge with no data
     /// </summary>
@@ -60,6 +69,33 @@ public class AbstractGraphEdge<VertexType, EdgeType> : IGraphEdge<VertexType, Ed
         this.Data = data;
         this.Endpoint = endpoint;
         this.Startpoint = startpoint;
+    }
+}
+
+/// <summary>
+/// Abstract class representing an graph edge
+/// </summary>
+/// <typeparam name="VertexType">Type of data stored in each vertex</typeparam>
+/// <typeparam name="EdgeType">Type of data stored in each edge</typeparam>
+public class AbstractAttributedGraphEdge<VertexType, EdgeType> : AbstractGraphEdge<VertexType, EdgeType>, IAttributedGraphEdge<VertexType, EdgeType> {
+    public Dictionary<string, string> Attributes {get;}
+
+    /// <summary>
+    /// Edge with no data
+    /// </summary>
+    /// <param name="endpoint">edge endpoint</param>
+    /// <param name="startpoint">edge startpoint</param>
+    public AbstractAttributedGraphEdge(VertexType startpoint, VertexType endpoint) : base(startpoint, endpoint) {
+        this.Attributes = new Dictionary<string, string>();
+    }
+    /// <summary>
+    /// Edge with data
+    /// </summary>
+    /// <param name="data">stored edge data</param>
+    /// <param name="endpoint">edge endpoint</param>
+    /// <param name="startpoint">edge startpoint</param>
+    public AbstractAttributedGraphEdge(EdgeType data, VertexType startpoint, VertexType endpoint) : base(data, startpoint, endpoint) {
+        this.Attributes = new Dictionary<string, string>();
     }
 }
 

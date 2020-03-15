@@ -87,4 +87,13 @@ public interface IGraph<VertexType, EdgeType> {
     (IGraphEdge<VertexType,EdgeType>, IGraphEdge<VertexType,EdgeType>) UndirectedEdge(VertexType a, VertexType b, EdgeType data);
 }
 
+/// <summary>
+/// Interface for graph based data structures which contain attributes
+/// </summary>
+/// <typeparam name="VertexType">Type of data stored in each vertex</typeparam>
+/// <typeparam name="EdgeType">Type of data stored in each edge</typeparam>
+public interface IAttributedGraph<VertexType, EdgeType> : IGraph<VertexType, EdgeType> { 
+    Dictionary<string, string> Attributes {get;}
+}
+
 }

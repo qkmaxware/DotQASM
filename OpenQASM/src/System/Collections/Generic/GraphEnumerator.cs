@@ -46,7 +46,7 @@ public class LambdaGraphVisitor<RType, VertexType, EdgeType> : GraphVisitor<Vert
     /// Traverse a given graph starting at the root nodes
     /// </summary>
     /// <param name="graph">graph to traverse</param>
-    public virtual void Traverse(IGraph<VertexType, EdgeType> graph) {
+    public override void Traverse(IGraph<VertexType, EdgeType> graph) {
         var nextNodes = graph.RootNodes;
 
         foreach (var node in nextNodes) {

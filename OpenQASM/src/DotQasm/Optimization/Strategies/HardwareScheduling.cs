@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using DotQasm.Scheduling;
 using DotQasm.IO.Svg;
+using DotQasm.Hardware;
 
 namespace DotQasm.Optimization.Strategies {
 
@@ -12,7 +13,7 @@ namespace DotQasm.Optimization.Strategies {
 /// Hardware scheduling based on the algorithm provided by Gian Giacomo Guerreschi and Jongsoo Park
 /// https://www.researchgate.net/publication/318849647_Gate_scheduling_for_quantum_algorithms
 /// </summary>
-public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule> {
+public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule>, IUsing<HardwareConfiguration> {
 
     public string Name => "Hardware Scheduling";
 
@@ -198,13 +199,20 @@ public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule> 
             var vertex = vertices[i];
             var evt = boxVertexMap[i];
 
-            var text = new Text(new Vector2(vertex.Bounds.MidpointX, vertex.Bounds.MidpointY), "(" + evt.DependencyCount + ") " + evt.Event.Name);
+            var text = new Text(new Vector2(vertex.Bounds.MidpointX, vertex.Bounds.MidpointY), "(" + evt.Priority + ") " + evt.Event.Name);
             text.HorizontalAnchor = HorizontalTextAnchor.middle;
             text.VerticalAnchor = VerticalTextAnchor.middle;
             svg.Add(text);
         }
         
         return svg;
+    }
+
+    private HardwareConfiguration hardware;
+    public void Use(HardwareConfiguration config) {
+        if (config == null)
+            throw new Exception(this.Name + " strategy requires a valid hardware configuration");
+        this.hardware = config;
     }
 
     private void ComputeLatencies (LogicalDataPrecedenceGraph ldpg, ILatencyEstimator TimeEstimator) {
@@ -238,17 +246,26 @@ public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule> 
         visitor.Traverse(ldpg);
     }
 
+    private void RPad<T>(List<T> list, int pad) {
+        while(list.Count < pad) {
+            list.Add(default(T));
+        }
+    }
+
+    private string Quote(object str) {
+        return "\"" + (str?.ToString() ?? string.Empty) + "\"";
+    }
+
     public LinearSchedule Transform(LinearSchedule schedule) {
         // Obtain information from CLI
-        Hardware.HardwareConfiguration hardware = null; 
-        ILatencyEstimator TimeEstimator = null;
+        ILatencyEstimator TimeEstimator = new BasicLatencyEstimator();
 
         // Create scheduling constructs
         var ldpg = new LogicalDataPrecedenceGraph(schedule);
-        var pdpt = new List<List<IEvent>>(); // Row, Column Format
+        var pdpt = new List<List<DataPrecedenceNode>>(); // Row, Column Format
         var qubitCount = schedule.Select(evt => evt.QuantumDependencies.Select(qubit => qubit.QubitId).Max()).Max();
-        for (int i = 0; i < qubitCount; i++) {
-            pdpt.Add(new List<IEvent>()); // Add row for each qubit in the schedule
+        for (int i = 0; i <= qubitCount; i++) {
+            pdpt.Add(new List<DataPrecedenceNode >()); // Add row for each qubit in the schedule
         }
 
         // Step 1, arrange data in the logical data precedence graph, assign priorities along longest line
@@ -261,6 +278,26 @@ public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule> 
         // Step 2, schedule each event by priority, add routing if necessary
         // Page 7, No gate will ever depend on a gate with a lower priority so we can use a priority iterator to construct the physical data precedence  table
         // Ambiguity resolution & routing occur here
+        foreach (var evt in ldpg.Vertices.OrderByDescending((vert) => vert.Priority)) {
+            // Naively schedule it at the lowest depth possible
+            // Get the depth
+            var depth = 0;
+            foreach (var qubit in evt.Event.QuantumDependencies) {
+                depth = Math.Max(pdpt[qubit.QubitId].Count, depth);
+            }
+            // Pad the depth to the current level
+            foreach (var qubit in evt.Event.QuantumDependencies) {
+                RPad(pdpt[qubit.QubitId], depth);
+            }
+            // Add event at level
+            foreach (var qubit in evt.Event.QuantumDependencies) {
+                pdpt[qubit.QubitId].Add(evt);
+            }
+
+            // Check if there is a conflict with ambiguity
+            // Resolve ambiguity
+            // Perform routing if required
+        }
 
         // Step 3, output all data
         var now = DateTime.Now.ToString("dd/MM/yyyy H.mmtt");
@@ -268,9 +305,29 @@ public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule> 
             GraphToSvg(ldpg).Stringify(writer);
         }
         using (var writer = new StreamWriter(now + " - Physical Data Precedence Table.csv")) {
+            // Print Header
+            var columns = pdpt.Select(row => row.Count).Max();
+            writer.Write(Quote("Qubit Index"));
+            for (int i = 1; i <= columns; i++) {
+                writer.Write(",");
+                writer.Write(Quote("Priority " + i));
+            }
+            writer.WriteLine();
+
             for (var i = 0; i < pdpt.Count; i++) {
-                writer.Write("\"Qubit " + i + "\","); 
-                writer.WriteLine(string.Join(',', pdpt[i].Select(x => "\"" + (x?.GetType()?.Name ?? "") + "\"")));
+                writer.Write(Quote(i));
+                
+                if (pdpt[i].Count > 0)
+                    writer.Write(",");
+
+                writer.WriteLine(
+                    string.Join(
+                        ',', 
+                        pdpt[i].Select(
+                            x => x == null ? string.Empty : Quote(x.Event.Name)
+                        )
+                    )
+                );
             }
         }
         return schedule;

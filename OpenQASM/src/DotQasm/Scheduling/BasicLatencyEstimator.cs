@@ -6,7 +6,7 @@ namespace DotQasm.Scheduling {
 /// <summary>
 /// Constant latency estimator assumes all quantum operations take 1 millisecond
 /// </summary>
-public class ConstantLatencyEstimator {
+public class ConstantLatencyEstimator : ILatencyEstimator {
     public TimeSpan TimeOf (IEvent evt) {
         return TimeSpan.FromMilliseconds(1);
     }
@@ -15,7 +15,7 @@ public class ConstantLatencyEstimator {
 /// <summary>
 /// Basic class for computing latency of a given quantum operation
 /// </summary>
-public class BasicLatencyEstimator {
+public class BasicLatencyEstimator : ILatencyEstimator {
     private static readonly double ns = 1e-6;
 
     // Default times based on https://github.com/Qiskit/ibmq-device-information/blob/master/backends/yorktown/V1/version_log.md
