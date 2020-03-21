@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace DotQasm.Hardware {
 
 public class PhysicalQubit {
-
+    
 }
 
 public class Channel {

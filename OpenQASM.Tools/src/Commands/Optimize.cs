@@ -19,7 +19,7 @@ public class Optimize : ICommand {
     [Value(0, MetaName = "input file", Required=true, HelpText = "Input OpenQASM file path")]
     public string QasmFile {get; set;}
 
-    [Value(1, MetaName = "output file", Required=false, HelpText = "Output OpenQASM file path", Default=null)]
+    [Option('e', "emit", HelpText="File path to emit optimized OpenQASM to", Default=null)]
     public string OutputQasmFile {get; set;}
 
     [Option('o', "optimization", Required = false, HelpText = "Apply optimization strategy")]
@@ -36,7 +36,9 @@ public class Optimize : ICommand {
 
     public static IEnumerable<IOptimization<LinearSchedule, LinearSchedule>> AvailableOptimizations => optimizationList.AsReadOnly();
 
-    private YamlDotNet.Serialization.Deserializer yamlParser = (new YamlDotNet.Serialization.DeserializerBuilder()).IgnoreUnmatchedProperties().Build();
+    private YamlDotNet.Serialization.Deserializer yamlParser = (new YamlDotNet.Serialization.DeserializerBuilder())
+        .IgnoreUnmatchedProperties()
+        .Build();
     private T ParseYaml<T>(string path) {
         if (path != null) {
             return yamlParser.Deserialize<T>(File.ReadAllText(path));
@@ -47,23 +49,25 @@ public class Optimize : ICommand {
 
     public Status Exec() {
         // Read source file
-        if (!File.Exists(QasmFile)) {
-            Console.WriteLine(string.Format("File `{0}` does not exist", QasmFile));
+        PhysicalFile SourceQasmFile = new PhysicalFile(QasmFile);
+        if (!SourceQasmFile.Exists()) {
+            Console.WriteLine(string.Format("File `{0}` does not exist", SourceQasmFile.PhysicalPath));
             return Status.Failure;
 
         }
         Circuit circuit = null; // By default schedule is a LinearSchedule
-        var source = File.ReadAllText(QasmFile);
+        PhysicalDirectory SourceDirectory = new PhysicalDirectory(SourceQasmFile.PhysicalDirectory);
+        var source = SourceQasmFile.Contents;
         try {
-            circuit = DotQasm.IO.OpenQasm.Parser.ParseCircuit(source, new PhysicalDirectory(Path.GetDirectoryName(QasmFile)));
+            circuit = DotQasm.IO.OpenQasm.Parser.ParseCircuit(source, SourceDirectory);
         } catch (OpenQasmException ex) {
-            Console.WriteLine(ex.Format(QasmFile, source));
+            Console.WriteLine(ex.Format(SourceQasmFile.PhysicalPath, source));
             return Status.Failure;
         } catch (Exception ex) {
             Console.WriteLine(ex.Message);
             return Status.Failure;
         }
-        circuit.Name = Path.GetFileNameWithoutExtension(QasmFile);
+        circuit.Name = SourceQasmFile.Name;
 
         // Get optimizations
         var opts = Optimizations.SelectMany((x) => optimizationList.Where((y) => x == y.Name));
@@ -78,6 +82,9 @@ public class Optimize : ICommand {
             // Assing necessary values to optimizer
             if (opt is IUsing<HardwareConfiguration> hardwareOpt) {
                 hardwareOpt.Use(hw);
+            }
+            if (opt is IUsing<PhysicalFile> sourceFileOpt) {
+                sourceFileOpt.Use(SourceQasmFile);
             }
 
             // Run the optimizer

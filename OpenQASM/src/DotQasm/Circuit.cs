@@ -33,23 +33,23 @@ public interface IRegister<T>: System.Collections.Generic.IEnumerable<T>, IOwned
 public class Register<T> : IRegister<T> where T:IOwnedBy<Register<T>> {
     public Circuit Owner {get; private set;}
     public int RegisterId {get; private set;}
-    private IEnumerable<T> elements;
-    public int Count => elements.Count(); 
+    public IEnumerable<T> Elements {get; private set;}
+    public int Count => Elements.Count(); 
 
     public Register(Circuit circuit, int registerId, IEnumerable<T> Ts) {
         this.Owner = circuit;
         this.RegisterId = registerId;
-        this.elements = Ts;
+        this.Elements = Ts;
     }
 
-    public T this[int i] => elements.ElementAt(i);
+    public T this[int i] => Elements.ElementAt(i);
 
     public IEnumerator<T> GetEnumerator() {
-        return elements.GetEnumerator();
+        return Elements.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator() {
-        return elements.GetEnumerator();
+        return Elements.GetEnumerator();
     }
 }
 
@@ -141,6 +141,15 @@ public class Circuit {
     /// List of classical registers
     /// </summary>
     public IEnumerable<Register<Cbit>> ClassicalRegisters => classicalRegisters.AsReadOnly();
+
+    /// <summary>
+    /// List of all qubits in the quantum circuit
+    /// </summary>
+    public IEnumerable<Qubit> Qubits => QuantumRegisters.SelectMany(reg => reg.Elements);
+    /// <summary>
+    /// List of all cbits in the quantum circuit
+    /// </summary>
+    public IEnumerable<Cbit> Cbits => ClassicalRegisters.SelectMany(reg => reg.Elements);
 
     /// <summary>
     /// Empty quantum circuit

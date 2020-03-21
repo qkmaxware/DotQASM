@@ -8,7 +8,7 @@
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <PublishTrimmed>true</PublishTrimmed>
 
-    <Version>0.0.1</Version>
+    <Version>1.0.0</Version>
     <Copyright>Copyright (c) 2019 Colin Halseth</Copyright>
     <Description>.QASM command line utility</Description>
     <Authors>Colin Halseth</Authors>

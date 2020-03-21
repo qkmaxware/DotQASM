@@ -7,3 +7,4 @@ out/
 *.opt
 /*.svg
 /*.csv
+/*.qasm

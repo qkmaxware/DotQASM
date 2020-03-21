@@ -6,6 +6,11 @@ using System.Numerics;
 using DotQasm.Scheduling;
 using DotQasm.IO.Svg;
 using DotQasm.Hardware;
+using DotQasm.Search;
+
+using PhysicalDataPrecedenceTable = System.Collections.Generic.List<System.Collections.Generic.List<DotQasm.Scheduling.DataPrecedenceNode>>;
+using PhysicalDataPrecedenceRow = System.Collections.Generic.List<DotQasm.Scheduling.DataPrecedenceNode>;
+
 
 namespace DotQasm.Optimization.Strategies {
 
@@ -13,7 +18,11 @@ namespace DotQasm.Optimization.Strategies {
 /// Hardware scheduling based on the algorithm provided by Gian Giacomo Guerreschi and Jongsoo Park
 /// https://www.researchgate.net/publication/318849647_Gate_scheduling_for_quantum_algorithms
 /// </summary>
-public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule>, IUsing<HardwareConfiguration> {
+public class HardwareScheduling : 
+    IOptimization<LinearSchedule, LinearSchedule>, 
+    IUsing<HardwareConfiguration>,
+    IUsing<DotQasm.IO.PhysicalFile>
+{
 
     public string Name => "Hardware Scheduling";
 
@@ -208,11 +217,25 @@ public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule>,
         return svg;
     }
 
+    private void Pad<T>(List<T> list, int pad) {
+        while(list.Count < pad) {
+            list.Add(default(T));
+        }
+    }
+
+    private string Quote(object str) {
+        return "\"" + (str?.ToString() ?? string.Empty) + "\"";
+    }
+
     private HardwareConfiguration hardware;
     public void Use(HardwareConfiguration config) {
         if (config == null)
             throw new Exception(this.Name + " strategy requires a valid hardware configuration");
         this.hardware = config;
+    }
+    private DotQasm.IO.PhysicalFile srcFile;
+    public void Use(DotQasm.IO.PhysicalFile source) {
+        this.srcFile = source;
     }
 
     private void ComputeLatencies (LogicalDataPrecedenceGraph ldpg, ILatencyEstimator TimeEstimator) {
@@ -246,14 +269,44 @@ public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule>,
         visitor.Traverse(ldpg);
     }
 
-    private void RPad<T>(List<T> list, int pad) {
-        while(list.Count < pad) {
-            list.Add(default(T));
-        }
+    private void ScheduleCopy(PhysicalDataPrecedenceTable pdpt, double priority, ControlledGateEvent ce, Qubit ctrl, Qubit target) {
+        var evt = new ControlledGateEvent(ce.Operator, ctrl, new Qubit[]{ target });
+
+        var node1 = new DataPrecedenceNode();
+        node1.Event = evt;
+        node1.Priority = priority;
+
+        pdpt[ctrl.QubitId].Add(node1);
+        pdpt[target.QubitId].Add(node1);
     }
 
-    private string Quote(object str) {
-        return "\"" + (str?.ToString() ?? string.Empty) + "\"";
+    private int Swap(PhysicalDataPrecedenceTable pdpt, double priority, Qubit lhs, Qubit rhs) {
+        var CX1 = new ControlledGateEvent(Gate.PauliX, lhs, new Qubit[]{ rhs });
+        var CX2 = new ControlledGateEvent(Gate.PauliX, rhs, new Qubit[]{ lhs });
+        var CX3 = new ControlledGateEvent(Gate.PauliX, lhs, new Qubit[]{ rhs });
+
+        var node1 = new DataPrecedenceNode();
+        node1.Event = CX1;
+        node1.Priority = priority;
+
+        var node2 = new DataPrecedenceNode();
+        node2.Event = CX2;
+        node2.Priority = priority;
+
+        var node3 = new DataPrecedenceNode();
+        node3.Event = CX3;
+        node3.Priority = priority;
+
+        pdpt[lhs.QubitId].Add(node1);
+        pdpt[rhs.QubitId].Add(node1);
+
+        pdpt[lhs.QubitId].Add(node2);
+        pdpt[rhs.QubitId].Add(node2);
+
+        pdpt[lhs.QubitId].Add(node3);
+        pdpt[rhs.QubitId].Add(node3);
+
+        return 3; // 3 operations added
     }
 
     public LinearSchedule Transform(LinearSchedule schedule) {
@@ -262,10 +315,23 @@ public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule>,
 
         // Create scheduling constructs
         var ldpg = new LogicalDataPrecedenceGraph(schedule);
-        var pdpt = new List<List<DataPrecedenceNode>>(); // Row, Column Format
-        var qubitCount = schedule.Select(evt => evt.QuantumDependencies.Select(qubit => qubit.QubitId).Max()).Max();
+        var pdpt = new PhysicalDataPrecedenceTable(); // Row, Column Format
+        var qubitCount = 0; 
+        List<Qubit> qubits = null;
+        foreach (var evt in schedule) {
+            foreach (var qubit in evt.QuantumDependencies) {
+                if (qubits == null) {
+                    var circuit = qubit.Owner.Owner;
+                    qubits = circuit.Qubits.ToList();
+                }
+                qubitCount = Math.Max(qubitCount, qubit.QubitId);
+            }
+        }
+        if (qubits == null) {
+            qubits = new List<Qubit>();
+        }
         for (int i = 0; i <= qubitCount; i++) {
-            pdpt.Add(new List<DataPrecedenceNode >()); // Add row for each qubit in the schedule
+            pdpt.Add(new PhysicalDataPrecedenceRow()); // Add row for each qubit in the schedule
         }
 
         // Step 1, arrange data in the logical data precedence graph, assign priorities along longest line
@@ -285,26 +351,91 @@ public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule>,
             foreach (var qubit in evt.Event.QuantumDependencies) {
                 depth = Math.Max(pdpt[qubit.QubitId].Count, depth);
             }
-            // Pad the depth to the current level
-            foreach (var qubit in evt.Event.QuantumDependencies) {
-                RPad(pdpt[qubit.QubitId], depth);
-            }
-            // Add event at level
-            foreach (var qubit in evt.Event.QuantumDependencies) {
-                pdpt[qubit.QubitId].Add(evt);
-            }
 
             // Check if there is a conflict with ambiguity
+            var ambiguities = pdpt.Where((row) => row.Count == depth && row.Last().Priority == evt.Priority).Select(row => row.Last());
+            
             // Resolve ambiguity
+
+            // Pad the depth to the current level
+            foreach (var qubit in evt.Event.QuantumDependencies) {
+                Pad(pdpt[qubit.QubitId], depth);
+            }
+
             // Perform routing if required
+            if (hardware != null && evt.Event is ControlledGateEvent ce) {
+                var startQubitId = ce.ControlQubit.QubitId;
+                var startQubit = hardware.ConnectivityGraph.Vertices.ElementAt(startQubitId);
+
+                foreach (var endQubitRef in ce.TargetQubits) {
+                    // AStar search for the routing path (first node is the control, last is the target)
+                    var endQubit = hardware.ConnectivityGraph.Vertices.ElementAt(endQubitRef.QubitId);
+                    var path = AStarSearch.Search(
+                        hardware.ConnectivityGraph,                             // The connectivity graph 
+                        startQubit,                                             // Start at the control qubit
+                        (vert) => vert == endQubit,                             // End is when we reach the end qubit
+                        (edge) => 1,                                            // No edge weighting
+                        (edge) => (Math.Abs(endQubitRef.QubitId - startQubitId))// Estimated "distance" between qubits
+                    );
+                    if (path == null) {
+                        throw new Exception($"No path found between qubits {startQubitId} and {endQubitRef.QubitId} for the given hardware");
+                    }
+
+                    // Swap, Swap, Swap
+                    var lhs = startQubitId;
+                    foreach (var physicalSwapQubit in path.Skip(1)) {
+                        if (endQubit == physicalSwapQubit)
+                            break; // not the target qubit
+
+                        var rhs = hardware.ConnectivityGraph.Vertices.IndexOf(physicalSwapQubit);
+                        var firstQubit = qubits[lhs];
+                        var secondQubit = qubits[rhs];
+
+                        Pad(pdpt[lhs], depth);
+                        Pad(pdpt[rhs], depth);
+                        //System.Console.WriteLine($"SWAP FORWARD {firstQubit.QubitId} -> {secondQubit.QubitId} at {depth}");
+                        depth += Swap(pdpt, evt.Priority, firstQubit, secondQubit);
+
+                        lhs = rhs;
+                    }
+
+                    // Schedule instruction
+                    Pad(pdpt[lhs], depth);
+                    Pad(pdpt[endQubitRef.QubitId], depth);
+                    ScheduleCopy(pdpt, evt.Priority, ce, qubits[lhs], endQubitRef);
+                    depth++;
+
+                    // Swap back, Swap back, Swap back
+                    // If last event, and last swap, don't bother swapping back
+                    if (!(evt == ldpg.Vertices.Last() && evt.Event.QuantumDependencies.Last() == endQubitRef)) {
+                        foreach (var physicalSwapQubit in path.Reverse().Skip(2)) {                        
+                            var rhs = hardware.ConnectivityGraph.Vertices.IndexOf(physicalSwapQubit);
+                            var firstQubit = qubits[lhs];
+                            var secondQubit = qubits[rhs];
+
+                            Pad(pdpt[lhs], depth);
+                            Pad(pdpt[rhs], depth);
+                            //System.Console.WriteLine($"SWAP BACK {firstQubit.QubitId} -> {secondQubit.QubitId} at {depth}");
+                            depth += Swap(pdpt, evt.Priority, firstQubit, secondQubit);
+                        }
+                    }
+                }
+            } 
+            else {
+                // Add event at level
+                foreach (var qubit in evt.Event.QuantumDependencies) {
+                    pdpt[qubit.QubitId].Add(evt);
+                }
+            }
         }
 
         // Step 3, output all data
         var now = DateTime.Now.ToString("dd/MM/yyyy H.mmtt");
-        using (var writer = new StreamWriter(now + " - Logical Data Precedence Graph.svg")) {
+        var name = srcFile?.Name ?? string.Empty;
+        using (var writer = new StreamWriter(now + " - " + name + " - Logical Data Precedence Graph.svg")) {
             GraphToSvg(ldpg).Stringify(writer);
         }
-        using (var writer = new StreamWriter(now + " - Physical Data Precedence Table.csv")) {
+        using (var writer = new StreamWriter(now + " - "  + name + " - Physical Data Precedence Table.csv")) {
             // Print Header
             var columns = pdpt.Select(row => row.Count).Max();
             writer.Write(Quote("Qubit Index"));
@@ -324,7 +455,7 @@ public class HardwareScheduling : IOptimization<LinearSchedule, LinearSchedule>,
                     string.Join(
                         ',', 
                         pdpt[i].Select(
-                            x => x == null ? string.Empty : Quote(x.Event.Name)
+                            x => x == null ? string.Empty : Quote(x.Event.Name + " (" + x.Event.GetHashCode().ToString("X") + ")")
                         )
                     )
                 );

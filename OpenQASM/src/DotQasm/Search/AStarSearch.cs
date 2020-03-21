@@ -42,9 +42,12 @@ public static class AStarSearch {
         List<T> path = new List<T>();
 
         SearchNode<T> p = node;
-        while (p.Parent != null) {
+        while (true) {
             path.Add(p.Current);
             p = p.Parent;
+            if (p == null) {
+                break;
+            }
         }
 
         path.Reverse();

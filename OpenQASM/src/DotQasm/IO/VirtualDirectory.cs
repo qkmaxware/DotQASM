@@ -43,12 +43,24 @@ public class VirtualFile: IFileHandle {
 /// A file on the local hard drive
 /// </summary>
 public class PhysicalFile: IFileHandle {
-    private string path;
-    public string Contents => File.ReadAllText(path);
+    public string PhysicalDirectory => Path.GetDirectoryName(PhysicalPath);
+    public string PhysicalPath {get; private set;}
+    public string Contents => File.ReadAllText(PhysicalPath);
     public string Name {get; private set;}
+    public string Extension {get; private set;}
+
     public PhysicalFile(string fspath) {
-        this.path = fspath;
-        this.Name = Path.GetFileName(fspath);
+        this.PhysicalPath = fspath;
+        this.Name = Path.GetFileNameWithoutExtension(PhysicalPath);
+        this.Extension = Path.GetExtension(PhysicalPath);
+    }
+
+    /// <summary>
+    /// Check if the physical file exists on disk
+    /// </summary>
+    /// <returns>true if the file exists</returns>
+    public bool Exists() {
+        return File.Exists(PhysicalPath);
     }
 }
 

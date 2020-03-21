@@ -195,6 +195,7 @@ public class HardwareConfiguration {
             throw new System.Exception("Failed to parse connectivity DSL", ex);
         }
     }
+    
 }
 
 }

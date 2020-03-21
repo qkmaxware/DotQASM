@@ -259,6 +259,16 @@ public static class DSL {
         control.ParentCircuit.GateSchedule.ScheduleEvent(evt);
     }
 
+    /// <summary>
+    /// Apply the swap gate (3 CX gates in a row)
+    /// </summary>
+    /// <param name="qubit">qubit</param>
+    public static void Swap(this Qubit qubit, Qubit other) {
+        qubit.CX(other);
+        other.CX(qubit);
+        qubit.CX(other);
+    }
+
 }
 
 }
