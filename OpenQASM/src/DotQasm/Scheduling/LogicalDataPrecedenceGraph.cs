@@ -1,6 +1,9 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using DotQasm;
+using DotQasm.Scheduling;
 
 namespace DotQasm.Scheduling {
 
@@ -34,49 +37,100 @@ public class LogicalDataPrecedenceGraph: EdgeListGraph<DataPrecedenceNode, DataP
 
     public LogicalDataPrecedenceGraph () {}
     public LogicalDataPrecedenceGraph (LinearSchedule events) {
-        Dictionary<Qubit, IEvent> quantumLastUsageMap = new Dictionary<Qubit, IEvent>();
-        Dictionary<Cbit, IEvent> classicalLastUsageMap = new Dictionary<Cbit, IEvent>();
+        this.AddEventsToGraph(events);
+        this.AddEdgesBasedOnEventDependencies();
+    }
 
-        int index = 0;
+    private void AddEventsToGraph(IEnumerable<IEvent> events) {
+        int index = this.VertexCount;
         foreach (var evt in events) {
-            // Add self
+            // Add self to the graph
             var node = new DataPrecedenceNode();
             node.Event = evt;
             node.EventIndex = index++;
             this.Add(node);
+        }
+    }
 
-            // Get dependencies 
-            HashSet<IEvent> deps = new HashSet<IEvent>();
-            if (evt.QuantumDependencies != null) {
-                foreach (var qs in evt.QuantumDependencies) {
-                    if (quantumLastUsageMap.ContainsKey(qs)) {
-                        deps.Add(quantumLastUsageMap[qs]);
+    private void AddEdgesBasedOnEventDependencies() {
+        Dictionary<object, IEnumerable<IEvent>> resourceUsageMap = new Dictionary<object, IEnumerable<IEvent>>();
+        //Dictionary<Qubit, IEnumerable<IEvent>> quantumLastUsageMap = new Dictionary<Qubit, IEnumerable<IEvent>>();
+        //Dictionary<Cbit, IEnumerable<IEvent>> classicalLastUsageMap = new Dictionary<Cbit, IEnumerable<IEvent>>();
+
+        foreach (var node in this.Vertices) {
+            // Get potential dependencies 
+            HashSet<IEvent> potentialDependencies = new HashSet<IEvent>();
+            if (node.Event.QuantumDependencies != null) {
+                // foreach (var qs in node.Event.QuantumDependencies) {
+                //     if (quantumLastUsageMap.ContainsKey(qs)) {
+                //         potentialDependencies.UnionWith(quantumLastUsageMap[qs]);
+                //     }
+                // }
+                foreach (var qs in node.Event.QuantumDependencies) {
+                    if (resourceUsageMap.ContainsKey(qs)) {
+                        potentialDependencies.UnionWith(resourceUsageMap[qs]);
                     }
                 }
             }
-            if (evt.ClassicalDependencies != null){
-                foreach (var cs in evt.ClassicalDependencies) {
-                    if (classicalLastUsageMap.ContainsKey(cs)) {
-                        deps.Add(classicalLastUsageMap[cs]);
+            if (node.Event.ClassicalDependencies != null) {
+                // foreach (var cs in node.Event.ClassicalDependencies) {
+                //     if (classicalLastUsageMap.ContainsKey(cs)) {
+                //         potentialDependencies.UnionWith(classicalLastUsageMap[cs]);
+                //     }
+                // }
+                foreach (var cs in node.Event.ClassicalDependencies) {
+                    if (resourceUsageMap.ContainsKey(cs)) {
+                        potentialDependencies.UnionWith(resourceUsageMap[cs]);
                     }
                 }
             }
+
+            // Group into commuting and not commuting
+            var split = potentialDependencies.ToLookup((evt) => this.CommutesWith(evt, node.Event));
+            var commuting = split[true];
+            var not_commuting = split[false];
 
             // Add self as last value to using the provided qubits and cbits
-            if (evt.QuantumDependencies != null) {
-                foreach (var qs in evt.QuantumDependencies) {
-                    quantumLastUsageMap[qs] = evt;
+            var new_dependencies = commuting.Append(node.Event);
+            var resource_dependency_lists = new Dictionary<object, HashSet<IEvent>>();
+            foreach (var evt in new_dependencies) { // Sort dependencies by the resources they use
+                if (node.Event.QuantumDependencies != null) {
+                    foreach (var qs in node.Event.QuantumDependencies) {
+                        if (resource_dependency_lists.ContainsKey(qs)) {
+                            resource_dependency_lists[qs].Add(evt);
+                        } else {
+                            resource_dependency_lists[qs] = new HashSet<IEvent>(){ evt };
+                        }
+                    }
+                }
+                if (node.Event.ClassicalDependencies != null) {
+                    foreach (var cs in node.Event.ClassicalDependencies) {
+                        if (resource_dependency_lists.ContainsKey(cs)) {
+                            resource_dependency_lists[cs].Add(evt);
+                        } else {
+                            resource_dependency_lists[cs] = new HashSet<IEvent>(){ evt };
+                        }
+                    }
                 }
             }
-            if (evt.ClassicalDependencies != null) {
-                foreach (var cs in evt.ClassicalDependencies) {
-                    classicalLastUsageMap[cs] = evt;
-                }
+            foreach (var (resource, list) in resource_dependency_lists) {
+                resourceUsageMap[resource] = list;
             }
+            
+            // if (node.Event.QuantumDependencies != null) {
+            //     foreach (var qs in node.Event.QuantumDependencies) {
+            //         quantumLastUsageMap[qs] = node.Event;
+            //     }
+            // }
+            // if (node.Event.ClassicalDependencies != null) {
+            //     foreach (var cs in node.Event.ClassicalDependencies) {
+            //         classicalLastUsageMap[cs] = node.Event;
+            //     }
+            // }
 
-            // Add connections from dependencies to self (which direction?)
+            // Add connections from dependencies (non-commuting) to self (which direction?)
             var depth = 0;
-            foreach (var dependency in deps) {
+            foreach (var dependency in not_commuting) {
                 var depNode = this.Vertices.Where(vert => vert.Event?.Equals(dependency) ?? false).FirstOrDefault();
                 if (depNode != null) {
                     this.DirectedEdge(depNode, node, new DataPrecedenceEdgeData());
@@ -85,6 +139,69 @@ public class LogicalDataPrecedenceGraph: EdgeListGraph<DataPrecedenceNode, DataP
                 }
             }
             node.Depth = depth + 1;
+        }
+    }
+
+    public void RecalculateLatencies(ILatencyEstimator TimeEstimator) {
+        foreach (var evt in this.Vertices) {
+            evt.Latency = TimeEstimator?.TimeOf(evt.Event) ?? TimeSpan.Zero;
+        }
+    }
+
+    public void RecalculatePriorities() {
+        /*
+            Priorities can be eﬃciently computed by traversing the (directed and acyclic) graph in a post-order,
+            starting from the gates in the last generation (pj=tj when nj ∈ leaves) and, 
+            for each node, adding its latency to the maximum of its children’s priorities.
+            
+            pi = Max ( Sum(tj) for each in paths to node from leaf generation)
+        */
+        var visitor = new AccumulatorGraphVisitor<double, DataPrecedenceNode, DataPrecedenceEdgeData>();
+        visitor.Accumulator = (old, @new) => {
+            return Math.Max(old, @new);
+        };
+        visitor.PostorderAction = (accumulator, current, last) => {
+            double pi = current.Latency.TotalMilliseconds;
+            pi += accumulator; // accumulator is the max of the child PI's 
+
+            if (pi > current.Priority) {
+                current.Priority = pi;
+            }
+
+            return current.Priority;
+        };
+        visitor.Traverse(this);
+    }
+
+    private bool CommutesWith(IEvent evt1, IEvent evt2) {
+        if (evt1 is GateEvent && evt2 is GateEvent) {
+            return ((GateEvent)evt1).Operator.CommutesWith(((GateEvent)evt2).Operator);
+        } else {
+            return false;
+        }
+    }
+
+    private string Quote(object str) {
+        return "\"" + (str?.ToString() ?? string.Empty) + "\"";
+    }
+
+    public void Encode(TextWriter writer) {
+        writer.Write(Quote("Operation Index"));
+        writer.Write(",");
+        writer.Write(Quote("Operation Name"));
+        writer.Write(",");
+        writer.Write(Quote("Latency"));
+        writer.Write(",");
+        writer.WriteLine(Quote("Priority"));
+        
+        foreach (var (index, evt) in this.Vertices.Select((evt, index) => (index, evt))) {
+            writer.Write(index);
+            writer.Write(",");
+            writer.Write(Quote(evt.Event.Name + " (" + evt.Event.GetHashCode().ToString("X") + ")"));
+            writer.Write(",");
+            writer.Write(Quote(evt.Latency));
+            writer.Write(",");
+            writer.WriteLine(Quote(evt.Priority));
         }
     }
 }

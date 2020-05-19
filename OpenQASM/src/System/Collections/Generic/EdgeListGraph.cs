@@ -33,6 +33,11 @@ public class EdgeListGraph<VertexType, EdgeType> : IGraph<VertexType, EdgeType> 
         ).Any()
     );
 
+    /// <summary>
+    /// Number of vertices in the graph
+    /// </summary>
+    public int VertexCount => _vertices.Count;
+
     public bool Contains(VertexType vertex) {
         return _vertices.IndexOf(vertex) >= 0;
     }

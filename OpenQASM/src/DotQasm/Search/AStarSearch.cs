@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace DotQasm.Search {
 
+public interface ISearchable : IEquatable<ISearchable> {
+    IEnumerable<ISearchable> Neighbours() ;
+    
+}
+
 /// <summary>
 /// Generic A* Heuristic search algorithm
 /// </summary>
@@ -52,6 +57,85 @@ public static class AStarSearch {
 
         path.Reverse();
         return path;
+    }
+ 
+    /// <summary>
+    /// Find the optimal path between two graph nodes
+    /// </summary>
+    /// <param name="start">Node to start with</param>
+    /// <param name="stopCondition">search condition</param>
+    /// <param name="weightFunction">edge weight function</param>
+    /// <param name="heuristicFunction">edge heuristic function</param>
+    /// <typeparam name="VertexType">type of searchable data</typeparam>
+    /// <returns>path of searchable data from the start to the node matching the search condition</returns>
+    public static IEnumerable<VertexType> Search<VertexType> (
+        VertexType start, 
+        Func<VertexType, bool> stopCondition, 
+        Func<VertexType, VertexType, double> weightFunction,
+        Func<VertexType, double> heuristicFunction
+    ) where VertexType:ISearchable {
+        // Start is end
+        if (stopCondition.Invoke(start)) {
+            var x = new List<VertexType>(1);
+            x.Add(start);
+            return x;
+        } 
+
+        // Already evaluated nodes
+        HashSet<SearchNode<VertexType>> closed = new HashSet<SearchNode<VertexType>>();
+        // Current nodes
+        var comparer = new SmallestFirstComparison<VertexType>();
+        PriorityQueue<SearchNode<VertexType>> open = new PriorityQueue<SearchNode<VertexType>>(comparer);
+
+        // Init
+        SearchNode<VertexType> startNode = new SearchNode<VertexType>();
+        startNode.Current = start;
+        startNode.G = 0;
+        startNode.H = 0;
+        open.Enqueue(startNode);
+
+        // Loop
+        while (!open.IsEmpty) {
+            // Find the node with least F and pop it off the open list
+            SearchNode<VertexType> current = open.Dequeue();
+
+            // Generate the successors to current
+            var successors = current.Current.Neighbours();
+
+            // Loop over successors
+            foreach (var successor in successors) {
+                // If at goal, stop
+                SearchNode<VertexType> node = new SearchNode<VertexType>();
+                node.Current = (VertexType)successor;
+                node.Parent = current;
+
+                if (stopCondition.Invoke(node.Current)) {
+                    return Backtrack<VertexType>(node);
+                }
+
+                node.G = current.G + weightFunction.Invoke(current.Current, node.Current);
+                node.H = heuristicFunction.Invoke(node.Current);
+
+                // If a node with the same position is in the open list and has a lower F score, skip this one
+                SearchNode<VertexType> equivalentPosition;
+                if (open.ContainsEquivalent(node, out equivalentPosition) && equivalentPosition.F <= node.F) {
+                    continue;
+                }
+
+                // If a node with the same position is in the closed list with a lower f skip this one, else add to open list
+                if (closed.TryGetValue(node, out equivalentPosition) && equivalentPosition.F <= node.F) {
+                    continue;
+                } else {
+                    open.Enqueue(node);
+                }
+            }
+
+            // Push current onto the closed list
+            closed.Add(current);
+        }
+
+        // No path found
+        return null;
     }
 
     /// <summary>

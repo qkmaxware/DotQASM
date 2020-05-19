@@ -1,0 +1,13 @@
+Name: Generic Linear 5 Qubit Machine
+Manufacturer: 
+Technology: Superconducting
+Connectivity: >-
+    q0 []
+    q1 []
+    q2 []
+    q3 []
+    q4 []
+    q0 -- q1
+    q1 -- q2
+    q2 -- q3
+    q3 -- q4

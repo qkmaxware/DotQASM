@@ -157,6 +157,14 @@ public class Circuit {
     public Circuit() {
         this.GateSchedule = new LinearSchedule(); // Default to a simple empty linear schedule
     }
+    
+    /// <summary>
+    /// Empty quantum circuit with the given name
+    /// </summary>
+    /// <param name="name">name of the circuit</param>
+    public Circuit(string name) : this() {
+        this.Name = name;
+    }
 
     /// <summary>
     /// Allocate a single classical bit

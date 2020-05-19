@@ -5,11 +5,11 @@ using DotQasm.Scheduling;
 
 namespace DotQasm.Optimization.Strategies {
 
-public class CombineGates : IOptimization<LinearSchedule, LinearSchedule> {
+public class CombineGates : BaseOptimizationStrategy<LinearSchedule, LinearSchedule> {
 
-    public string Name => "Combine";
+    public override string Name => "Combine";
 
-    public string Description => "Combine neighboring gates into a single gate";
+    public override string Description => "Combine neighboring gates into a single gate";
 
     private bool CanCombine(GateEvent second, GateEvent first) {
         if (
@@ -31,7 +31,7 @@ public class CombineGates : IOptimization<LinearSchedule, LinearSchedule> {
         );
     }
 
-    public LinearSchedule Transform(LinearSchedule schedule) {
+    public override LinearSchedule Transform(LinearSchedule schedule) {
         List<IEvent> newSchedule = new List<IEvent>();
 
         // Start at the last event and work my way towards the first event

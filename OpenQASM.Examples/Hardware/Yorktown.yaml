@@ -1,5 +1,6 @@
 Name: Yorktown
 Manufacturer: IBM
+Technology: Superconducting
 Connectivity: >-
     q0 []
     q0 -- q1 []

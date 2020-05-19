@@ -22,7 +22,7 @@ public class Optimize : ICommand {
     [Option('e', "emit", HelpText="File path to emit optimized OpenQASM to", Default=null)]
     public string OutputQasmFile {get; set;}
 
-    [Option('o', "optimization", Required = false, HelpText = "Apply optimization strategy")]
+    [Option('o', "optimization", Required = false, HelpText = "Apply optimization strategy(s) ';' separated", Separator=';')]
     public IEnumerable<string> Optimizations { get; set; }
 
     [Option('h', "hardware-config", HelpText = "Specify a hardware configuration to optimize against")]
@@ -31,7 +31,8 @@ public class Optimize : ICommand {
     private static List<IOptimization<LinearSchedule, LinearSchedule>> optimizationList = new List<IOptimization<LinearSchedule, LinearSchedule>>(){
         new Optimization.Strategies.CombineGates(),
         new Optimization.Strategies.HardwareScheduling(),
-        new Optimization.Strategies.SplitCombinedOperations()
+        new Optimization.Strategies.SplitCombinedOperations(),
+        new Optimization.Strategies.SwapDecompose(),
     };
 
     public static IEnumerable<IOptimization<LinearSchedule, LinearSchedule>> AvailableOptimizations => optimizationList.AsReadOnly();

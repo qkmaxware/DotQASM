@@ -33,12 +33,32 @@ public static class DSL {
     // DSL commands for easily manipulating quantum circuits
     // -----------------------------------------------------------------------------------------------
     /// <summary>
+    /// Apply a specific single qubit gate 
+    /// </summary>
+    /// <param name="qubit">qubit to apply to</param>
+    /// <param name="gate">gate to apply</param>
+    public static void Apply(this Qubit qubit, Gate gate) {
+        var evt = new Scheduling.GateEvent(gate, qubit);
+        qubit.ParentCircuit?.GateSchedule?.ScheduleEvent(evt);
+    }
+    
+    /// <summary>
+    /// Measure a qubit and put the result in the given classical bit
+    /// </summary>
+    /// <param name="qubit">qubit to measure</param>
+    /// <param name="cbit">cbit to receive the result</param>
+    public static void Measure (this Qubit qubit, Cbit cbit) {
+        var evt = new Scheduling.MeasurementEvent(new Cbit[]{ cbit }, new Qubit[]{ qubit });
+        qubit.ParentCircuit?.GateSchedule?.ScheduleEvent(evt);
+    }
+    
+    /// <summary>
     /// Reset a qubit
     /// </summary>
     /// <param name="qubit">qubit</param>
     public static void Reset(this Qubit qubit) {
         var evt = new Scheduling.ResetEvent(new Qubit[]{ qubit });
-        qubit.ParentCircuit.GateSchedule.ScheduleEvent(evt);
+        qubit.ParentCircuit?.GateSchedule?.ScheduleEvent(evt);
     }
     /// <summary>
     /// Reset several qubits

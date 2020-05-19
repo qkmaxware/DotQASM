@@ -7,26 +7,91 @@ using DotQasm.Scheduling;
 using DotQasm.IO.Svg;
 using DotQasm.Hardware;
 using DotQasm.Search;
-
-using PhysicalDataPrecedenceTable = System.Collections.Generic.List<System.Collections.Generic.List<DotQasm.Scheduling.DataPrecedenceNode>>;
-using PhysicalDataPrecedenceRow = System.Collections.Generic.List<DotQasm.Scheduling.DataPrecedenceNode>;
-
+using System.Collections;
 
 namespace DotQasm.Optimization.Strategies {
 
+class SwapSearchColouring : ISearchable {
+    public Hardware.ConnectivityGraph graph;
+    public Hardware.PhysicalQubit[] qubits;
+    public int[] colours; 
+
+    public (PhysicalQubit, PhysicalQubit)? lastSwap;
+
+
+    private SwapSearchColouring(Hardware.ConnectivityGraph graph, Hardware.PhysicalQubit[] qubits, int[] colours, (PhysicalQubit, PhysicalQubit) swap) {
+        this.graph = graph;
+        this.qubits = qubits;
+        this.lastSwap = swap;
+        this.colours = new int[colours.Length];
+        for (int i = 0; i < this.qubits.Length; i++) {
+            this.colours[i] = colours[i];
+        }
+        
+        var id1 = qubits.IndexOf(swap.Item1);
+        var id2 = qubits.IndexOf(swap.Item2);
+        var tmp = this.colours[id1];
+        this.colours[id1] = this.colours[id2];
+        this.colours[id2] = tmp;
+    }
+    
+    public SwapSearchColouring(Hardware.ConnectivityGraph graph) {
+        this.graph = graph;
+        this.lastSwap = null;
+        this.qubits = graph.Vertices.ToArray();
+        this.colours = new int[this.qubits.Length];
+        for (int i = 0; i < this.qubits.Length; i++) {
+            this.colours[i] = this.qubits[i].Colour;
+        }
+    }
+
+    public IEnumerable<ISearchable> Neighbours() {
+        foreach (var edge in graph.Edges) {
+            
+            // Get elements
+            var inId = graph.Vertices.IndexOf(edge.Startpoint);
+            var outId = graph.Vertices.IndexOf(edge.Endpoint);
+            var inQ = this.qubits[inId];
+            var outQ = this.qubits[outId];
+
+            // Return next element
+            yield return new SwapSearchColouring(this.graph, this.qubits, this.colours, (inQ, outQ));
+        }
+    }
+
+    public bool Equals(ISearchable other) {
+        // Equal if they have the same colouring pattern
+        return other switch {
+            SwapSearchColouring ssc => this.colours.SequenceEqual(ssc.colours),
+            _ => base.Equals(other)
+        };
+    }
+
+    public override bool Equals(object obj) {
+        return obj switch {
+            ISearchable searchable => Equals(searchable),
+            _ => base.Equals(obj)
+        };
+    }
+
+    public override int GetHashCode() {
+        return colours.Aggregate((a,b) => a ^ b); // not the greatest hash, but should work(tm)
+    }
+}
+
 /// <summary>
-/// Hardware scheduling based on the algorithm provided by Gian Giacomo Guerreschi and Jongsoo Park
+/// Hardware scheduling inspired by the algorithm provided by Gian Giacomo Guerreschi and Jongsoo Park
 /// https://www.researchgate.net/publication/318849647_Gate_scheduling_for_quantum_algorithms
 /// </summary>
 public class HardwareScheduling : 
-    IOptimization<LinearSchedule, LinearSchedule>, 
+    BaseOptimizationStrategy<LinearSchedule, LinearSchedule>, 
     IUsing<HardwareConfiguration>,
     IUsing<DotQasm.IO.PhysicalFile>
 {
 
-    public string Name => "Hardware Scheduling";
+    public override string Name => "Hardware Scheduling";
 
-    public string Description => "Schedule gates for a given hardware configuration";
+    public override string Description => "Schedule gates for a given hardware configuration";
 
     private Svg GraphToSvg(LogicalDataPrecedenceGraph graph, int iterations = 100) {
         float width = 128;
@@ -57,8 +122,8 @@ public class HardwareScheduling :
 
         // Canvas size (plus a little bit of room to move)
         var vertexCount = graph.Vertices.Count();
-        var canvasWidth = (vertexCount + 2) * width;
-        var canvasHeight = (vertexCount + 2) * height;
+        var canvasWidth = (vertexCount / 2) * width;
+        var canvasHeight = (vertexCount / 2) * height;
         var canvasMidpointX = canvasWidth / 2;
         var canvasMidpointY = canvasHeight / 2;
 
@@ -208,7 +273,7 @@ public class HardwareScheduling :
             var vertex = vertices[i];
             var evt = boxVertexMap[i];
 
-            var text = new Text(new Vector2(vertex.Bounds.MidpointX, vertex.Bounds.MidpointY), "(" + evt.Priority + ") " + evt.Event.Name);
+            var text = new Text(new Vector2(vertex.Bounds.MidpointX, vertex.Bounds.MidpointY), evt.Event.Name + " (" + evt.Event.GetHashCode().ToString("X") + ")");
             text.HorizontalAnchor = HorizontalTextAnchor.middle;
             text.VerticalAnchor = VerticalTextAnchor.middle;
             svg.Add(text);
@@ -223,10 +288,6 @@ public class HardwareScheduling :
         }
     }
 
-    private string Quote(object str) {
-        return "\"" + (str?.ToString() ?? string.Empty) + "\"";
-    }
-
     private HardwareConfiguration hardware;
     public void Use(HardwareConfiguration config) {
         if (config == null)
@@ -239,49 +300,72 @@ public class HardwareScheduling :
     }
 
     private void ComputeLatencies (LogicalDataPrecedenceGraph ldpg, ILatencyEstimator TimeEstimator) {
-        foreach (var evt in ldpg.Vertices) {
-            evt.Latency = TimeEstimator?.TimeOf(evt.Event) ?? TimeSpan.Zero;
-        }
+        ldpg.RecalculateLatencies(TimeEstimator);
     }
 
     private void ComputePriorities (LogicalDataPrecedenceGraph ldpg) {
-        /*
-            Priorities can be eﬃciently computed by traversing the (directed and acyclic) graph in a post-order,
-            starting from the gates in the last generation (pj=tj when nj ∈ leaves) and, 
-            for each node, adding its latency to the maximum of its children’s priorities.
-            
-            pi = Max ( Sum(tj) for each in paths to node from leaf generation)
-        */
-        var visitor = new LambdaGraphVisitor<double, DataPrecedenceNode, DataPrecedenceEdgeData>();
-        visitor.Accumulator = (old, @new) => {
-            return Math.Max(old, @new);
-        };
-        visitor.PostorderAction = (accumulator, current, last) => {
-            double pi = current.Latency.TotalMilliseconds;
-            pi += accumulator; // accumulator is the max of the child PI's 
-
-            if (pi > current.Priority) {
-                current.Priority = pi;
-            }
-
-            return current.Priority;
-        };
-        visitor.Traverse(ldpg);
+        ldpg.RecalculatePriorities();
     }
 
-    private void ScheduleCopy(PhysicalDataPrecedenceTable pdpt, double priority, ControlledGateEvent ce, Qubit ctrl, Qubit target) {
-        var evt = new ControlledGateEvent(ce.Operator, ctrl, new Qubit[]{ target });
+    private bool AllColoursAdjacent(Hardware.ConnectivityGraph graph) {
+        // Ignore the "null" colour groups when checking for adjacency
+        foreach (var group in graph.Vertices.GroupBy(vert => vert.Colour).Where(group => group.Key != 0)) {
+            // Fail if any 1 qubit is not connected to any other qubit in the group
+            foreach (var a in group) {
+                var hasConnection = false;
+                var moreThanOne = false;
+                foreach (var b in group) {
+                    if (a == b) {
+                        continue; // Skip self
+                    }
+                    moreThanOne = true;
+                    if (graph.AreAdjacent(a,b) || graph.AreAdjacent(b,a)) {
+                        hasConnection = true;
+                        break; // Connection found
+                    }
+                }
+                if (moreThanOne && !hasConnection) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-        var node1 = new DataPrecedenceNode();
-        node1.Event = evt;
-        node1.Priority = priority;
-
-        pdpt[ctrl.QubitId].Add(node1);
-        pdpt[target.QubitId].Add(node1);
+    private double DistanceFromAdjacency(Hardware.ConnectivityGraph graph) {
+        double distance = 0.0;
+        foreach (var group in graph.Vertices.GroupBy(vert => vert.Colour).Where(group => group.Key != 0)) {
+            // Add 1 for any qubit not connected to its neighbours, greater value for graphs that are more disconnected
+            foreach (var a in group) {
+                var hasConnection = false;
+                var moreThanOne = false;
+                foreach (var b in group) {
+                    if (a == b) {
+                        continue; // Skip self
+                    }
+                    moreThanOne = true;
+                    if (graph.AreAdjacent(a,b) || graph.AreAdjacent(b,a)) {
+                        hasConnection = true;
+                        break; // Connection found
+                    }
+                }
+                if (moreThanOne && !hasConnection) {
+                    distance += 1;
+                }
+            }
+        }
+        return distance;
     }
 
     private int Swap(PhysicalDataPrecedenceTable pdpt, double priority, Qubit lhs, Qubit rhs) {
-        var CX1 = new ControlledGateEvent(Gate.PauliX, lhs, new Qubit[]{ rhs });
+        var swap = new SwapEvent(lhs, rhs);
+        
+        var node1 = new DataPrecedenceNode();
+        node1.Event = swap;
+        node1.Priority = priority;
+
+        return 1; // 1 event added
+        /*var CX1 = new ControlledGateEvent(Gate.PauliX, lhs, new Qubit[]{ rhs });
         var CX2 = new ControlledGateEvent(Gate.PauliX, rhs, new Qubit[]{ lhs });
         var CX3 = new ControlledGateEvent(Gate.PauliX, lhs, new Qubit[]{ rhs });
 
@@ -306,32 +390,159 @@ public class HardwareScheduling :
         pdpt[lhs.QubitId].Add(node3);
         pdpt[rhs.QubitId].Add(node3);
 
-        return 3; // 3 operations added
+        return 3; // 3 operations added*/
     }
 
-    public LinearSchedule Transform(LinearSchedule schedule) {
-        // Obtain information from CLI
-        ILatencyEstimator TimeEstimator = new BasicLatencyEstimator();
+    private IEnumerable<IGrouping<double, DataPrecedenceNode>> GroupByPriority(IEnumerable<DataPrecedenceNode> vertices){
+        return vertices.GroupBy((vert) => vert.Priority).OrderByDescending((group) => group.Key);
+    }
+
+    private bool DoAmbiguitiesExist(IGrouping<double, DataPrecedenceNode> group) {
+        HashSet<Qubit> qubits = new HashSet<Qubit>();
+        foreach (var node in group) {
+            if (node.Event.QuantumDependencies != null) {
+                foreach (var qubit in node.Event.QuantumDependencies) {
+                    if (qubits.Contains(qubit)) {
+                        return true;
+                    } else {
+                        qubits.Add(qubit);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private IEnumerable<IGrouping<double, DataPrecedenceNode>> SplitAmbiguousGroup(IGrouping<double, DataPrecedenceNode> group) {
+        // Create interaction graph
+        InteractionGraph ig = new InteractionGraph(group);
+        // Assign colours to the interactions
+        ig.AssignColours();
+        // Create unambiguous groupings
+        var unambiguous_groups = ig.Edges
+            .Select(edge => edge.Data)
+            .Distinct()
+            // Group by the colour of the edge
+            .GroupBy(data => data.Colour)
+            // Convert edge coloured groups to groups of DataPrecendenceNodes
+            .Select(group => {
+                var events = group.Select(edge => new DataPrecedenceNode() { 
+                    Event = edge.Event,
+                    Priority = group.Key
+                });
+                return new BasicGrouping<double, DataPrecedenceNode>(group.Key, events);
+            });
+        // Return groups
+        return unambiguous_groups;
+    }
+
+    private IEnumerable<IGrouping<double, DataPrecedenceNode>> ResolveAmbiguitiesToIterable(IEnumerable<IGrouping<double, DataPrecedenceNode>> iterable) {
+        foreach (var group in iterable) {
+            // detect ambiguities
+            if (DoAmbiguitiesExist(group)) {
+                Console.WriteLine("Ambiguities exist");
+                // resolve ambiguities
+                foreach (var unambiguous_group in SplitAmbiguousGroup(group)) {
+                    yield return unambiguous_group;
+                }
+            } else {
+                yield return group;
+            }
+        }
+    }
+
+    private void RouteGroup(BijectiveDictionary<Qubit, PhysicalQubit> logicalQubitMap, PhysicalDataPrecedenceTable pdpt, IGrouping<double, DataPrecedenceNode> group) {
+        // Reset colours
+        foreach (var qubit in hardware.ConnectivityGraph.Vertices) {
+            qubit.Colour = 0;
+        }
+
+        // Create colours using current map
+        int nextColour = 1;
+        foreach (var vert in group) {
+            // Generate colour and record qubits to colour
+            var @event = vert.Event;
+            var invovledQubits = @event.QuantumDependencies;
+            var thisColour = nextColour++;
+
+            // Assign colour to qubits 
+            foreach (var logical in invovledQubits) {
+                logicalQubitMap[logical].Colour = thisColour;
+            }
+        }
+
+        // Create swaps to satisfy connectivity (Search?)
+        var swapPath = AStarSearch.Search<SwapSearchColouring>(
+            new SwapSearchColouring(hardware.ConnectivityGraph), 
+            (node) => {         // End Condition
+                return AllColoursAdjacent(node.graph);
+            },
+            (from, to) => {     // Edge Distance Weighting
+                return 1;       // 1 swap added
+            },
+            (node) => {         // Node Heuristic
+                return DistanceFromAdjacency(node.graph); 
+            }
+        );
+        if (swapPath == null) {
+            throw new Exception("Algorithm failed to meet hardware connectivity constraints");
+        }
+
+        // Add swaps to the schedule, put those swaps into place on the qubit map
+        foreach (var node in swapPath) {
+            if (node.lastSwap.HasValue) {
+                // swap the physical qubits associated with the logical qubits
+                var logical1 = logicalQubitMap[node.lastSwap.Value.Item1];
+                var logical2 = logicalQubitMap[node.lastSwap.Value.Item2];
+                logicalQubitMap.Swap(node.lastSwap.Value.Item1, node.lastSwap.Value.Item2);
+                
+                // Add a physical swap to the pdpt as well
+                var swapOp = new SwapEvent(logical1, logical2);
+                var swapNode = new DataPrecedenceNode();
+                swapNode.Event = swapOp;
+                swapNode.Priority = group.Key;
+                pdpt[logical1].Add((node.lastSwap.Value.Item1, swapNode));
+                pdpt[logical2].Add((node.lastSwap.Value.Item2, swapNode));
+            }
+        }
+
+        // Apply operations as none should conflict
+        var depth = pdpt.Select(row => row.Count()).Max();
+        foreach (var vert in group) {
+            foreach (var qubit in vert.Event.QuantumDependencies) {
+                // Pad the depth to the current level
+                Pad(pdpt[qubit], depth);
+
+                // Add event at level
+                pdpt[qubit].Add((logicalQubitMap[qubit], vert));
+            }
+        }
+    }
+
+    public override LinearSchedule Transform(LinearSchedule schedule) {
+        // Obtain hardware reference
+        if (hardware == null) {
+            throw new ArgumentException(this.Name + " strategy requires a valid hardware configuration");
+        }
+        var logicalQubits = schedule.Events.SelectMany(x => x.QuantumDependencies).Distinct().ToList();
+        var physicalQubits = hardware.ConnectivityGraph.Vertices.ToList();
+        var qubitCount = hardware.PhysicalQubitCount;
+        if (logicalQubits.Count > qubitCount) {
+            throw new ArgumentOutOfRangeException("Number of logical qubits is greater than the number of physical qubits");
+        }
+
+        // Obtain operation latencies (maybe get this from the hardware config?)
+        ILatencyEstimator TimeEstimator = new IntegerLatencyEstimator();
 
         // Create scheduling constructs
         var ldpg = new LogicalDataPrecedenceGraph(schedule);
-        var pdpt = new PhysicalDataPrecedenceTable(); // Row, Column Format
-        var qubitCount = 0; 
-        List<Qubit> qubits = null;
-        foreach (var evt in schedule) {
-            foreach (var qubit in evt.QuantumDependencies) {
-                if (qubits == null) {
-                    var circuit = qubit.Owner.Owner;
-                    qubits = circuit.Qubits.ToList();
-                }
-                qubitCount = Math.Max(qubitCount, qubit.QubitId);
-            }
-        }
-        if (qubits == null) {
-            qubits = new List<Qubit>();
-        }
-        for (int i = 0; i <= qubitCount; i++) {
-            pdpt.Add(new PhysicalDataPrecedenceRow()); // Add row for each qubit in the schedule
+        var pdpt = new PhysicalDataPrecedenceTable(qubitCount); // Row, Column Format
+
+        // Fill initial logical qubit to physical qubit mapping
+        // 1-1, logical maps directly to physical (better way of doing this would be nice)
+        var logicalQubitMap = new BijectiveDictionary<Qubit, PhysicalQubit>(qubitCount);
+        foreach (var logical in logicalQubits) {
+            logicalQubitMap.Add(logical, physicalQubits.ElementAt(logical.QubitId));
         }
 
         // Step 1, arrange data in the logical data precedence graph, assign priorities along longest line
@@ -343,126 +554,99 @@ public class HardwareScheduling :
         
         // Step 2, schedule each event by priority, add routing if necessary
         // Page 7, No gate will ever depend on a gate with a lower priority so we can use a priority iterator to construct the physical data precedence  table
-        // Ambiguity resolution & routing occur here
-        foreach (var evt in ldpg.Vertices.OrderByDescending((vert) => vert.Priority)) {
-            // Naively schedule it at the lowest depth possible
-            // Get the depth
-            var depth = 0;
-            foreach (var qubit in evt.Event.QuantumDependencies) {
-                depth = Math.Max(pdpt[qubit.QubitId].Count, depth);
-            }
+        var groups = GroupByPriority(ldpg.Vertices);
 
-            // Check if there is a conflict with ambiguity
-            var ambiguities = pdpt.Where((row) => row.Count == depth && row.Last().Priority == evt.Priority).Select(row => row.Last());
-            
-            // Resolve ambiguity
-
-            // Pad the depth to the current level
-            foreach (var qubit in evt.Event.QuantumDependencies) {
-                Pad(pdpt[qubit.QubitId], depth);
-            }
-
-            // Perform routing if required
-            if (hardware != null && evt.Event is ControlledGateEvent ce) {
-                var startQubitId = ce.ControlQubit.QubitId;
-                var startQubit = hardware.ConnectivityGraph.Vertices.ElementAt(startQubitId);
-
-                foreach (var endQubitRef in ce.TargetQubits) {
-                    // AStar search for the routing path (first node is the control, last is the target)
-                    var endQubit = hardware.ConnectivityGraph.Vertices.ElementAt(endQubitRef.QubitId);
-                    var path = AStarSearch.Search(
-                        hardware.ConnectivityGraph,                             // The connectivity graph 
-                        startQubit,                                             // Start at the control qubit
-                        (vert) => vert == endQubit,                             // End is when we reach the end qubit
-                        (edge) => 1,                                            // No edge weighting
-                        (edge) => (Math.Abs(endQubitRef.QubitId - startQubitId))// Estimated "distance" between qubits
-                    );
-                    if (path == null) {
-                        throw new Exception($"No path found between qubits {startQubitId} and {endQubitRef.QubitId} for the given hardware");
-                    }
-
-                    // Swap, Swap, Swap
-                    var lhs = startQubitId;
-                    foreach (var physicalSwapQubit in path.Skip(1)) {
-                        if (endQubit == physicalSwapQubit)
-                            break; // not the target qubit
-
-                        var rhs = hardware.ConnectivityGraph.Vertices.IndexOf(physicalSwapQubit);
-                        var firstQubit = qubits[lhs];
-                        var secondQubit = qubits[rhs];
-
-                        Pad(pdpt[lhs], depth);
-                        Pad(pdpt[rhs], depth);
-                        //System.Console.WriteLine($"SWAP FORWARD {firstQubit.QubitId} -> {secondQubit.QubitId} at {depth}");
-                        depth += Swap(pdpt, evt.Priority, firstQubit, secondQubit);
-
-                        lhs = rhs;
-                    }
-
-                    // Schedule instruction
-                    Pad(pdpt[lhs], depth);
-                    Pad(pdpt[endQubitRef.QubitId], depth);
-                    ScheduleCopy(pdpt, evt.Priority, ce, qubits[lhs], endQubitRef);
-                    depth++;
-
-                    // Swap back, Swap back, Swap back
-                    // If last event, and last swap, don't bother swapping back
-                    if (!(evt == ldpg.Vertices.Last() && evt.Event.QuantumDependencies.Last() == endQubitRef)) {
-                        foreach (var physicalSwapQubit in path.Reverse().Skip(2)) {                        
-                            var rhs = hardware.ConnectivityGraph.Vertices.IndexOf(physicalSwapQubit);
-                            var firstQubit = qubits[lhs];
-                            var secondQubit = qubits[rhs];
-
-                            Pad(pdpt[lhs], depth);
-                            Pad(pdpt[rhs], depth);
-                            //System.Console.WriteLine($"SWAP BACK {firstQubit.QubitId} -> {secondQubit.QubitId} at {depth}");
-                            depth += Swap(pdpt, evt.Priority, firstQubit, secondQubit);
-                        }
-                    }
-                }
-            } 
-            else {
-                // Add event at level
-                foreach (var qubit in evt.Event.QuantumDependencies) {
-                    pdpt[qubit.QubitId].Add(evt);
-                }
-            }
+        // Ambiguity resolution
+        var unambiguous_groups = ResolveAmbiguitiesToIterable(groups);
+        foreach (var unambiguous_group in unambiguous_groups) {
+            // Routing
+            RouteGroup(logicalQubitMap, pdpt, unambiguous_group);
         }
 
         // Step 3, output all data
-        var now = DateTime.Now.ToString("dd/MM/yyyy H.mmtt");
-        var name = srcFile?.Name ?? string.Empty;
-        using (var writer = new StreamWriter(now + " - " + name + " - Logical Data Precedence Graph.svg")) {
-            GraphToSvg(ldpg).Stringify(writer);
-        }
-        using (var writer = new StreamWriter(now + " - "  + name + " - Physical Data Precedence Table.csv")) {
-            // Print Header
-            var columns = pdpt.Select(row => row.Count).Max();
-            writer.Write(Quote("Qubit Index"));
-            for (int i = 1; i <= columns; i++) {
-                writer.Write(",");
-                writer.Write(Quote("Priority " + i));
-            }
-            writer.WriteLine();
-
-            for (var i = 0; i < pdpt.Count; i++) {
-                writer.Write(Quote(i));
-                
-                if (pdpt[i].Count > 0)
-                    writer.Write(",");
-
-                writer.WriteLine(
-                    string.Join(
-                        ',', 
-                        pdpt[i].Select(
-                            x => x == null ? string.Empty : Quote(x.Event.Name + " (" + x.Event.GetHashCode().ToString("X") + ")")
-                        )
-                    )
-                );
-            }
-        }
+        OutputFiles(ldpg, pdpt);
         return schedule;
+    }
+
+    private void OutputFiles(LogicalDataPrecedenceGraph ldpg, PhysicalDataPrecedenceTable pdpt) {
+        var now = DateTime.Now.ToString("yyyy/MM/dd H.mmtt");
+        var name = srcFile?.Name ?? string.Empty;
+        // Emit logical data precedence graph
+        using (var writer = MakeDataFile(now + " - " + name + " - Logical Data Precedence Graph.csv")) {
+            ldpg.Encode(writer);
+        }
+        // Emit physical data precedence table
+        using (var writer = MakeDataFile(now + " - "  + name + " - Physical Data Precedence Table.csv")) {
+            pdpt.Encode(writer);
+        }
     }
 }
 
 }
+
+/*
+if (hardware != null && evt.Event is ControlledGateEvent ce) {
+    var startQubitId = ce.ControlQubit.QubitId;
+    var startQubit = hardware.ConnectivityGraph.Vertices.ElementAt(startQubitId);
+
+    foreach (var endQubitRef in ce.TargetQubits) {
+        // AStar search for the routing path (first node is the control, last is the target)
+        var endQubit = hardware.ConnectivityGraph.Vertices.ElementAt(endQubitRef.QubitId);
+        var path = AStarSearch.Search(
+            hardware.ConnectivityGraph,                             // The connectivity graph 
+            startQubit,                                             // Start at the control qubit
+            (vert) => vert == endQubit,                             // End is when we reach the end qubit
+            (edge) => 1,                                            // No edge weighting
+            (edge) => (Math.Abs(endQubitRef.QubitId - startQubitId))// Estimated "distance" between qubits
+        );
+        if (path == null) {
+            throw new Exception($"No path found between qubits {startQubitId} and {endQubitRef.QubitId} for the given hardware");
+        }
+
+        // Swap, Swap, Swap
+        var lhs = startQubitId;
+        foreach (var physicalSwapQubit in path.Skip(1)) {
+            if (endQubit == physicalSwapQubit)
+                break; // not the target qubit
+
+            var rhs = hardware.ConnectivityGraph.Vertices.IndexOf(physicalSwapQubit);
+            var firstQubit = qubits[lhs];
+            var secondQubit = qubits[rhs];
+
+            Pad(pdpt[lhs], depth);
+            Pad(pdpt[rhs], depth);
+            //System.Console.WriteLine($"SWAP FORWARD {firstQubit.QubitId} -> {secondQubit.QubitId} at {depth}");
+            depth += Swap(pdpt, evt.Priority, firstQubit, secondQubit);
+
+            lhs = rhs;
+        }
+
+        // Schedule instruction
+        Pad(pdpt[lhs], depth);
+        Pad(pdpt[endQubitRef.QubitId], depth);
+        ScheduleCopy(pdpt, evt.Priority, ce, qubits[lhs], endQubitRef);
+        depth++;
+
+        // Swap back, Swap back, Swap back
+        // If last event, and last swap, don't bother swapping back
+        if (!(evt == ldpg.Vertices.Last() && evt.Event.QuantumDependencies.Last() == endQubitRef)) {
+            foreach (var physicalSwapQubit in path.Reverse().Skip(2)) {                        
+                var rhs = hardware.ConnectivityGraph.Vertices.IndexOf(physicalSwapQubit);
+                var firstQubit = qubits[lhs];
+                var secondQubit = qubits[rhs];
+
+                Pad(pdpt[lhs], depth);
+                Pad(pdpt[rhs], depth);
+                //System.Console.WriteLine($"SWAP BACK {firstQubit.QubitId} -> {secondQubit.QubitId} at {depth}");
+                depth += Swap(pdpt, evt.Priority, firstQubit, secondQubit);
+            }
+        }
+    }
+} 
+else {
+    // Add event at level
+    foreach (var qubit in evt.Event.QuantumDependencies) {
+        pdpt[qubit.QubitId].Add(evt);
+    }
+}
+*/

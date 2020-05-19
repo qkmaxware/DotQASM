@@ -5,13 +5,13 @@ using DotQasm.Scheduling;
 
 namespace DotQasm.Optimization.Strategies {
 
-public class SplitCombinedOperations : IOptimization<LinearSchedule, LinearSchedule> {
+public class SplitCombinedOperations : BaseOptimizationStrategy<LinearSchedule, LinearSchedule> {
 
-    public string Name => "Split";
+    public override string Name => "Split";
 
-    public string Description => "Split operations on many qubits into a series each acting on one qubit";
+    public override string Description => "Split operations on many qubits into a series each acting on one qubit";
 
-    public LinearSchedule Transform(LinearSchedule schedule) {
+    public override LinearSchedule Transform(LinearSchedule schedule) {
         List<IEvent> newSchedule = new List<IEvent>();
 
         foreach (var evt in schedule) {

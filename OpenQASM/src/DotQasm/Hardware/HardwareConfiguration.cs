@@ -5,12 +5,29 @@ using System.Text;
 namespace DotQasm.Hardware {
     
 public class HardwareConfiguration {
+    /// <summary>
+    /// Name of the quantum device
+    /// </summary>
     public string Name {get; set;}
-
+    /// <summary>
+    /// Physical qubit implementation technology
+    /// </summary>
+    /// <value>Superconducting, Trapped Ion, etc</value>
+    public string Technology {get; set;}
+    /// <summary>
+    /// Connectivity graph between physcial qubits
+    /// </summary>
     public ConnectivityGraph ConnectivityGraph {get; set;}
+    /// <summary>
+    /// Number of physical qubits, obtained from the connectivity graph
+    /// </summary>
+    /// <returns></returns>
     public int PhysicalQubitCount => ConnectivityGraph.Vertices.Count();
 
     private string _dsl;
+    /// <summary>
+    /// Connectivity graph domain specific language string. Assigning a string to this field will re-compile the connectivity graph. 
+    /// </summary>
     public string Connectivity {
         get {
             return _dsl;

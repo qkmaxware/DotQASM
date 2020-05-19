@@ -6,7 +6,7 @@ namespace System.Collections.Generic {
 /// </summary>
 /// <typeparam name="VertexType">graph vertex type</typeparam>
 /// <typeparam name="EdgeType">graph edge type</typeparam>
-public class LambdaGraphVisitor<RType, VertexType, EdgeType> : GraphVisitor<VertexType, EdgeType>{
+public class AccumulatorGraphVisitor<RType, VertexType, EdgeType> {
     /// <summary>
     /// Action to run on vertex in preorder traversal (current vertex, last vertex) -> void
     /// </summary>
@@ -46,7 +46,7 @@ public class LambdaGraphVisitor<RType, VertexType, EdgeType> : GraphVisitor<Vert
     /// Traverse a given graph starting at the root nodes
     /// </summary>
     /// <param name="graph">graph to traverse</param>
-    public override void Traverse(IGraph<VertexType, EdgeType> graph) {
+    public void Traverse(IGraph<VertexType, EdgeType> graph) {
         var nextNodes = graph.RootNodes;
 
         foreach (var node in nextNodes) {
@@ -55,41 +55,9 @@ public class LambdaGraphVisitor<RType, VertexType, EdgeType> : GraphVisitor<Vert
     }
 }
 
-/// <summary>
-/// Class to invoke functions on each node of a graph via graph traversal
-/// </summary>
-/// <typeparam name="VertexType">graph vertex type</typeparam>
-/// <typeparam name="EdgeType">graph edge type</typeparam>
 public class GraphVisitor<VertexType, EdgeType> {
-    
-    protected virtual void OnPreorderVisit(VertexType current, VertexType last) {}
-    protected virtual void OnPostorderVisit(VertexType current, VertexType last) {}
-
-    private void Visit(IGraph<VertexType, EdgeType> graph, VertexType current, VertexType last) {
-        // Pre (before)
-        OnPreorderVisit(current, last);
-
-        // Traverse sub-graph
-        var next = graph.IncidentEdges(current);
-        foreach (var edge in next) {
-           Visit(graph, edge.Endpoint, current);
-        }
-
-        // Post (after)
-        OnPostorderVisit(current, last);
-    }
-
-    /// <summary>
-    /// Traverse a given graph starting at the root nodes
-    /// </summary>
-    /// <param name="graph">graph to traverse</param>
-    public virtual void Traverse(IGraph<VertexType, EdgeType> graph) {
-        var nextNodes = graph.RootNodes;
-
-        foreach (var node in nextNodes) {
-            Visit (graph, node, default(VertexType));
-        }
-    }
+    public System.Action<VertexType> OnVisitVertex;
+    public System.Action<IGraphEdge<VertexType, EdgeType>> OnVisitEdge;
 }
 
 /// <summary>
@@ -107,20 +75,65 @@ public class BreadthFirstEnumerator<VertexType, EdgeType>: IEnumerable<VertexTyp
 
     public IEnumerator<VertexType> GetEnumerator() {
         Queue<VertexType> stack = new Queue<VertexType>();
+        HashSet<VertexType> visited = new HashSet<VertexType>();
+
         stack.Enqueue(startVertex);
 
         while (stack.Count > 0) {
             var node = stack.Dequeue();
+            visited.Add(node);
             yield return node;
 
             foreach (var edge in graph.IncidentEdges(node)) {
-                stack.Enqueue(edge.Endpoint);
+                if (!visited.Contains(edge.Endpoint)) { // prevents infinite loops
+                    stack.Enqueue(edge.Endpoint);
+                }
             }   
         }
     }
 
     IEnumerator IEnumerable.GetEnumerator() {
         return GetEnumerator();
+    }
+}
+
+public class BreadthFirstWalker<VertexType, EdgeType> {
+
+    private VertexType startVertex;
+    private IGraph<VertexType, EdgeType> graph;
+
+    public BreadthFirstWalker(VertexType start, IGraph<VertexType, EdgeType> graph) {
+        this.startVertex = start;
+        this.graph = graph;
+    }
+
+    public void Traverse(GraphVisitor<VertexType, EdgeType> visitor) {
+        Queue<VertexType> stack = new Queue<VertexType>();
+        HashSet<VertexType> visitedNodes = new HashSet<VertexType>();
+        HashSet<IGraphEdge<VertexType, EdgeType>> visitedEdges = new HashSet<IGraphEdge<VertexType, EdgeType>>();
+
+        stack.Enqueue(startVertex);
+        visitedNodes.Add(startVertex);
+
+        while (stack.Count > 0) {
+            var node = stack.Dequeue();
+            if (visitor?.OnVisitVertex != null) {
+                visitor.OnVisitVertex(node);
+            }
+
+            foreach (var edge in graph.IncidentEdges(node)) {
+                if (!visitedEdges.Contains(edge)) {
+                    visitedEdges.Add(edge);
+                    if (visitor?.OnVisitEdge != null) {
+                        visitor.OnVisitEdge(edge);
+                    }
+                    if (!visitedNodes.Contains(edge.Endpoint)) {
+                        stack.Enqueue(edge.Endpoint);
+                        visitedNodes.Add(edge.Endpoint);
+                    }
+                }
+            }   
+        }
     }
 }
 

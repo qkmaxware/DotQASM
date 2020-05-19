@@ -1,13 +1,20 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DotQasm.Hardware {
 
 public class PhysicalQubit {
-    
+    public int Colour = 0;    
+
+    public PhysicalQubit() {}
+    public PhysicalQubit(PhysicalQubit other) {
+        this.Colour = other.Colour;
+    }
 }
 
 public class Channel {
-
+    public Channel() {}
+    public Channel(Channel other) {}
 }
 
 /// <summary>
@@ -18,6 +25,25 @@ public class ConnectivityGraph: EdgeListGraph<PhysicalQubit, Channel> {
     /// Create an empty connectivity graph
     /// </summary>
     public ConnectivityGraph() {}
+
+    /// <summary>
+    /// Copy a connectivity graph
+    /// </summary>
+    /// <param name="other">graph to copy</param>
+    public ConnectivityGraph(ConnectivityGraph other) {
+        foreach (var vertice in other.Vertices) {
+            // Convert vertice
+            this.Add(new PhysicalQubit(vertice));
+        }
+        foreach (var edge in other.Edges) {
+            // Convert edge
+            this.DirectedEdge(
+                other.Vertices.IndexOf(edge.Startpoint), 
+                other.Vertices.IndexOf(edge.Endpoint), 
+                new Channel(edge.Data)
+            );
+        }
+    }
 
     /// <summary>
     /// Each qubit is connected to the next bi-directionally
