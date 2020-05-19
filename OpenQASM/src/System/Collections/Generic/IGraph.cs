@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace System.Collections.Generic {
 
 /// <summary>
@@ -19,6 +21,13 @@ public interface IGraph<VertexType, EdgeType> {
     /// Collection of vertices in the graph
     /// </summary>
     IEnumerable<VertexType> Vertices {get;}
+    
+    /// <summary>
+    /// Number of vertices in the graph
+    /// </summary>
+    /// <returns>number of vertices</returns>
+    int VertexCount => Vertices.Count(); // Default implementation, meant to be overwritten by implementors
+     
     /// <summary>
     /// Collection of vertices in the graph
     /// </summary>

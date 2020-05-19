@@ -565,7 +565,7 @@ public class HardwareScheduling :
 
         // Step 3, output all data
         OutputFiles(ldpg, pdpt);
-        return schedule;
+        return pdpt.ToLinearSchedule();
     }
 
     private void OutputFiles(LogicalDataPrecedenceGraph ldpg, PhysicalDataPrecedenceTable pdpt) {

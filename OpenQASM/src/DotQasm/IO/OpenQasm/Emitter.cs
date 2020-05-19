@@ -45,6 +45,7 @@ public class OpenQasmEmitter: IEmitter<Circuit> {
             foreach (var qubit in evt.TargetQubits) {
                 writer.Write("cx ");
                 writer.Write(ConvertQubit(evt.ControlQubit));
+                writer.Write(',');
                 writer.Write(space);
                 writer.Write(ConvertQubit(qubit));
                 writer.WriteLine(stop);
@@ -57,7 +58,7 @@ public class OpenQasmEmitter: IEmitter<Circuit> {
     private void EmitGate(GateEvent evt, TextWriter writer) {
         foreach (var qubit in evt.QuantumDependencies) {
             // Write name
-            writer.Write(evt.Operator.Symbol);
+            writer.Write("u3"); // all gates are u3 representable
 
             // Write params (if any)
             writer.Write(evt.Operator.Parametres);
@@ -143,7 +144,7 @@ public class OpenQasmEmitter: IEmitter<Circuit> {
             writer.WriteLine("qreg qubits" + reg.RegisterId + "[" + reg.Count + "];");
         }
         foreach (var reg in  circuit.ClassicalRegisters) {
-            writer.WriteLine("qreg bits" + reg.RegisterId + "[" + reg.Count + "];");
+            writer.WriteLine("creg bits" + reg.RegisterId + "[" + reg.Count + "];");
         }
         writer.WriteLine();
 

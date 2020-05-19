@@ -3,7 +3,14 @@ title: Command Line Tooling
 ---
 dotQASM comes with a fully featured command line utility for handing operations related to quantum assembly files. The command line utility includes functionality such as:
 
-**1)** Verify if your quantum assembly files are syntactically and semantically valid by using the describe command
+**1)** Create new OpenQASM projects from a given algorithm template
+```sh
+> qasm new . maxcut
+Created: ./qelib1.inc
+Created: ./main.qasm
+```
+
+**2)** Verify if your quantum assembly files are syntactically and semantically valid by using the describe command
 
 ```sh
 > qasm describe ./teleport.qasm
@@ -23,13 +30,13 @@ Barriers                 1
 Conditionals             2
 Est. Time.               ~5.00ms
 ```
-**2)** Render quantum circuits to scalable vector graphics (svg) circuit diagrams
+**3)** Render quantum circuits to scalable vector graphics (svg) circuit diagrams
 ```sh
 > qasm render ./qft.qasm
 Rendered circuit to 'qft.svg'
 ```
 
-**3)** Optimize open quantum assembly files using a variety of optimization strategies and output the optimized code to a new file by using the optimize command
+**4)** Optimize open quantum assembly files using a variety of optimization strategies and output the optimized code to a new file by using the optimize command
 
 ```sh
 > qasm optimizations
@@ -42,7 +49,7 @@ Hardware Scheduling              Schedule gates for a given hardware configurati
 > qasm optimize ./teleport.qasm ./teleport.optimized.qasm -o "Combine"
 ```
 
-**4)** Execute quantum programs on a variety of quantum hardware including hardware from IBM's quantum experience as well as on a variety of simulators.
+**5)** Execute quantum programs on a variety of quantum hardware including hardware from IBM's quantum experience as well as on a variety of simulators.
 
 ```sh
 > qasm backends
@@ -77,7 +84,7 @@ ibmqx2
 1 ||||||||||||||||||||||||| 48.34 %
 ```
 
-**5)** Execute quantum instructions in a read-print-evaluate-loop (repl) against a locally simulated quantum machine and view ths results after each instruction.
+**6)** Execute quantum instructions in a read-print-evaluate-loop (repl) against a locally simulated quantum machine and view ths results after each instruction.
 
 ```sh
 > qasm repl --qubits 2

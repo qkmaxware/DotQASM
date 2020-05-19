@@ -1,6 +1,10 @@
 using System;
 using System.IO;
 using CommandLine;
+using System.Collections.Generic;
+using System.Linq;
+using DotQasm.Compile;
+using DotQasm.Compile.Generators;
 
 namespace DotQasm.Tools.Commands {
 
@@ -9,6 +13,8 @@ public class New : ICommand {
 
     [Value(0, MetaName="path", Default=".", HelpText="Path to create project in")]
     public string ProjectPath {get; set;}
+    [Value(1, MetaName="template", Default="", HelpText="Algorithm template")]
+    public string Template {get; set;}
 
     private static string qelib1_inc = @"// Quantum Experience (QE) Standard Header
 // file: qelib1.inc
@@ -109,7 +115,16 @@ gate cu3(theta,phi,lambda) c, t
     private static string main = @"OPENQASM 2.0;
 include ""qelib1.inc"";";
 
+    private List<ICircuitTemplate> Templates = new List<ICircuitTemplate>(){
+        new MaxCutGenerator<object>()
+    };
+
     public Status Exec() {
+        ICircuitTemplate selectedTemplate = null; 
+        if (!string.IsNullOrEmpty(Template)) {
+            selectedTemplate = Templates.Where(t => t.TemplateName.ToLower() == Template.ToLower()).First();
+        }
+        
         if (!Directory.Exists(ProjectPath)) {
           Directory.CreateDirectory(ProjectPath);
         }
@@ -121,7 +136,11 @@ include ""qelib1.inc"";";
 
         var mainPath = Path.Combine(ProjectPath, "main.qasm");
         using (var writer = new StreamWriter(mainPath)) {
-          writer.Write(main);
+          if (selectedTemplate != null) {
+              IO.OpenQasm.OpenQasmEmitter.EmitCircuit(selectedTemplate.GetTemplateCircuit(), writer);
+          } else {
+              writer.WriteLine(main);
+          }
         }   
 
         Console.WriteLine("Created: " + incPath);

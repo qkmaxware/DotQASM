@@ -13,10 +13,29 @@ using LogicalQubitMap = Dictionary<Qubit, PhysicalQubit>;
 class PhysicalDataPrecedenceTable: List<List<(PhysicalQubit, DataPrecedenceNode)>> {
     public PhysicalDataPrecedenceRow this[Qubit q] => this[q.QubitId];
 
+    public int RowCount {get; private set;} = 0;
+    public int ColumnCount => this.Select(row => row.Count).Max();
+
     public PhysicalDataPrecedenceTable(int rows) {
         for (int i = 0; i <= rows; i++) {
             this.Add(new PhysicalDataPrecedenceRow()); // Add row for each qubit in the schedule
+            this.RowCount++;
         }
+    }
+
+    public LinearSchedule ToLinearSchedule() {
+        LinearSchedule schedule = new LinearSchedule();
+
+        var columns = this.ColumnCount;
+        for (int column = 0; column < columns; column++) {
+            for (int row = 0; row < this.RowCount; row++) {
+                var cell = this[row][column];
+                if (cell.Item2 != null && cell.Item2.Event != null)
+                    schedule.ScheduleEvent(cell.Item2.Event);
+            }
+        }
+
+        return schedule;
     }
 
     private string Quote(object str) {
