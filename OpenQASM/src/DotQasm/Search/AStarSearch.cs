@@ -83,6 +83,7 @@ public static class AStarSearch {
 
         // Already evaluated nodes
         HashSet<SearchNode<VertexType>> closed = new HashSet<SearchNode<VertexType>>();
+        
         // Current nodes
         var comparer = new SmallestFirstComparison<VertexType>();
         PriorityQueue<SearchNode<VertexType>> open = new PriorityQueue<SearchNode<VertexType>>(comparer);

@@ -12,6 +12,10 @@ public class BarrierEvent: IEvent {
     public BarrierEvent(IEnumerable<Qubit> dependencies) {
         this.QuantumDependencies = dependencies;
     }
+
+    public override string ToString() {
+       return GetType().ToString(); 
+    }
 }
 
 }

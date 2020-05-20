@@ -16,20 +16,30 @@ class SwapSearchColouring : ISearchable {
     public Hardware.PhysicalQubit[] qubits;
     public int[] colours; 
 
-    public (PhysicalQubit, PhysicalQubit)? lastSwap;
+    public (int, int)? lastSwap;
+    public (PhysicalQubit, PhysicalQubit)? lastSwapQubits {
+        get {
+            if (this.lastSwap.HasValue) {
+                return (qubits[lastSwap.Value.Item1], qubits[lastSwap.Value.Item2]);
+            } else {
+                return null;
+            }
+        }
+    }
 
-
-    private SwapSearchColouring(Hardware.ConnectivityGraph graph, Hardware.PhysicalQubit[] qubits, int[] colours, (PhysicalQubit, PhysicalQubit) swap) {
+    private SwapSearchColouring(Hardware.ConnectivityGraph graph, Hardware.PhysicalQubit[] qubits, int[] colours, (int, int) swap) {
+        // Copy parameters
         this.graph = graph;
         this.qubits = qubits;
         this.lastSwap = swap;
         this.colours = new int[colours.Length];
-        for (int i = 0; i < this.qubits.Length; i++) {
+        for (int i = 0; i < this.colours.Length; i++) {
             this.colours[i] = colours[i];
         }
         
-        var id1 = qubits.IndexOf(swap.Item1);
-        var id2 = qubits.IndexOf(swap.Item2);
+        // Swap colours
+        var id1 = swap.Item1;
+        var id2 = swap.Item2;
         var tmp = this.colours[id1];
         this.colours[id1] = this.colours[id2];
         this.colours[id2] = tmp;
@@ -46,17 +56,62 @@ class SwapSearchColouring : ISearchable {
     }
 
     public IEnumerable<ISearchable> Neighbours() {
+        //Console.WriteLine(string.Join(',', this.colours) + " " + AreAllColoursAdjacent());
         foreach (var edge in graph.Edges) {
-            
             // Get elements
-            var inId = graph.Vertices.IndexOf(edge.Startpoint);
-            var outId = graph.Vertices.IndexOf(edge.Endpoint);
-            var inQ = this.qubits[inId];
-            var outQ = this.qubits[outId];
+            var inId = Array.IndexOf(this.qubits, edge.Startpoint);
+            var outId = Array.IndexOf(this.qubits, edge.Endpoint);
 
             // Return next element
-            yield return new SwapSearchColouring(this.graph, this.qubits, this.colours, (inQ, outQ));
+            if (inId != outId) {
+                yield return new SwapSearchColouring(this.graph, this.qubits, this.colours, (inId, outId));
+            }
         }
+    }
+
+    public bool AreAllColoursAdjacent() {
+        var colourCount = this.colours.GroupBy(colour => colour).ToDictionary(grp => grp.Key, grp => grp.Count());
+        for (var index = 0; index < this.colours.Length; index++) {
+            var colour = this.colours[index];
+            if (colour == default(int))
+                continue; // uncolored
+
+            var qubit = this.qubits[index];
+
+            if (colourCount.ContainsKey(colour) && colourCount[colour] > 1) {
+                // If others of this colour exist
+                // This vertex is the start node of each edge
+                var edges = this.graph.IncidentEdges(qubit);
+                var connected = edges.Where(edge => edge.Endpoint.Colour == colour).Any();
+                if (!connected) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public int DistanceFromAdjacency() {
+        var distance = 0;
+        var colourCount = this.colours.GroupBy(colour => colour).ToDictionary(grp => grp.Key, grp => grp.Count());
+        for (var index = 0; index < this.colours.Length; index++) {
+            var colour = this.colours[index];
+            if (colour == default(int))
+                continue; // uncolored
+
+            var qubit = this.qubits[index];
+
+            if (colourCount.ContainsKey(colour) && colourCount[colour] > 1) {
+                // If others of this colour exist
+                // This vertex is the start node of each edge
+                var edges = this.graph.IncidentEdges(qubit);
+                var connected = edges.Where(edge => edge.Endpoint.Colour == colour).Any();
+                if (!connected) {
+                    distance++;
+                }
+            }
+        }
+        return distance;
     }
 
     public bool Equals(ISearchable other) {
@@ -307,56 +362,6 @@ public class HardwareScheduling :
         ldpg.RecalculatePriorities();
     }
 
-    private bool AllColoursAdjacent(Hardware.ConnectivityGraph graph) {
-        // Ignore the "null" colour groups when checking for adjacency
-        foreach (var group in graph.Vertices.GroupBy(vert => vert.Colour).Where(group => group.Key != 0)) {
-            // Fail if any 1 qubit is not connected to any other qubit in the group
-            foreach (var a in group) {
-                var hasConnection = false;
-                var moreThanOne = false;
-                foreach (var b in group) {
-                    if (a == b) {
-                        continue; // Skip self
-                    }
-                    moreThanOne = true;
-                    if (graph.AreAdjacent(a,b) || graph.AreAdjacent(b,a)) {
-                        hasConnection = true;
-                        break; // Connection found
-                    }
-                }
-                if (moreThanOne && !hasConnection) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private double DistanceFromAdjacency(Hardware.ConnectivityGraph graph) {
-        double distance = 0.0;
-        foreach (var group in graph.Vertices.GroupBy(vert => vert.Colour).Where(group => group.Key != 0)) {
-            // Add 1 for any qubit not connected to its neighbours, greater value for graphs that are more disconnected
-            foreach (var a in group) {
-                var hasConnection = false;
-                var moreThanOne = false;
-                foreach (var b in group) {
-                    if (a == b) {
-                        continue; // Skip self
-                    }
-                    moreThanOne = true;
-                    if (graph.AreAdjacent(a,b) || graph.AreAdjacent(b,a)) {
-                        hasConnection = true;
-                        break; // Connection found
-                    }
-                }
-                if (moreThanOne && !hasConnection) {
-                    distance += 1;
-                }
-            }
-        }
-        return distance;
-    }
-
     private int Swap(PhysicalDataPrecedenceTable pdpt, double priority, Qubit lhs, Qubit rhs) {
         var swap = new SwapEvent(lhs, rhs);
         
@@ -454,7 +459,7 @@ public class HardwareScheduling :
     private void RouteGroup(BijectiveDictionary<Qubit, PhysicalQubit> logicalQubitMap, PhysicalDataPrecedenceTable pdpt, IGrouping<double, DataPrecedenceNode> group) {
         // Reset colours
         foreach (var qubit in hardware.ConnectivityGraph.Vertices) {
-            qubit.Colour = 0;
+            qubit.Colour = default(int);
         }
 
         // Create colours using current map
@@ -475,34 +480,38 @@ public class HardwareScheduling :
         var swapPath = AStarSearch.Search<SwapSearchColouring>(
             new SwapSearchColouring(hardware.ConnectivityGraph), 
             (node) => {         // End Condition
-                return AllColoursAdjacent(node.graph);
+                return node.AreAllColoursAdjacent();
             },
             (from, to) => {     // Edge Distance Weighting
                 return 1;       // 1 swap added
             },
             (node) => {         // Node Heuristic
-                return DistanceFromAdjacency(node.graph); 
+                return node.DistanceFromAdjacency();
             }
         );
         if (swapPath == null) {
-            throw new Exception("Algorithm failed to meet hardware connectivity constraints");
+            throw new DataException<ConnectivityGraph>(
+                "Algorithm failed to meet hardware connectivity constraints for group {" + string.Join(',', group.Select(x => x.Event.ToString() + "(" + x.Event.GetHashCode().ToString("X") + ")")) + "}", 
+                hardware.ConnectivityGraph
+            );
         }
 
         // Add swaps to the schedule, put those swaps into place on the qubit map
         foreach (var node in swapPath) {
             if (node.lastSwap.HasValue) {
                 // swap the physical qubits associated with the logical qubits
-                var logical1 = logicalQubitMap[node.lastSwap.Value.Item1];
-                var logical2 = logicalQubitMap[node.lastSwap.Value.Item2];
-                logicalQubitMap.Swap(node.lastSwap.Value.Item1, node.lastSwap.Value.Item2);
+                var swap = node.lastSwapQubits;
+                var logical1 = logicalQubitMap[swap.Value.Item1];
+                var logical2 = logicalQubitMap[swap.Value.Item2];
+                logicalQubitMap.Swap(swap.Value.Item1, swap.Value.Item2);
                 
                 // Add a physical swap to the pdpt as well
                 var swapOp = new SwapEvent(logical1, logical2);
                 var swapNode = new DataPrecedenceNode();
                 swapNode.Event = swapOp;
                 swapNode.Priority = group.Key;
-                pdpt[logical1].Add((node.lastSwap.Value.Item1, swapNode));
-                pdpt[logical2].Add((node.lastSwap.Value.Item2, swapNode));
+                pdpt[logical1].Add((swap.Value.Item1, swapNode));
+                pdpt[logical2].Add((swap.Value.Item2, swapNode));
             }
         }
 
@@ -531,6 +540,9 @@ public class HardwareScheduling :
             throw new ArgumentOutOfRangeException("Number of logical qubits is greater than the number of physical qubits");
         }
 
+        var now = DateTime.Now.ToString("yyyy/MM/dd H.mmtt");
+        var filename = srcFile?.Name ?? string.Empty;
+
         // Obtain operation latencies (maybe get this from the hardware config?)
         ILatencyEstimator TimeEstimator = new IntegerLatencyEstimator();
 
@@ -551,7 +563,8 @@ public class HardwareScheduling :
         // Page 7. the depth of a node ni corresponds to the maximum number of nodes traversed along any directed path from ni to any gate in the last generation
         // Page 7, pi = Max ( Sum(tj) for each in paths to node from leaf generation)
         ComputePriorities(ldpg);
-        
+        EmitLdpg(now, filename, ldpg);
+
         // Step 2, schedule each event by priority, add routing if necessary
         // Page 7, No gate will ever depend on a gate with a lower priority so we can use a priority iterator to construct the physical data precedence  table
         var groups = GroupByPriority(ldpg.Vertices);
@@ -564,19 +577,20 @@ public class HardwareScheduling :
         }
 
         // Step 3, output all data
-        OutputFiles(ldpg, pdpt);
+        EmitPdpt(now, filename, pdpt);
         return pdpt.ToLinearSchedule();
     }
 
-    private void OutputFiles(LogicalDataPrecedenceGraph ldpg, PhysicalDataPrecedenceTable pdpt) {
-        var now = DateTime.Now.ToString("yyyy/MM/dd H.mmtt");
-        var name = srcFile?.Name ?? string.Empty;
+    private void EmitLdpg(string timestamp, string filename, LogicalDataPrecedenceGraph ldpg) {
         // Emit logical data precedence graph
-        using (var writer = MakeDataFile(now + " - " + name + " - Logical Data Precedence Graph.csv")) {
+        using (var writer = MakeDataFile(timestamp + " - " + filename + " - Logical Data Precedence Graph.csv")) {
             ldpg.Encode(writer);
         }
+    }
+
+    private void EmitPdpt(string timestamp, string filename, PhysicalDataPrecedenceTable pdpt) {
         // Emit physical data precedence table
-        using (var writer = MakeDataFile(now + " - "  + name + " - Physical Data Precedence Table.csv")) {
+        using (var writer = MakeDataFile(timestamp + " - " + filename + " - Physical Data Precedence Table.csv")) {
             pdpt.Encode(writer);
         }
     }

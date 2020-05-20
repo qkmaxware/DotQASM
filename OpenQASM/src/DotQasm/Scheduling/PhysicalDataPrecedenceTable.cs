@@ -29,9 +29,11 @@ class PhysicalDataPrecedenceTable: List<List<(PhysicalQubit, DataPrecedenceNode)
         var columns = this.ColumnCount;
         for (int column = 0; column < columns; column++) {
             for (int row = 0; row < this.RowCount; row++) {
-                var cell = this[row][column];
-                if (cell.Item2 != null && cell.Item2.Event != null)
-                    schedule.ScheduleEvent(cell.Item2.Event);
+                if (column < this[row].Count) {
+                    var cell = this[row][column];
+                    if (cell.Item2 != null && cell.Item2.Event != null)
+                        schedule.ScheduleEvent(cell.Item2.Event);
+                }
             }
         }
 
@@ -65,7 +67,7 @@ class PhysicalDataPrecedenceTable: List<List<(PhysicalQubit, DataPrecedenceNode)
                         x => 
                             x.Item2 == null 
                             ? string.Empty 
-                            : Quote(x.Item2.Event.Name + (x.Item2.Event is ControlledGateEvent ce && ce.ControlQubit.QubitId == i? "*" : string.Empty) + " (" + x.Item2.Event.GetHashCode().ToString("X") + ")")
+                            : Quote(x.Item1.Name + "::" + x.Item2.Event.Name + (x.Item2.Event is ControlledGateEvent ce && ce.ControlQubit.QubitId == i? "*" : string.Empty) + " (" + x.Item2.Event.GetHashCode().ToString("X") + ")")
                     )
                 )
             );

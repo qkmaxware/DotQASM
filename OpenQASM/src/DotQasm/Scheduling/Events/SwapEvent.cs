@@ -19,6 +19,9 @@ public class SwapEvent: IEvent {
         this.QuantumDependencies = new Qubit[]{a, b};
     }
 
+    public override string ToString() {
+       return GetType().ToString(); 
+    }
 }
 
 }

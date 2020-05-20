@@ -23,6 +23,9 @@ public class IfEvent: IEvent {
         this.Event = evt;
     }
 
+    public override string ToString() {
+       return GetType().ToString(); 
+    }
 }
 
 }

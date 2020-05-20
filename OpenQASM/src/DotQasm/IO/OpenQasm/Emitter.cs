@@ -58,10 +58,20 @@ public class OpenQasmEmitter: IEmitter<Circuit> {
     private void EmitGate(GateEvent evt, TextWriter writer) {
         foreach (var qubit in evt.QuantumDependencies) {
             // Write name
-            writer.Write("u3"); // all gates are u3 representable
+            if (evt.Operator == Gate.Hadamard) {
+                writer.Write("h");
+            } else if (evt.Operator == Gate.PauliX) {
+                writer.Write("x");
+            } else if (evt.Operator == Gate.PauliY) {
+                writer.Write("y");
+            } else if (evt.Operator == Gate.PauliZ) {
+                writer.Write("z");
+            } else {
+                writer.Write("u3"); 
 
-            // Write params (if any)
-            writer.Write(evt.Operator.Parametres);
+                // Write params (if any)
+                writer.Write(evt.Operator.Parametres);
+            }
             writer.Write(space);
 
             // Write args (if any) (comma separated list of qubits)

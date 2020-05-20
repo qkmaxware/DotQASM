@@ -53,6 +53,7 @@ namespace DotQasm.Backend.IBM {
                 new IBMSimulator(key),
                 new IBMVigo(key),
                 new IBMYorktown(key),
+                new IBMRome(key),
             };
         }
     }

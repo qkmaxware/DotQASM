@@ -23,6 +23,9 @@ public class GateEvent: IEvent {
 
     public GateEvent (Gate gate, Qubit member) : this(gate, new Qubit[]{ member }) {}
 
+    public override string ToString() {
+       return GetType().ToString(); 
+    }
 }
 
 }

@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace DotQasm.Hardware {
 
 public class PhysicalQubit {
+    public string Name;
     public int Colour = 0;    
 
     public PhysicalQubit() {}
@@ -89,6 +91,24 @@ public class ConnectivityGraph: EdgeListGraph<PhysicalQubit, Channel> {
         }
 
         return graph;
+    }
+
+    private void WriteQubit(StringBuilder writer, PhysicalQubit qubit) {
+        writer.Append(qubit.Name).Append('[').Append("colour=").Append(qubit.Colour).Append(']');
+    }
+
+    public override string ToString() {
+        StringBuilder sb = new StringBuilder();
+        foreach (var edge in this.Edges) {
+            var start = edge.Startpoint;
+            var end = edge.Endpoint;
+
+            WriteQubit(sb, start);
+            sb.Append(" -> ");
+            WriteQubit(sb, end);
+            sb.Append(System.Environment.NewLine);
+        }
+        return sb.ToString();
     }
 
 }

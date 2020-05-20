@@ -31,6 +31,9 @@ public class ControlledGateEvent: IEvent {
         this.Operator = gate;
     }
 
+    public override string ToString() {
+       return GetType().ToString(); 
+    }
 }
 
 }

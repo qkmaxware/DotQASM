@@ -150,6 +150,7 @@ public class HardwareConfiguration {
         }
         if (!graph.ContainsKey(nodeName)) {
             var qubit = new PhysicalQubit();
+            qubit.Name = nodeName;
             graph.Add(nodeName, qubit);   
             return qubit;
         } else {

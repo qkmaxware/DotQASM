@@ -15,6 +15,10 @@ public class MeasurementEvent: IEvent {
         this.ClassicalDependencies = cds;
         this.QuantumDependencies = qds;
     }
+
+    public override string ToString() {
+       return GetType().ToString(); 
+    }
 }
 
 }

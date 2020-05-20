@@ -59,7 +59,7 @@ public class Stat : ICommand {
             OpenQasmSemanticAnalyser semanticAnalyser = builder.Analyser;
             Circuit circuit = builder.Circuit;
             var linearEventCount = circuit.GateSchedule.EventCount;
-            var first = circuit.GateSchedule;
+            var first = circuit.GateSchedule.First;
             var last = circuit.GateSchedule.Last;
 
             int[] widths = new int[]{24, 42};
@@ -73,8 +73,8 @@ public class Stat : ICommand {
             Console.WriteLine(string.Format(fmt, "Quantum Bits", semanticAnalyser.QubitCount));
             Console.WriteLine(string.Format(fmt, "Classic Bits", semanticAnalyser.CbitCount));
             Console.WriteLine(string.Format(fmt, "Scheduled Events", linearEventCount.ToString()));
-            Console.WriteLine(string.Format(fmt, "First Event", first.GetType()));
-            Console.WriteLine(string.Format(fmt, "Last Event", last.GetType()));
+            Console.WriteLine(string.Format(fmt, "First Event", first));
+            Console.WriteLine(string.Format(fmt, "Last Event", last));
             Console.WriteLine(string.Format(fmt, "Gate Uses", semanticAnalyser.GateUseCount));
             Console.WriteLine(string.Format(fmt, "Measurements", semanticAnalyser.MeasurementCount));
             Console.WriteLine(string.Format(fmt, "Resets", semanticAnalyser.ResetCount));
