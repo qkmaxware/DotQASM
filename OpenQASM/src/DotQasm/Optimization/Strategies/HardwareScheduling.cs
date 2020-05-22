@@ -423,6 +423,7 @@ public class HardwareScheduling :
         InteractionGraph ig = new InteractionGraph(group);
         // Assign colours to the interactions
         ig.AssignColours();
+        System.Console.WriteLine(ig);
         // Create unambiguous groupings
         var unambiguous_groups = ig.Edges
             .Select(edge => edge.Data)
@@ -445,7 +446,7 @@ public class HardwareScheduling :
         foreach (var group in iterable) {
             // detect ambiguities
             if (DoAmbiguitiesExist(group)) {
-                Console.WriteLine("Ambiguities exist");
+                // Console.WriteLine("Ambiguities exist");
                 // resolve ambiguities
                 foreach (var unambiguous_group in SplitAmbiguousGroup(group)) {
                     yield return unambiguous_group;
@@ -496,27 +497,45 @@ public class HardwareScheduling :
             );
         }
 
+        Func<(PhysicalQubit, PhysicalQubit), (PhysicalQubit, PhysicalQubit), bool> InterferesWith = (a, b) => {
+            return a.Item1 == b.Item1 || a.Item1 == b.Item2 || a.Item2 == b.Item1 || a.Item2 == b.Item2; 
+        };
+
         // Add swaps to the schedule, put those swaps into place on the qubit map
+        var depth = pdpt.ColumnCount;
+        var swapsAtPreviousDepth = new List<SwapSearchColouring>();
         foreach (var node in swapPath) {
             if (node.lastSwap.HasValue) {
                 // swap the physical qubits associated with the logical qubits
-                var swap = node.lastSwapQubits;
-                var logical1 = logicalQubitMap[swap.Value.Item1];
-                var logical2 = logicalQubitMap[swap.Value.Item2];
-                logicalQubitMap.Swap(swap.Value.Item1, swap.Value.Item2);
+                var swap = node.lastSwapQubits.Value;
+                var logical1 = logicalQubitMap[swap.Item1];
+                var logical2 = logicalQubitMap[swap.Item2];
+                logicalQubitMap.Swap(swap.Item1, swap.Item2);
                 
-                // Add a physical swap to the pdpt as well
+                // Create swap event
                 var swapOp = new SwapEvent(logical1, logical2);
                 var swapNode = new DataPrecedenceNode();
                 swapNode.Event = swapOp;
                 swapNode.Priority = group.Key;
-                pdpt[logical1].Add((swap.Value.Item1, swapNode));
-                pdpt[logical2].Add((swap.Value.Item2, swapNode));
+                
+                // If this swap doesn't interfer with previous swaps, can schedule it at the same depth as the last ones, otherwise add new depth
+                var conflicts = swapsAtPreviousDepth.Where(prior => prior.lastSwap.HasValue ? InterferesWith(swap, prior.lastSwapQubits.Value) : false).Any();
+                if (!conflicts && swapsAtPreviousDepth.Count > 0) {
+                    depth --;
+                } else {
+                    swapsAtPreviousDepth.Clear();
+                }
+
+                // Add a physical swap to the pdpt as well
+                Pad(pdpt[logical1], depth);
+                Pad(pdpt[logical2], depth++);
+                pdpt[logical1].Add((swap.Item1, swapNode));
+                pdpt[logical2].Add((swap.Item2, swapNode));
+                swapsAtPreviousDepth.Add(node);
             }
         }
 
         // Apply operations as none should conflict
-        var depth = pdpt.Select(row => row.Count()).Max();
         foreach (var vert in group) {
             foreach (var qubit in vert.Event.QuantumDependencies) {
                 // Pad the depth to the current level

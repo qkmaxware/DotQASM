@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Collections.Generic;
+using System.Text;
 
 namespace DotQasm.Scheduling {
 
@@ -28,7 +29,7 @@ public class InteractionGraph: EdgeListGraph<Qubit, Interaction> {
         foreach (var (evt, index) in nodes.Select((node, index) => (node.Event, index))) {
             var interaction = new Interaction() {
                 Event = evt,
-                Colour = index
+                Colour = default(int)
             };
 
             // Add undirected edge for interaction
@@ -54,37 +55,17 @@ public class InteractionGraph: EdgeListGraph<Qubit, Interaction> {
     public void AssignColours() {
         BreadthFirstColourSharing();
     }
-    
-    private void BreadthFirstAllUniqueEdgeColouring() {
-        if (this.VertexCount > 0) {
-            GraphVisitor<Qubit, Interaction> visitor = new GraphVisitor<Qubit, Interaction>();
-            BreadthFirstWalker<Qubit, Interaction> iterator = new BreadthFirstWalker<Qubit, Interaction>(this.Vertices.ElementAt(0), this);
-
-            var nextColour = 1; // TODO better strategy, this will give each edge its own colour, it won't minimize colours
-
-            visitor.OnVisitVertex = (vertex) => {};
-            visitor.OnVisitEdge = (edge) => {
-                // Give different colour to each edge
-                if (!edge.Data.HasColour())
-                    edge.Data.Colour = nextColour++;
-            };
-            
-            iterator.Traverse(visitor);
-        }
-    }
 
    private void BreadthFirstColourSharing() {
         if (this.VertexCount > 0) {
-            GraphVisitor<Qubit, Interaction> visitor = new GraphVisitor<Qubit, Interaction>();
-            BreadthFirstWalker<Qubit, Interaction> iterator = new BreadthFirstWalker<Qubit, Interaction>(this.Vertices.ElementAt(0), this);
+            foreach (var edge in this.Edges) {
+                if (edge.Data.HasColour()) {
+                    continue;
+                }
 
-            visitor.OnVisitVertex = (vertex) => { };
-            visitor.OnVisitEdge = (edge) => {
-                if (edge.Data.HasColour())
-                    return;
-                    
                 var startEdges = this.IncidentEdges(edge.Startpoint);
                 var endEdges = this.IncidentEdges(edge.Endpoint);
+
                 var colour = 1; // Always bias towards 1 (force more things to be 1 than not 1)
 
                 var coloursItCantBe = startEdges.Select(e => e.Data.Colour).Concat(endEdges.Select(e => e.Data.Colour)).ToList();
@@ -94,12 +75,26 @@ public class InteractionGraph: EdgeListGraph<Qubit, Interaction> {
                 }
 
                 edge.Data.Colour = colour;
-            };
-
-            iterator.Traverse(visitor);
+            }
         }
-   }
+    }
     
+    public override string ToString() {
+        StringBuilder sb = new StringBuilder();
+        foreach (var edge in this.Edges.DistinctBy((e) => e.Data)) {
+            var start = edge.Startpoint;
+            var end = edge.Endpoint;
+
+            sb.Append('q').Append(start.QubitId);
+            sb.Append(" -> ");
+            sb.Append('q').Append(end.QubitId);
+            sb.Append(" [").Append("colour=").Append(edge.Data.Colour).Append(",event=").Append(edge.Data.Event.Name).Append(']');
+
+            sb.Append(System.Environment.NewLine);
+        }
+        return sb.ToString();
+    }
+
     /// <summary>
     /// Assign colours using the Misra & Gries algorithm
     /// https://en.wikipedia.org/wiki/Misra_%26_Gries_edge_coloring_algorithm

@@ -47,6 +47,7 @@ public class OpenQasm2CircuitVisitor : IOpenQasmVisitor {
     }
 
     private Qubit GetQubit(string varname, int element) {
+        // TODO System.ArgumentOutOfRangeException handling
         return qubitMap[varname].ElementAt(element);
     }
 
