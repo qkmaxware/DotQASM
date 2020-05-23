@@ -16,6 +16,8 @@ public class SvgEmitter : IEmitter<Circuit>, IConverter<Circuit, Svg> {
     private int cellHeight = 32;
     private int cellWidth = 32;
 
+    public string FormatName => "SVG";
+
     private Colour GetColorFor(Gate gate) {
         return gate.Symbol switch {
             "h" => Colour.Blue,

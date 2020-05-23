@@ -68,9 +68,8 @@ public abstract class QaoaGenerator<T> : ICircuitGenerator<QaoaArguments<T>> {
 /// Generator for the MaxCut Quantum Approximate Optimization Algorithm
 /// created by study of "Quantum Algorithm Implementations for Beginners": https://arxiv.org/pdf/1804.03719.pdf
 /// </summary>
-public class MaxCutGenerator<T>: QaoaGenerator<T>, ICircuitTemplate {
+public class MaxCutGenerator<T>: QaoaGenerator<T> {
     public override string OptimizationProblemName => "MaxCut";
-    public string TemplateName => OptimizationProblemName;
 
     private void ApplyGammaAngle(Qubit q1, Qubit q2, float angle) {
         q2.CX(q1);
@@ -92,27 +91,6 @@ public class MaxCutGenerator<T>: QaoaGenerator<T>, ICircuitTemplate {
         foreach (var qubit in reg) {
             qubit.Apply(gate);
         }
-    }
-
-    public Circuit GetTemplateCircuit() {
-        // Create graph, similar to the actual hardware
-        EdgeListGraph<int, T> graph = new EdgeListGraph<int, T>();
-        graph.Add(0); graph.Add(1); graph.Add(2); graph.Add(3); graph.Add(4);
-        // Triangle plus edge 
-        graph.DirectedEdge(2, 1, default(T));
-        graph.DirectedEdge(2, 4, default(T));
-        graph.DirectedEdge(2, 3, default(T));
-        graph.DirectedEdge(3, 4, default(T));
-
-        // Create args
-        var args = new QaoaArguments<T>(){
-            RoundsOfOptimization    = 2,
-            GammaAngles             = new float[] { (float)(0.2 * Math.PI),     (float)(0.4 * Math.PI)  },
-            BetaAngles              = new float[] { (float)(0.15 * Math.PI),    (float)(0.05 * Math.PI) },
-            Graph                   = graph
-        };
-
-        return Generate(args);
     }
 }
 

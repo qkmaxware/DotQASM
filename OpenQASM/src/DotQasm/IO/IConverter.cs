@@ -9,6 +9,10 @@ namespace DotQasm.IO {
 /// <typeparam name="To">type to convert into</typeparam>
 public interface IConverter<From, To> {
     /// <summary>
+    /// Name of format being converted to
+    /// </summary>
+    string FormatName {get;}
+    /// <summary>
     /// Convert the given program into another form
     /// </summary>
     /// <param name="from">program to convert</param>

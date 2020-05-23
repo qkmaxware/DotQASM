@@ -4,6 +4,8 @@ using DotQasm.IO.OpenQasm.Ast;
 namespace DotQasm.IO.QSharp {
 
 public class QSharpTranspiler : IConverter<ProgramContext, string> {
+    public string FormatName => "q#";
+
     public string Convert(ProgramContext program) {
         StringBuilder sb = new StringBuilder();
 

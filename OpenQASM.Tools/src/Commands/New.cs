@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using DotQasm.Compile;
 using DotQasm.Compile.Generators;
+using DotQasm.Compile.Templates;
+using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
@@ -115,9 +117,26 @@ gate cu3(theta,phi,lambda) c, t
     private static string main = @"OPENQASM 2.0;
 include ""qelib1.inc"";";
 
-    private List<ICircuitTemplate> Templates = new List<ICircuitTemplate>(){
-        new MaxCutGenerator<object>()
+    private static List<ICircuitTemplate> Templates = new List<ICircuitTemplate>(){
+        new MaxCutTemplate(),
+        new QftTemplate(Qubits: 3),
+        new QftTemplate(Qubits: 4),
+        new QftTemplate(Qubits: 5)
     };
+
+    [Usage()]
+    public static IEnumerable<Example> Examples {
+        get {
+            foreach (var template in Templates) {
+                yield return new Example(
+                    "Create a new " + template.TemplateName + " project", 
+                    new New{ 
+                        ProjectPath = ".", Template = template.TemplateName.ToLower() 
+                    }
+                );
+            }
+        }
+    }
 
     public Status Exec() {
         ICircuitTemplate selectedTemplate = null; 

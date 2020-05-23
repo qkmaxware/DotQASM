@@ -1,20 +1,18 @@
 using System;
+using System.Linq;
 using System.IO;
 using System.Collections.Generic;
 using CommandLine;
 using DotQasm.IO.OpenQasm.Ast;
 using DotQasm.IO;
+using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
-public enum SupportedLanguages {
-    OpenQASM, ProjectQ, QISkit, QSharp, Quil, Scaffold
-}
-
 [Verb("convert", HelpText="Transpile OpenQASM to another quantum language")]
-public class Transpile : ICommand {
-    [Option('l', "lang", Default=SupportedLanguages.OpenQASM, HelpText="Emitted language specifier")]
-    public SupportedLanguages Language {get; set;}
+public class Transpile : BaseCommand {
+    [Option('l', "lang", Default="OpenQasm", HelpText="Emitted language specifier")]
+    public string Language {get; set;}
     private string outf;
     [Option('o', "out", HelpText = "Converted file output path")]
     public string OutputFile {
@@ -33,34 +31,45 @@ public class Transpile : ICommand {
     [Value(0, MetaName="file", Required=true, HelpText="OpenQASM file path")]
     public string QasmFile {get; set;}
 
-    public Status Exec(){
-        IConverter<OpenQasmAstContext, string> transpiler = null;
-        switch (Language) {
-            case SupportedLanguages.OpenQASM:
-                // transpiler = transpiler ?? new IO.OpenQASM.Transpiler();
-            case SupportedLanguages.ProjectQ:
-                // transpiler = transpiler ?? new IO.ProjectQ.Transpiler();
-            case SupportedLanguages.QISkit:
-                // transpiler = transpiler ?? new IO.QISkit.Transpiler();
-            case SupportedLanguages.QSharp:
-                transpiler = transpiler ?? (IConverter<OpenQasmAstContext, string>)new IO.QSharp.QSharpTranspiler();
-                goto case SupportedLanguages.Scaffold;
-            case SupportedLanguages.Quil:
-                // transpiler = transpiler ?? new IO.Quil.Transpiler();
-            case SupportedLanguages.Scaffold:
-                // transpiler = transpiler ?? new IO.Scaffold.Transpiler();
-                string NameOnly = Path.GetFileName(QasmFile);
-                string OutputNameOnly = Path.GetFileName(OutputFile);
-                Console.Write(QasmFile + " -> " + OutputNameOnly + " ... ");
+    [Usage()]
+    public static IEnumerable<Example> Examples {
+        get {
+            foreach (var transpiler in Transpilers) {
+                yield return new Example(
+                    "Convert OpenQASM circuit to " + transpiler.FormatName,
+                    new Transpile {
+                        QasmFile = "./file.qasm",
+                        Language = transpiler.FormatName
+                    }
+                );
+            }
+        }
+    }
 
-                // var node = ...
-                // var content = transpiler?.Convert(node);
-                // using (StreamWriter writer = new StreamWriter(OutputFile)) { writer.Write(content) }
+    private static List<IConverter<OpenQasmAstContext, string>> transpilers = new List<IConverter<OpenQasmAstContext, string>>(){
+        (IConverter<OpenQasmAstContext, string>)new IO.QSharp.QSharpTranspiler()
+    };
+    public static IEnumerable<IConverter<OpenQasmAstContext, string>> Transpilers => transpilers.AsReadOnly();
 
-                Console.WriteLine("Saved");
-                return Status.Success;
-            default:
-                throw new Exception(string.Format("Language '{0}' is not yet supported", Language));
+    public override Status Exec(){
+        // Get transpiler
+        var transpiler = Transpilers.Where((x) => x.FormatName.ToLower() == Language.ToLower()).FirstOrDefault();
+
+        if (transpiler != null) {
+            // Convert
+            string NameOnly = Path.GetFileName(QasmFile);
+            string OutputNameOnly = Path.GetFileName(OutputFile);
+            Console.Write(QasmFile + " -> " + OutputNameOnly + " ... ");
+
+            var circuit = ReadFileAsCircuit(QasmFile);
+            
+            //var content = transpiler.Convert(node);
+            //using (StreamWriter writer = new StreamWriter(OutputFile)) { writer.Write(content); }
+
+            Console.WriteLine("Saved");
+            return Status.Success;
+        } else {
+            throw new Exception(string.Format("Language '{0}' is not yet supported", Language));
         }
     }
 }

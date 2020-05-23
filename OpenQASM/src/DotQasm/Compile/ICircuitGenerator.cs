@@ -12,9 +12,4 @@ public interface ICircuitGenerator<T> {
     Circuit Generate(T generatorArgs);
 }
 
-public interface ICircuitTemplate {
-    string TemplateName {get;}
-    Circuit GetTemplateCircuit();
-}
-
 }

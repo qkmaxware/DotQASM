@@ -7,6 +7,7 @@ using DotQasm;
 using DotQasm.Backend.Local;
 using DotQasm.IO.OpenQasm;
 using DotQasm.IO.OpenQasm.Ast;
+using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
@@ -14,6 +15,18 @@ namespace DotQasm.Tools.Commands {
 public class Repl : ICommand {
     [Option('q', "qubits", Default=5, HelpText="Number of qubits")]
     public int Qubits {get; set;}
+
+    [Usage()]
+    public static IEnumerable<Example> Examples {
+        get {
+            yield return new Example(
+                "Read-evaluate-print loop on 10 qubit simulated machine",
+                new Repl {
+                    Qubits = 10
+                }
+            );
+        }
+    }
 
     public Status Exec() {
         Console.WriteLine(

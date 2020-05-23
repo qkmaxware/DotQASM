@@ -6,6 +6,7 @@ using CommandLine;
 using DotQasm.IO;
 using DotQasm.IO.OpenQasm;
 using DotQasm.Scheduling;
+using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
@@ -17,6 +18,18 @@ public class Stat : ICommand {
 
     [Option('m', "show-matrix", Required = false, HelpText = "Show instruction dependency matrix")]
     public bool ShowMatrix {get; set;}
+
+    [Usage()]
+    public static IEnumerable<Example> Examples {
+        get {
+            yield return new Example(
+                "Obtain description of algorithm in a given file",
+                new Stat {
+                    QasmFile = "./file.qasm"
+                }
+            );
+        }
+    }
 
     public Status Exec() {
         // Read in text

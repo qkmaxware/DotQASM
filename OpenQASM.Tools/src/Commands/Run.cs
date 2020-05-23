@@ -6,6 +6,7 @@ using CommandLine;
 using DotQasm.IO;
 using DotQasm.Backend;
 using DotQasm.IO.OpenQasm;
+using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
@@ -29,7 +30,25 @@ public class Run : ICommand {
         new Backend.IBM.IBMBackendProvider()
     };
 
-    public static IEnumerable<IBackendProvider> Providers => providers;
+    public static IEnumerable<IBackendProvider> Providers => providers.AsReadOnly();
+
+    [Usage()]
+    public static IEnumerable<Example> Examples {
+        get {
+            foreach (var provider in Run.Providers) {
+                foreach (var backend in provider.ListBackends()) {
+                    yield return new Example(
+                        "Execute algorithm on the " + provider.ProviderAbbreviation + " " + backend.Name  + " device", 
+                        new Run{ 
+                            QasmFile = "./file.qasm", 
+                            Provider = provider.ProviderAbbreviation,
+                            Backend = backend.Name 
+                        }
+                    );
+                }
+            }
+        }
+    }
 
     public static object GetBackend(string providerName, string backendName, string apikey, int qubits) {
         var lowerProvider = providerName.ToLower();

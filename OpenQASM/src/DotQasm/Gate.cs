@@ -114,6 +114,13 @@ public class Gate {
         }
     );*/
 
+    public static Gate PhaseShift(float theta) {
+        var gate = U1(theta);
+        gate.Name = "rφ(" + theta + ")";
+        gate.Symbol = "rφ";
+        return gate;
+    }
+
     /// <summary>
     /// Create an X-Axis rotation gate
     /// </summary>

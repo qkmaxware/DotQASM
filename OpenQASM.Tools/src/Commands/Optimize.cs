@@ -10,6 +10,7 @@ using DotQasm.Optimization;
 using DotQasm.IO.OpenQasm;
 using System.Diagnostics;
 using DotQasm.Hardware;
+using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
@@ -27,6 +28,21 @@ public class Optimize : ICommand {
 
     [Option('h', "hardware-config", HelpText = "Specify a hardware configuration to optimize against")]
     public string HardwareConfiguration {get; set;}
+
+    [Usage()]
+    public static IEnumerable<Example> Examples {
+        get {
+            foreach (var optimization in AvailableOptimizations) {
+                yield return new Example(
+                    "Apply \"" + optimization.Name + "\" optimization", 
+                    new Optimize{ 
+                        QasmFile = "./file.qasm", 
+                        Optimizations = new string[]{ optimization.Name } 
+                    }
+                );
+            }
+        }
+    }
 
     private static List<IOptimization<LinearSchedule, LinearSchedule>> optimizationList = new List<IOptimization<LinearSchedule, LinearSchedule>>(){
         new Optimization.Strategies.CombineGates(),

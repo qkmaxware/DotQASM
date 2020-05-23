@@ -9,6 +9,7 @@ using DotQasm.Scheduling;
 using DotQasm.Optimization;
 using DotQasm.IO.OpenQasm;
 using System.Diagnostics;
+using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
@@ -30,6 +31,18 @@ public class Render : ICommand {
         } 
         set {
             outf = value;
+        }
+    }
+
+    [Usage()]
+    public static IEnumerable<Example> Examples {
+        get {
+            yield return new Example(
+                "Compile circuit code to diagram",
+                new Render {
+                    QasmFile = "./file.qasm"
+                }
+            );
         }
     }
 
