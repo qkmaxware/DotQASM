@@ -114,6 +114,10 @@ public class Gate {
         }
     );*/
 
+    /// <summary>
+    /// Apply a phase rotation of the given angle
+    /// </summary>
+    /// <param name="theta">phase angle</param>
     public static Gate PhaseShift(float theta) {
         var gate = U1(theta);
         gate.Name = "rφ(" + theta + ")";

@@ -14,6 +14,9 @@ using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
+/// <summary>
+/// Command to apply optimization algorithms to OpenQASM programs
+/// </summary>
 [Verb("optimize", HelpText="Optimize an OpenQASM file")]
 public class Optimize : ICommand {
 

@@ -10,6 +10,9 @@ using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
+/// <summary>
+/// Command for creating new OpenQASM projects from templates
+/// </summary>
 [Verb("new", HelpText="Create a new OpenQASM project")]
 public class New : ICommand {
 

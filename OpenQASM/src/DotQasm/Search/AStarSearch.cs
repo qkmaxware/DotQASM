@@ -3,9 +3,11 @@ using System.Collections.Generic;
 
 namespace DotQasm.Search {
 
+/// <summary>
+/// Interface for any object that is searchable
+/// </summary>
 public interface ISearchable : IEquatable<ISearchable> {
-    IEnumerable<ISearchable> Neighbours() ;
-    
+    IEnumerable<ISearchable> Neighbours();
 }
 
 /// <summary>

@@ -13,6 +13,9 @@ using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
+/// <summary>
+/// Command to render OpenQASM circuits to SVG diagrams
+/// </summary>
 [Verb("render", HelpText="Render circuit diagram")]
 public class Render : ICommand {
 

@@ -9,6 +9,9 @@ using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
+/// <summary>
+/// Command to convert OpenQASM programs to other quantum frameworks
+/// </summary>
 [Verb("convert", HelpText="Transpile OpenQASM to another quantum language")]
 public class Transpile : BaseCommand {
     [Option('l', "lang", Default="OpenQasm", HelpText="Emitted language specifier")]

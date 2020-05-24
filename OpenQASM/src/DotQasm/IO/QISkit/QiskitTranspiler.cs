@@ -5,6 +5,9 @@ using DotQasm.Scheduling;
 
 namespace DotQasm.IO.Qiskit {
 
+/// <summary>
+/// Compiler from OpenQASM circuits to QIS kit source code
+/// </summary>
 public class QiskitTranspiler : IFileConverter<Circuit, string> {
 
     public string FormatName => "QISkit";

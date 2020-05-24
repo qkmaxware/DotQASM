@@ -10,6 +10,9 @@ using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
+/// <summary>
+/// Command to execute an OpenQASM program
+/// </summary>
 [Verb("run", HelpText="Execute a quantum assembly file")]
 public class Run : ICommand {
     [Option('p', "provider", Default="local", HelpText="Backend provider identifier string")]

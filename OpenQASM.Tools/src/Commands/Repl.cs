@@ -11,6 +11,9 @@ using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
+/// <summary>
+/// Command to access interactive REPL terminal
+/// </summary>
 [Verb("repl", HelpText="Interactive quantum circuit Read-Evaluate-Print-Loop")]
 public class Repl : ICommand {
     [Option('q', "qubits", Default=5, HelpText="Number of qubits")]

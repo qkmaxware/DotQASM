@@ -4,6 +4,9 @@ using DotQasm.Tools.Commands;
 
 namespace DotQasm.Tools {
 
+    /// <summary>
+    /// CLI tooling 
+    /// </summary>
     class QasmProgram {
         static int Main(string[] args) {
             Parser parser = new Parser(config => {

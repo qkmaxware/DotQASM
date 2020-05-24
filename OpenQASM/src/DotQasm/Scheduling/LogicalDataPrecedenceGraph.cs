@@ -142,12 +142,19 @@ public class LogicalDataPrecedenceGraph: EdgeListGraph<DataPrecedenceNode, DataP
         }
     }
 
+    /// <summary>
+    /// Calculate the latencies of all events using the given latency estimator
+    /// </summary>
+    /// <param name="TimeEstimator"></param>
     public void RecalculateLatencies(ILatencyEstimator TimeEstimator) {
         foreach (var evt in this.Vertices) {
             evt.Latency = TimeEstimator?.TimeOf(evt.Event) ?? TimeSpan.Zero;
         }
     }
 
+    /// <summary>
+    /// Compute the priorities of all events
+    /// </summary>
     public void RecalculatePriorities() {
         /*
             Priorities can be eﬃciently computed by traversing the (directed and acyclic) graph in a post-order,
@@ -185,6 +192,10 @@ public class LogicalDataPrecedenceGraph: EdgeListGraph<DataPrecedenceNode, DataP
         return "\"" + (str?.ToString() ?? string.Empty) + "\"";
     }
 
+    /// <summary>
+    /// Write the graph as a CSV to the given text writer
+    /// </summary>
+    /// <param name="writer">writer to write to</param>
     public void Encode(TextWriter writer) {
         writer.Write(Quote("Operation Index"));
         writer.Write(",");

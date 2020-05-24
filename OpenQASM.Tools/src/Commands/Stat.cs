@@ -10,6 +10,9 @@ using CommandLine.Text;
 
 namespace DotQasm.Tools.Commands {
 
+/// <summary>
+/// Command to obtain statistics about OpenQASM programs
+/// </summary>
 [Verb("describe", HelpText="Verify structure and gather statistics about a given quantum program")]
 public class Stat : ICommand {
 

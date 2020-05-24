@@ -5,6 +5,9 @@ using DotQasm.Scheduling;
 
 namespace DotQasm.IO.ProjectQ {
 
+/// <summary>
+/// Compiler from OpenQASM circuits to ProjectQ source code
+/// </summary>
 public class ProjectQTranspiler : IFileConverter<Circuit, string> {
 
     public string FormatName => "ProjectQ";

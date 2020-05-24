@@ -5,6 +5,9 @@ using DotQasm.Scheduling;
 
 namespace DotQasm.IO.QSharp {
 
+/// <summary>
+/// Compiler from OpenQASM circuits to Microsoft Q# source code
+/// </summary>
 public class QSharpTranspiler : IFileConverter<Circuit, string> {
     public string FormatName => "q#";
     public string FormatExtension => "qs";
@@ -21,17 +24,17 @@ public class QSharpTranspiler : IFileConverter<Circuit, string> {
         sb.AppendLine("open Microsoft.Quantum.Math as Math;");
         sb.AppendLine();
 
-        sb.AppendLine("operation U1(lambda: Double, qubit: Qubit) {");
+        sb.AppendLine("operation U1(lambda: Double, qubit: Qubit) : Unit {");
         sb.AppendLine(tab + "U3(0, 0, lambda, qubit);");
         sb.AppendLine("}");
         sb.AppendLine();
 
-        sb.AppendLine("operation U3(theta: Double, phi: Double, lambda: Double, qubit: Qubit) {");
+        sb.AppendLine("operation U3(theta: Double, phi: Double, lambda: Double, qubit: Qubit) : Unit {");
         sb.AppendLine(tab + "Rz(phi, qubit); Ry(theta, qubit); Rz(lambda, qubit);");
         sb.AppendLine("}");
         sb.AppendLine();
 
-        sb.AppendLine("operation CU3(theta: Double, phi: Double, lambda: Double, control: Qubit, target: Qubit) {");
+        sb.AppendLine("operation CU3(theta: Double, phi: Double, lambda: Double, control: Qubit, target: Qubit) : Unit {");
         sb.AppendLine(tab + "U1((lambda-phi)/2, target);");
         sb.AppendLine(tab + "Gates.CNOT(control, target);");
         sb.AppendLine(tab + "U3(-theta/2, 0, -(phi+lambda)/2, target);");

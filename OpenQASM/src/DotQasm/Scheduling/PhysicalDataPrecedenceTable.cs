@@ -10,10 +10,23 @@ using PhysicalDataPrecedenceCell = ValueTuple<PhysicalQubit, DataPrecedenceNode>
 using PhysicalDataPrecedenceRow = List<(PhysicalQubit, DataPrecedenceNode)>;
 using LogicalQubitMap = Dictionary<Qubit, PhysicalQubit>;
 
+/// <summary>
+/// Physical data precedence table indicating which operations apply to which logical and physical qubits during each discrete time-slice
+/// </summary>
 class PhysicalDataPrecedenceTable: List<List<(PhysicalQubit, DataPrecedenceNode)>> {
+    /// <summary>
+    /// Fetch the row cooresponding to the given logical qubit
+    /// </summary>
     public PhysicalDataPrecedenceRow this[Qubit q] => this[q.QubitId];
 
+    /// <summary>
+    /// Number of rows in the table
+    /// </summary>
     public int RowCount {get; private set;} = 0;
+    /// <summary>
+    /// Number of columns in the table
+    /// </summary>
+    /// <returns></returns>
     public int ColumnCount => this.Select(row => row.Count).Max();
 
     public PhysicalDataPrecedenceTable(int rows) {
@@ -23,6 +36,10 @@ class PhysicalDataPrecedenceTable: List<List<(PhysicalQubit, DataPrecedenceNode)
         }
     }
 
+    /// <summary>
+    /// Convert the given table of events to a linear sequence
+    /// </summary>
+    /// <returns>linear sequence of events</returns>
     public LinearSchedule ToLinearSchedule() {
         LinearSchedule schedule = new LinearSchedule();
 
@@ -44,6 +61,10 @@ class PhysicalDataPrecedenceTable: List<List<(PhysicalQubit, DataPrecedenceNode)
         return "\"" + (str?.ToString() ?? string.Empty) + "\"";
     }
 
+    /// <summary>
+    /// Write the table as a CSV to the given text writer
+    /// </summary>
+    /// <param name="writer">writer to write to</param>
     public void Encode(TextWriter writer) {
         // Print Header
         var columns = this.Select(row => row.Count).Max();

@@ -12,6 +12,9 @@ public class ConstantLatencyEstimator : ILatencyEstimator {
     }
 }
 
+/// <summary>
+/// Latency estimation where operations all have integer intervals
+/// </summary>
 public class IntegerLatencyEstimator : ILatencyEstimator {
     public TimeSpan TimeOf (IEvent evt) {
         return evt switch {

@@ -4,20 +4,41 @@ using System.Text;
 
 namespace DotQasm.Scheduling {
 
+/// <summary>
+/// Interaction graph edge data
+/// </summary>
 public class Interaction {
+    /// <summary>
+    /// Event
+    /// </summary>
     public IEvent Event;
+    /// <summary>
+    /// Edge colour
+    /// </summary>
     public int Colour;
-
+    /// <summary>
+    /// Clear the edge's colour
+    /// </summary>
     public void ClearColour() {
         this.Colour = default(int);
     }
+    /// <summary>
+    /// Check if this edge is coloured
+    /// </summary>
+    /// <returns></returns>
     public bool HasColour() {
         return this.Colour != default(int);
     }
 }
 
+/// <summary>
+/// Graph describing the interactions of various events on qubits
+/// </summary>
 public class InteractionGraph: EdgeListGraph<Qubit, Interaction> {
-
+    /// <summary>
+    /// Create new interaction graph from LogicalDataPrecendenceGraph nodes
+    /// </summary>
+    /// <param name="nodes"></param>
     public InteractionGraph(IEnumerable<DataPrecedenceNode> nodes) {
         // Add qubits
         var logicals = nodes.SelectMany(node => node.Event.QuantumDependencies).Distinct();
@@ -46,12 +67,18 @@ public class InteractionGraph: EdgeListGraph<Qubit, Interaction> {
         }
     }
 
+    /// <summary>
+    /// Clear all edge colours
+    /// </summary>
     private void ClearColours() {
         foreach (var edge in this.Edges) {
             edge.Data.ClearColour();
         }
     }
 
+    /// <summary>
+    /// Assign colours to each edge
+    /// </summary>
     public void AssignColours() {
         BreadthFirstColourSharing();
     }
