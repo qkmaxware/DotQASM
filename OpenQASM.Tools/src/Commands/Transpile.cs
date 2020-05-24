@@ -20,7 +20,7 @@ public class Transpile : BaseCommand {
             if (outf != null) {
                 return outf;
             } else {
-                return QasmFile + "." + Language.ToString().ToLower();
+                return Path.GetFileNameWithoutExtension(QasmFile);
             }
         } 
         set {
@@ -46,10 +46,11 @@ public class Transpile : BaseCommand {
         }
     }
 
-    private static List<IConverter<OpenQasmAstContext, string>> transpilers = new List<IConverter<OpenQasmAstContext, string>>(){
-        (IConverter<OpenQasmAstContext, string>)new IO.QSharp.QSharpTranspiler()
+    private static List<IFileConverter<Circuit, string>> transpilers = new List<IFileConverter<Circuit, string>>(){
+        new IO.QSharp.QSharpTranspiler(),
+        new IO.ProjectQ.ProjectQTranspiler()
     };
-    public static IEnumerable<IConverter<OpenQasmAstContext, string>> Transpilers => transpilers.AsReadOnly();
+    public static IEnumerable<IFileConverter<Circuit, string>> Transpilers => transpilers.AsReadOnly();
 
     public override Status Exec(){
         // Get transpiler
@@ -58,13 +59,13 @@ public class Transpile : BaseCommand {
         if (transpiler != null) {
             // Convert
             string NameOnly = Path.GetFileName(QasmFile);
-            string OutputNameOnly = Path.GetFileName(OutputFile);
+            string OutputNameOnly = Path.GetFileName(OutputFile) + "." + transpiler.FormatExtension;
             Console.Write(QasmFile + " -> " + OutputNameOnly + " ... ");
 
             var circuit = ReadFileAsCircuit(QasmFile);
             
-            //var content = transpiler.Convert(node);
-            //using (StreamWriter writer = new StreamWriter(OutputFile)) { writer.Write(content); }
+            var result = transpiler.Convert(circuit);
+            using (StreamWriter writer = new StreamWriter(OutputNameOnly)) { writer.Write(result); }
 
             Console.WriteLine("Saved");
             return Status.Success;

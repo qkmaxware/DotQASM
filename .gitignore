@@ -6,7 +6,9 @@ out/
 qasmdata/
 .VSCodeCounter/
 
-*.opt
 /*.svg
 /*.csv
 /*.qasm
+/*.qs
+/*.py
+/*.quil
