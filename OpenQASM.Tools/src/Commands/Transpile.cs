@@ -48,7 +48,8 @@ public class Transpile : BaseCommand {
 
     private static List<IFileConverter<Circuit, string>> transpilers = new List<IFileConverter<Circuit, string>>(){
         new IO.QSharp.QSharpTranspiler(),
-        new IO.ProjectQ.ProjectQTranspiler()
+        new IO.ProjectQ.ProjectQTranspiler(),
+        new IO.Qiskit.QiskitTranspiler()
     };
     public static IEnumerable<IFileConverter<Circuit, string>> Transpilers => transpilers.AsReadOnly();
 
