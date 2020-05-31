@@ -124,7 +124,8 @@ include ""qelib1.inc"";";
         new MaxCutTemplate(),
         new QftTemplate(Qubits: 3),
         new QftTemplate(Qubits: 4),
-        new QftTemplate(Qubits: 5)
+        new QftTemplate(Qubits: 5),
+        new DeutschTemplate(fn: (x) => x)
     };
 
     [Usage()]

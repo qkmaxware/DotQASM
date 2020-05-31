@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DotQasm.Compile.Operators {
 
-public class Qft : IQuantumOperator {
+public class Qft : BaseQuantumOperator {
 
     private static float RmTheta(int m) {
         return (float)(
@@ -40,7 +40,7 @@ public class Qft : IQuantumOperator {
         u1(theta_2, b);
     }
 
-    public void Invoke(IEnumerable<Qubit> register) {
+    public override void Invoke(IEnumerable<Qubit> register) {
         // https://en.wikipedia.org/wiki/Quantum_Fourier_transform
         
         var qubits = register.ToList();

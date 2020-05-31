@@ -22,6 +22,31 @@ public static class DSL {
         var evt = new Scheduling.GateEvent(gate, qubit);
         qubit.ParentCircuit?.GateSchedule?.ScheduleEvent(evt);
     }
+
+    /// <summary>
+    /// Apply a specific gate to the target qubit if the control qubit is set
+    /// </summary>
+    /// <param name="control">control qubit</param>
+    /// <param name="target">target qubit</param>
+    /// <param name="gate">gate to apply</param>
+    public static void ControlledApply(this Qubit control, Qubit target, Gate gate) {
+        /*
+        gate cu3(theta,phi,lambda) c, t
+        {
+            // implements controlled-U(theta,phi,lambda) with  target t and control c
+            u1((lambda-phi)/2) t;
+            cx c,t;
+            u3(-theta/2,0,-(phi+lambda)/2) t;
+            cx c,t;
+            u3(theta/2,phi,0) t;
+        }
+        */
+        target.U1((gate.Parametres.Lambda - gate.Parametres.Phi) / 2);
+        control.CX(target);
+        target.U3(-gate.Parametres.Theta/2, 0, -(gate.Parametres.Phi + gate.Parametres.Lambda) / 2);
+        control.CX(target);
+        target.U3(gate.Parametres.Theta/2, gate.Parametres.Phi, 0);
+    }
     
     /// <summary>
     /// Measure a qubit and put the result in the given classical bit

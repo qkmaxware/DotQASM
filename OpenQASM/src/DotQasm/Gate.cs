@@ -4,6 +4,46 @@ using System.Numerics;
 namespace DotQasm {
 
 /// <summary>
+/// Parametres for quantum single qubit unitary gates
+/// </summary>
+public struct GateParametres {
+    public double Theta {get; private set;}
+    public double Item1 {
+        get {
+            return Theta;
+        } private set {
+            Theta = value;
+        }
+    }
+    public double Phi {get; private set;}
+    public double Item2 {
+        get {
+            return Phi;
+        } private set {
+            Phi = value;
+        }
+    }
+    public double Lambda {get; private set;}
+    public double Item3 {
+        get {
+            return Lambda;
+        } private set {
+            Lambda = value;
+        }
+    }
+
+    public GateParametres(double theta, double phi, double lambda) {
+        this.Theta = theta;
+        this.Phi = phi;
+        this.Lambda = lambda;
+    }
+
+    public static implicit operator GateParametres((double, double, double) tuple) {
+        return new GateParametres(tuple.Item1, tuple.Item2, tuple.Item3);
+    }
+}
+
+/// <summary>
 /// Single qubit quantum gate
 /// </summary>
 public class Gate {
@@ -22,7 +62,7 @@ public class Gate {
     /// <summary>
     /// Classical rotation parametres 
     /// </summary>
-    public (double, double, double) Parametres {get; private set;}
+    public GateParametres Parametres {get; private set;}
 
     /// <summary>
     /// The identity gate
