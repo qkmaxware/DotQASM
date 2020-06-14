@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace DotQasm.Compile.Operators {
 
-public class CRx : BaseControlledQuantumOperator {
+public class CRx : BaseControlledOperator {
     private Gate gate;
 
     public CRx(Gate gate) {
@@ -10,15 +10,15 @@ public class CRx : BaseControlledQuantumOperator {
     }
     public CRx(float angle) : this(Gate.Rx(angle)) {}
 
-    public override void Invoke(Qubit control, IEnumerable<Qubit> register) {
-        foreach (var qubit in register) {
-            control.ControlledApply(qubit, gate);
+    public override void Invoke((Qubit control, IEnumerable<Qubit> register) args) {
+        foreach (var qubit in args.register) {
+            args.control.ControlledApply(qubit, gate);
         }
     }
 }
 
 
-public class Rx : BaseHermitianOperator, IControllable {
+public class Rx : BaseHermitianOperator, IControllable<IEnumerable<Qubit>> {
 
     private Gate gate;
 
@@ -26,7 +26,7 @@ public class Rx : BaseHermitianOperator, IControllable {
         this.gate = Gate.Rx(angle);
     }
 
-    public IControlledQuantumOperator Controlled() {
+    public IControlledOperator<IEnumerable<Qubit>> Controlled() {
         return new CRx(gate);
     }
 
@@ -37,7 +37,7 @@ public class Rx : BaseHermitianOperator, IControllable {
     }
 }
 
-public class CRy : BaseControlledQuantumOperator {
+public class CRy : BaseControlledOperator {
     private Gate gate;
 
     public CRy(Gate gate) {
@@ -45,14 +45,14 @@ public class CRy : BaseControlledQuantumOperator {
     }
     public CRy(float angle) : this(Gate.Ry(angle)) {}
 
-    public override void Invoke(Qubit control, IEnumerable<Qubit> register) {
-        foreach (var qubit in register) {
-            control.ControlledApply(qubit, gate);
+    public override void Invoke((Qubit control, IEnumerable<Qubit> register) args) {
+        foreach (var qubit in args.register) {
+            args.control.ControlledApply(qubit, gate);
         }
     }
 }
 
-public class Ry : BaseHermitianOperator , IControllable {
+public class Ry : BaseHermitianOperator , IControllable<IEnumerable<Qubit>> {
 
     private Gate gate;
 
@@ -60,7 +60,7 @@ public class Ry : BaseHermitianOperator , IControllable {
         this.gate = Gate.Ry(angle);
     }
 
-    public IControlledQuantumOperator Controlled() {
+    public IControlledOperator<IEnumerable<Qubit>> Controlled() {
         return new CRy(gate);
     }
 
@@ -71,7 +71,7 @@ public class Ry : BaseHermitianOperator , IControllable {
     }
 }
 
-public class CRz : BaseControlledQuantumOperator {
+public class CRz : BaseControlledOperator {
     private Gate gate;
 
     public CRz(Gate gate) {
@@ -79,14 +79,14 @@ public class CRz : BaseControlledQuantumOperator {
     }
     public CRz(float angle) : this(Gate.Rz(angle)) {}
 
-    public override void Invoke(Qubit control, IEnumerable<Qubit> register) {
-        foreach (var qubit in register) {
-            control.ControlledApply(qubit, gate);
+    public override void Invoke((Qubit control, IEnumerable<Qubit> register) args) {
+        foreach (var qubit in args.register) {
+            args.control.ControlledApply(qubit, gate);
         }
     }
 }
 
-public class Rz : BaseHermitianOperator , IControllable {
+public class Rz : BaseHermitianOperator , IControllable<IEnumerable<Qubit>> {
 
     private Gate gate;
 
@@ -94,7 +94,7 @@ public class Rz : BaseHermitianOperator , IControllable {
         this.gate = Gate.Rz(angle);
     }
 
-    public IControlledQuantumOperator Controlled() {
+    public IControlledOperator<IEnumerable<Qubit>> Controlled() {
         return new CRz(gate);
     }
 

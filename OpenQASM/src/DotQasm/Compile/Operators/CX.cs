@@ -1,17 +1,18 @@
+using System.Linq;
 using System.Collections.Generic;
+using System;
 
 namespace DotQasm.Compile.Operators {
 
-public class CNot : BaseQuantumOperator {
-    private Qubit control;
+/// <summary>
+/// Controlled not operator
+/// </summary>
+public class CNot : BaseControlledOperator {
+    public CNot() {}
 
-    public CNot(Qubit control) {
-        this.control = control;
-    }
-
-    public override void Invoke(IEnumerable<Qubit> register) {
-        foreach (var target in register) {
-            control.CX(target);
+    public override void Invoke((Qubit control, IEnumerable<Qubit> register) args) {
+        foreach (var qubit in args.register) {
+            args.control.CX(qubit);
         }
     }
 }

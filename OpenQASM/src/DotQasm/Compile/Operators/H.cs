@@ -2,16 +2,16 @@ using System.Collections.Generic;
 
 namespace DotQasm.Compile.Operators {
 
-public class CH : BaseControlledQuantumOperator {
-    public override void Invoke(Qubit control, IEnumerable<Qubit> register) {
-        foreach (var qubit in register) {
-            control.ControlledApply(qubit, Gate.Hadamard);
+public class CH : BaseControlledOperator {
+    public override void Invoke((Qubit control, IEnumerable<Qubit> register) args) {
+        foreach (var qubit in args.register) {
+            args.control.ControlledApply(qubit, Gate.Hadamard);
         }
     }
 }
 
-public class H : BaseHermitianOperator, IControllable {
-    public IControlledQuantumOperator Controlled() {
+public class H : BaseHermitianOperator, IControllable<IEnumerable<Qubit>> {
+    public IControlledOperator<IEnumerable<Qubit>> Controlled() {
         return new CH();
     }
 

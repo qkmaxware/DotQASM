@@ -19,6 +19,7 @@ public class ProjectQTranspiler : IFileConverter<Circuit, string> {
         StringBuilder sb = new StringBuilder();
 
         // Imports
+        sb.AppendLine("# Code generated from DotQasm");
         sb.AppendLine("from projectq           import MainEngine               # Import main compiler engine");
         sb.AppendLine("from projectq.ops       import Rx, Ry,Rz, CNOT, Measure # Import quantum operations");
         sb.AppendLine("from projectq.backends  import Simulator                # Import quantum simulator");

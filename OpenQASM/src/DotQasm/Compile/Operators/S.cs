@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DotQasm.Compile.Operators {
 
-public class S : BaseQuantumOperator, IAdjoint, IControllable {
+public class S : BaseOperator<IEnumerable<Qubit>>, IAdjoint<IEnumerable<Qubit>>, IControllable<IEnumerable<Qubit>> {
 
     public static readonly Gate SGate = Gate.U1(Math.PI / 2);
 
@@ -13,24 +13,24 @@ public class S : BaseQuantumOperator, IAdjoint, IControllable {
         }
     }
 
-    public IQuantumOperator Adjoint() {
+    public IOperator<IEnumerable<Qubit>> Adjoint() {
         return new Sdg();
     }
 
-    public IControlledQuantumOperator Controlled() {
+    public IControlledOperator<IEnumerable<Qubit>> Controlled() {
         return new CS();
     }
 }
 
-public class CS : BaseControlledQuantumOperator {
-    public override void Invoke(Qubit control, IEnumerable<Qubit> register) {
-        foreach (var qubit in register) {
-            control.ControlledApply(qubit, S.SGate);
+public class CS : BaseControlledOperator {
+    public override void Invoke((Qubit control, IEnumerable<Qubit> register) args) {
+        foreach (var qubit in args.register) {
+            args.control.ControlledApply(qubit, S.SGate);
         }
     }
 }
 
-public class Sdg : BaseQuantumOperator, IAdjoint, IControllable {
+public class Sdg : BaseOperator<IEnumerable<Qubit>>, IAdjoint<IEnumerable<Qubit>>, IControllable<IEnumerable<Qubit>> {
 
     public static readonly Gate SdgGate = Gate.U1(-Math.PI / 2);
 
@@ -40,19 +40,19 @@ public class Sdg : BaseQuantumOperator, IAdjoint, IControllable {
         }
     }
 
-    public IQuantumOperator Adjoint() {
+    public IOperator<IEnumerable<Qubit>> Adjoint() {
         return new S();
     }
 
-    public IControlledQuantumOperator Controlled() {
+    public IControlledOperator<IEnumerable<Qubit>> Controlled() {
         return new CSdg();
     }
 }
 
-public class CSdg : BaseControlledQuantumOperator {
-    public override void Invoke(Qubit control, IEnumerable<Qubit> register) {
-        foreach (var qubit in register) {
-            control.ControlledApply(qubit, Sdg.SdgGate);
+public class CSdg : BaseControlledOperator {
+    public override void Invoke((Qubit control, IEnumerable<Qubit> register) args) {
+        foreach (var qubit in args.register) {
+            args.control.ControlledApply(qubit, Sdg.SdgGate);
         }
     }
 }

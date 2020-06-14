@@ -19,6 +19,7 @@ public class QiskitTranspiler : IFileConverter<Circuit, string> {
         StringBuilder sb = new StringBuilder();
 
         // Imports
+        sb.AppendLine("# Code generated from DotQasm");
         sb.AppendLine("from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit, Aer, execute");
         sb.AppendLine();
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DotQasm.Compile.Operators {
 
-public class Qft : BaseQuantumOperator {
+public class Qft : BaseOperator<IEnumerable<Qubit>> {
 
     private static float RmTheta(int m) {
         return (float)(

@@ -58,7 +58,7 @@ public class Transpile : BaseCommand {
 
     public override Status Exec(){
         // Get transpiler
-        var transpiler = Transpilers.Where((x) => x.FormatName.ToLower() == Language.ToLower()).FirstOrDefault();
+        var transpiler = Transpilers.Where((x) => x.FormatName.ToLower() == Language.ToLower() || x.FormatExtension.ToLower() == Language.ToLower()).FirstOrDefault();
 
         if (transpiler != null) {
             // Convert
@@ -71,7 +71,7 @@ public class Transpile : BaseCommand {
             var result = transpiler.Convert(circuit);
             using (StreamWriter writer = new StreamWriter(OutputNameOnly)) { writer.Write(result); }
 
-            Console.WriteLine("Saved");
+            Console.WriteLine("Done");
             return Status.Success;
         } else {
             throw new Exception(string.Format("Language '{0}' is not yet supported", Language));

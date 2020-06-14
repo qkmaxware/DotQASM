@@ -34,6 +34,8 @@ public class DeutschJozsaGenerator : ICircuitGenerator<Func<List<bool>, bool>> {
             q.H();
             q.Measure(c);
         }
+
+        return Circuit;
     }
 }
 
