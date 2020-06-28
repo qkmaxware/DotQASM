@@ -24,6 +24,18 @@ public static class DSL {
     }
 
     /// <summary>
+    /// Apply a gate to a qubit only if the given classical bit is set
+    /// </summary>
+    /// <param name="qubit">qubit to apply to</param>
+    /// <param name="control">classical control</param>
+    /// <param name="gate">gate to apply</param>
+    public static void IfApply(this Qubit qubit, Cbit control, Gate gate) {
+        var evt = new Scheduling.GateEvent(gate, qubit);
+        var iff = new Scheduling.IfEvent( new Cbit[]{ control }, 1, evt );
+        qubit.ParentCircuit?.GateSchedule?.ScheduleEvent(iff);
+    }   
+
+    /// <summary>
     /// Apply a specific gate to the target qubit if the control qubit is set
     /// </summary>
     /// <param name="control">control qubit</param>

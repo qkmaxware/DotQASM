@@ -4,9 +4,10 @@ WORKDIR /app
 
 # Copy over csproj and sln
 COPY OpenQASM/*.csproj ./OpenQASM/
+COPY OpenQASM.Desktop/*.csproj ./OpenQASM.Desktop/
+COPY OpenQASM.Experiment/*.csproj ./OpenQASM.Experiment/
 COPY OpenQASM.Tests/*.csproj ./OpenQASM.Tests/
 COPY OpenQASM.Tools/*.csproj ./OpenQASM.Tools/
-COPY OpenQASM.Desktop/*.csproj ./OpenQASM.Desktop/
 COPY OpenQASM.sln OpenQASM.sln
 RUN dotnet restore
 

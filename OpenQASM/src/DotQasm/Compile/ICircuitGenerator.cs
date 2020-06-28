@@ -12,4 +12,15 @@ public interface ICircuitGenerator<T> {
     Circuit Generate(T generatorArgs);
 }
 
+/// <summary>
+/// Interface representing a class that can generate full quantum circuits
+/// </summary>
+public interface ICircuitGenerator {
+    /// <summary>
+    /// Generate a circuit given specific args
+    /// </summary>
+    /// <returns>Generated circuit</returns>
+    Circuit Generate();
+}
+
 }

@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 namespace DotQasm.Compile.Generators {
 
-public class GroverGenerator : ICircuitGenerator<IOperator<IEnumerable<Qubit>>> {
+public class GroverGenerator : ICircuitGenerator<(int itemCount, IOperator<IEnumerable<Qubit>> oracle)> {
 
     private static Operators.Diffusion grovers = new Operators.Diffusion();
 
-    public Circuit Generate(IOperator<IEnumerable<Qubit>> oracle) {
-        var circ = new Circuit(); 
+    public Circuit Generate((int itemCount, IOperator<IEnumerable<Qubit>> oracle) args) {
+        var circ = new Circuit($"Gover's search with {args.itemCount} items"); 
         // https://qiskit.org/textbook/ch-algorithms/grover.html
 
-        var N = 4;
+        var N = args.itemCount;
         var qubits = (int)Math.Max(Math.Ceiling(Math.Sqrt(N)), 1);
         var qreg = circ.AllocateQubits(qubits);
 
@@ -32,7 +32,7 @@ public class GroverGenerator : ICircuitGenerator<IOperator<IEnumerable<Qubit>>> 
             /*
                 We apply the oracle reflection Uf to the state |s⟩
             */
-            oracle.Invoke(qreg);
+            args.oracle.Invoke(qreg);
 
             // Step 3.
             /*

@@ -14,9 +14,7 @@ public class QftTemplate : ICircuitTemplate {
     }
 
     public Circuit GetTemplateCircuit() {
-        return (new QftGenerator()).Generate(new QftGeneratorArguments() {
-            Qubits = QubitCount
-        });
+        return (new QftGenerator()).Generate(QubitCount);
     }
 }
 

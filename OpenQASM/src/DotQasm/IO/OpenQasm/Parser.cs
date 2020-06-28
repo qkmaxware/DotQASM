@@ -460,6 +460,8 @@ public class Parser {
 
         var quantum = ParseArgument();
 
+        Semicolon();
+
         return new ResetContext(pos, quantum);
     }
 

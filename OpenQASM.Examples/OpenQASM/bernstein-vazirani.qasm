@@ -8,7 +8,7 @@ creg c[2];
 x q[0];
 h q[0];
 h q[1];
-h 1[2];
+h q[2];
 
 // Toffoli decomposition
 h q[0];
@@ -39,7 +39,7 @@ h q[1];
 x q[2];
 x q[1];
 h q[2];
-q q[1];
+h q[1];
 
 // Measurement
 measure q[1] -> c[0];

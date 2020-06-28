@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DotQasm.Compile.Operators {
 
-public class Qft : BaseOperator<IEnumerable<Qubit>> {
+public class Qft : BaseOperator<IEnumerable<Qubit>>, IAdjoint<IEnumerable<Qubit>> {
 
     private static float RmTheta(int m) {
         return (float)(
@@ -57,6 +57,33 @@ public class Qft : BaseOperator<IEnumerable<Qubit>> {
                 ControlledPhaseRotation(RmTheta(m++), control, target);
             }
         }
+    }
+
+    public IOperator<IEnumerable<Qubit>> Adjoint() {
+        return new QftDg();
+    }
+}
+
+public class QftDg : BaseOperator<IEnumerable<Qubit>>, IAdjoint<IEnumerable<Qubit>> {
+    public override void Invoke(IEnumerable<Qubit> register) {
+        var qubits = register.ToList();
+
+        for (var i = 0; i < qubits.Count/2; i++) {
+            // Half of the qubits
+            var qubit = qubits[i];
+            qubit.Swap(qubits[qubits.Count - i - 1]);
+        }
+        for (var j = 0; j < qubits.Count; j++) {
+            for (var m = 0; m < j; m++) {
+                var gate = Gate.U1(-Math.PI / Math.Pow(2, j - m));
+                qubits[m].ControlledApply(qubits[j], gate);
+            }
+            qubits[j].H();
+        }
+    }
+
+    public IOperator<IEnumerable<Qubit>> Adjoint() {
+        return new Qft();
     }
 }
 

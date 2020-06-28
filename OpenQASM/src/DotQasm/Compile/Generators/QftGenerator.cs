@@ -4,14 +4,10 @@ using System.Collections.Generic;
 
 namespace DotQasm.Compile.Generators {
 
-public class QftGeneratorArguments {
-    public int Qubits = 5;
-}
-
-public class QftGenerator : ICircuitGenerator<QftGeneratorArguments> {
-    public Circuit Generate(QftGeneratorArguments generatorArgs) {
-        var Circuit = new Circuit(generatorArgs.Qubits + " Qubit Quantum Fourier Transform");
-        var qreg = Circuit.AllocateQubits(generatorArgs.Qubits);
+public class QftGenerator : ICircuitGenerator<int> {
+    public Circuit Generate(int qubits = 5) {
+        var Circuit = new Circuit(qubits + " Qubit Quantum Fourier Transform");
+        var qreg = Circuit.AllocateQubits(qubits);
 
         Operators.Qft op = new Operators.Qft();
         op.Invoke(qreg);

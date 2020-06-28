@@ -547,7 +547,16 @@ public class HardwareScheduling :
         }
     }
 
-    public override LinearSchedule Transform(LinearSchedule schedule) {
+    /// <summary>
+    /// Transform the given schedule but keep references to the created data and files
+    /// </summary>
+    /// <param name="schedule">schedule to transform</param>
+    /// <param name="save_ldpg">reference to the Logical Data Precedence Graph</param>
+    /// <param name="saved_ldpg_filename">filename of the emitted Logical Data Precedence Graph on the hard-drive</param>
+    /// <param name="save_pdpt">reference to the Physical Data Precedence Table</param>
+    /// <param name="saved_pdpt_filename">filename of the emitted Physical Data Precedence Table on the hard-drive</param>
+    /// <returns>transformed schedule</returns>
+    public LinearSchedule Transform(LinearSchedule schedule, out LogicalDataPrecedenceGraph save_ldpg, out string saved_ldpg_filename, out PhysicalDataPrecedenceTable save_pdpt, out string saved_pdpt_filename) {
         // Obtain hardware reference
         if (hardware == null) {
             throw new ArgumentException(this.Name + " strategy requires a valid hardware configuration");
@@ -569,6 +578,10 @@ public class HardwareScheduling :
         var ldpg = new LogicalDataPrecedenceGraph(schedule);
         var pdpt = new PhysicalDataPrecedenceTable(qubitCount); // Row, Column Format
 
+        // Save these references
+        save_ldpg = ldpg;
+        save_pdpt = pdpt;
+
         // Fill initial logical qubit to physical qubit mapping
         // 1-1, logical maps directly to physical (better way of doing this would be nice)
         var logicalQubitMap = new BijectiveDictionary<Qubit, PhysicalQubit>(qubitCount);
@@ -582,7 +595,7 @@ public class HardwareScheduling :
         // Page 7. the depth of a node ni corresponds to the maximum number of nodes traversed along any directed path from ni to any gate in the last generation
         // Page 7, pi = Max ( Sum(tj) for each in paths to node from leaf generation)
         ComputePriorities(ldpg);
-        EmitLdpg(now, filename, ldpg);
+        saved_ldpg_filename = EmitLdpg(now, filename, ldpg);
 
         // Step 2, schedule each event by priority, add routing if necessary
         // Page 7, No gate will ever depend on a gate with a lower priority so we can use a priority iterator to construct the physical data precedence  table
@@ -596,22 +609,39 @@ public class HardwareScheduling :
         }
 
         // Step 3, output all data
-        EmitPdpt(now, filename, pdpt);
+        saved_pdpt_filename = EmitPdpt(now, filename, pdpt);
         return pdpt.ToLinearSchedule();
     }
 
-    private void EmitLdpg(string timestamp, string filename, LogicalDataPrecedenceGraph ldpg) {
-        // Emit logical data precedence graph
-        using (var writer = MakeDataFile(timestamp + " - " + filename + " - Logical Data Precedence Graph.csv")) {
-            ldpg.Encode(writer);
-        }
+    /// <summary>
+    /// Transform the given schedule discarding all references to the created data and files 
+    /// </summary>
+    /// <param name="schedule">schedule to transform</param>
+    /// <returns>transformed schedule</returns>
+    public override LinearSchedule Transform(LinearSchedule schedule) {
+        LogicalDataPrecedenceGraph ldpg;
+        string ldpg_filename;
+        PhysicalDataPrecedenceTable pdpt;
+        string pdpt_filename;
+        return Transform(schedule, out ldpg, out ldpg_filename, out pdpt, out pdpt_filename);
     }
 
-    private void EmitPdpt(string timestamp, string filename, PhysicalDataPrecedenceTable pdpt) {
+    private string EmitLdpg(string timestamp, string filename, LogicalDataPrecedenceGraph ldpg) {
+        // Emit logical data precedence graph
+        var name = timestamp + " - " + filename + " - Logical Data Precedence Graph.csv";
+        using (var writer = MakeDataFile(name)) {
+            ldpg.Encode(writer);
+        }
+        return name;
+    }
+
+    private string EmitPdpt(string timestamp, string filename, PhysicalDataPrecedenceTable pdpt) {
         // Emit physical data precedence table
-        using (var writer = MakeDataFile(timestamp + " - " + filename + " - Physical Data Precedence Table.csv")) {
+        var name = timestamp + " - " + filename + " - Physical Data Precedence Table.csv";
+        using (var writer = MakeDataFile(name)) {
             pdpt.Encode(writer);
         }
+        return name;
     }
 }
 

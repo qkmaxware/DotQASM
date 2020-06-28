@@ -23,6 +23,7 @@ public class IntegerLatencyEstimator : ILatencyEstimator {
             IfEvent ie                  => TimeSpan.FromMilliseconds(2),
             GateEvent ge                => TimeSpan.FromMilliseconds(1),
             ControlledGateEvent cge     => TimeSpan.FromMilliseconds(2),
+            SwapEvent swap              => TimeSpan.FromMilliseconds(3 * 2),
             // Other events just use a default time
             BarrierEvent be             => TimeSpan.FromMilliseconds(1),
             _                           => TimeSpan.FromMilliseconds(1),
@@ -46,17 +47,28 @@ public class BasicLatencyEstimator : ILatencyEstimator {
     public TimeSpan OtherEventTime = new TimeSpan();                        // Unidentified events get this time
 
     public TimeSpan TimeOf (IEvent evt) {
-        return evt switch {
-            BarrierEvent be => BarrierTime,
-            MeasurementEvent me => MeasurementTime,
-            ResetEvent re => ResetTime,
+        return TimeOf(evt.GetType());
+    }
+
+    public TimeSpan TimeOf(Type type) {
+        if (type == typeof(BarrierEvent)) {
+            return BarrierTime;
+        } else if (type == typeof(MeasurementEvent)) {
+            return MeasurementTime;
+        } else if (type == typeof(ResetEvent)) {
+            return ResetTime;
+        } else if (type == typeof(IfEvent)) {
             // If is a classical check + a quantum gate
-            IfEvent ie => ClassicalCheckLatency + TimeOf(ie.Event),
-            GateEvent ge => SingleGateTime,
-            ControlledGateEvent cge => MultipleGateTime,
-            // Other events just use a default time
-            _ => OtherEventTime
-        };
+            return ClassicalCheckLatency + SingleGateTime;
+        } else if (type == typeof(GateEvent)) {
+            return SingleGateTime;
+        } else if (type == typeof(ControlledGateEvent)) {
+            return MultipleGateTime;
+        } else if (type == typeof(SwapEvent)) {
+          return 3 * MultipleGateTime;  // is 3 controlled gate operations
+        } else {
+            return OtherEventTime;
+        }
     }
 }
 

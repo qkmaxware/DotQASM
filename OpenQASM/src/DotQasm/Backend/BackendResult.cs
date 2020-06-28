@@ -25,6 +25,10 @@ public class BackendResult {
     /// Probabilities per each potential state
     /// </summary>
     public Dictionary<int, double> StateProbabilityHistogram {get; protected set;}
+    /// <summary>
+    /// Most likely state
+    /// </summary>
+    public int State => StateProbabilityHistogram.Aggregate((current, next) => current.Value > next.Value ? current : next).Key;
 
     /// <summary>
     /// Create an empty backend result

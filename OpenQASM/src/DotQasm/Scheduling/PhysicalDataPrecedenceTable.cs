@@ -13,7 +13,7 @@ using LogicalQubitMap = Dictionary<Qubit, PhysicalQubit>;
 /// <summary>
 /// Physical data precedence table indicating which operations apply to which logical and physical qubits during each discrete time-slice
 /// </summary>
-class PhysicalDataPrecedenceTable: List<List<(PhysicalQubit, DataPrecedenceNode)>> {
+public class PhysicalDataPrecedenceTable: List<List<(PhysicalQubit, DataPrecedenceNode)>> {
     /// <summary>
     /// Fetch the row cooresponding to the given logical qubit
     /// </summary>

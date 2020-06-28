@@ -66,6 +66,7 @@ public abstract class QaoaGenerator<T> : ICircuitGenerator<QaoaArguments<T>> {
 
 /// <summary>
 /// Generator for the MaxCut Quantum Approximate Optimization Algorithm
+/// Generic argument is the type of value stored in the graph edges
 /// created by study of "Quantum Algorithm Implementations for Beginners": https://arxiv.org/pdf/1804.03719.pdf
 /// </summary>
 public class MaxCutGenerator<T>: QaoaGenerator<T> {
