@@ -25,27 +25,27 @@ public class Experiment1 {
 
         // Circuits to test
         IEnumerable<Circuit> generated_circuits = new Circuit[] {
-            new QuantumTeleportationGenerator().Generate(),                                             // Quantum teleportation algorithm
-            new SuperdenseCodingGenerator().Generate(0b00),                                             // Superdense coding of '0'
-            new SuperdenseCodingGenerator().Generate(0b01),                                             // Superdense coding of '1'
-            new SuperdenseCodingGenerator().Generate(0b10),                                             // Superdense coding of '2'
-            new SuperdenseCodingGenerator().Generate(0b11),                                             // Superdense coding of '3'
-            new DeutschGenerator().Generate((x) => true),                                               // Constant true Deutsch
-            new DeutschGenerator().Generate((x) => false),                                              // Constant false Deutsch
-            new DeutschGenerator().Generate((x) => x),                                                  // Identity Deutsch
-            new DeutschGenerator().Generate((x) => !x),                                                 // Bit-flip Deutsch
-            new DeutschJoszaGenerator().Generate((qubits: 3, oracle: new BalancedOracle("101"))),       // Create a balanced oracle for binary string 101
-            new BernsteinVazraniGenerator().Generate((qubits: 3, value: 0b011)),                        // Bernstein Vazrani on a 3 qubit machine with the binary string 011
-            new SimonGenerator().Generate("11"),                                                        // Simon's algorithm with a bitstring of '11'
-            new QftGenerator().Generate(qubits: 3),                                                     // Quantum Fourier Transform with 3 qubits
-            new QftGenerator().Generate(qubits: 4),                                                     // Quantum Fourier Transform with 4 qubits
-            new QftGenerator().Generate(qubits: 5),                                                     // Quantum Fourier Transform with 5 qubits
+        /* 1*/    new QuantumTeleportationGenerator().Generate(),                                             // Quantum teleportation algorithm
+        /* 2*/    new SuperdenseCodingGenerator().Generate(0b00),                                             // Superdense coding of '0'
+        /* 3*/    new SuperdenseCodingGenerator().Generate(0b01),                                             // Superdense coding of '1'
+        /* 4*/    new SuperdenseCodingGenerator().Generate(0b10),                                             // Superdense coding of '2'
+        /* 5*/    new SuperdenseCodingGenerator().Generate(0b11),                                             // Superdense coding of '3'
+        /* 6*/    new DeutschGenerator().Generate((x) => true),                                               // Constant true Deutsch
+        /* 7*/    new DeutschGenerator().Generate((x) => false),                                              // Constant false Deutsch
+        /* 8*/    new DeutschGenerator().Generate((x) => x),                                                  // Identity Deutsch
+        /* 9*/    new DeutschGenerator().Generate((x) => !x),                                                 // Bit-flip Deutsch
+        /*10*/    new DeutschJoszaGenerator().Generate((qubits: 3, oracle: new BalancedOracle("101"))),       // Create a balanced oracle for binary string 101
+        /*11*/    new BernsteinVazraniGenerator().Generate((qubits: 3, value: 0b011)),                        // Bernstein Vazrani on a 3 qubit machine with the binary string 011
+        /*12*/    new SimonGenerator().Generate("11"),                                                        // Simon's algorithm with a bitstring of '11'
+        /*13*/    new QftGenerator().Generate(qubits: 3),                                                     // Quantum Fourier Transform with 3 qubits
+        /*14*/    new QftGenerator().Generate(qubits: 4),                                                     // Quantum Fourier Transform with 4 qubits
+        /*15*/    new QftGenerator().Generate(qubits: 5),                                                     // Quantum Fourier Transform with 5 qubits
             // Quantum Phase Estimation
             //new ShorsGenerator().Generate((2, 9)),                                                      // Shor's algorithm to factor '9' with a guess of 2
-            new GroverGenerator().Generate((itemCount: 9, oracle: new PhaseOracle())),                  // Grover's algorithm on a collection of 9 items looking for |101> and |110>
+        /*16*/    new GroverGenerator().Generate((itemCount: 9, oracle: new PhaseOracle())),                  // Grover's algorithm on a collection of 9 items looking for |101> and |110>
             // Quantum Counting
             // Quantum Key Distribution
-            new MaxCutTemplate().GetTemplateCircuit()
+        /*17*/    new MaxCutTemplate().GetTemplateCircuit()
         };
         IEnumerable<Circuit> prebuilt_circuits = Directory
             .GetFiles(Path.Combine("OpenQASM.Examples", "OpenQASM"), "*.qasm")
@@ -68,12 +68,16 @@ public class Experiment1 {
             });
 
         var circuits = generated_circuits.Concat(prebuilt_circuits).ToArray();
+        var skipLongCircuits = true;
+        var longCircuitLength = 25; // Skip all circuits with more than 'x' operations
 
         // Hardware to compile against
         var hardware = Directory
             .GetFiles(Path.Combine("OpenQASM.Examples", "Hardware"), "*.yaml")
             .Select(filename => {
                 return ParseYaml<HardwareConfiguration>(filename);
+            }).Where( hw => {
+                return hw.PhysicalQubitCount < 32; // Skip large hardware to avoid stack overflows
             }).ToArray();
         
         // Create timing model
@@ -153,14 +157,10 @@ public class Experiment1 {
             timingWriter.WriteLine($"{typeof(GateEvent)}, {timeModel.TimeOf(typeof(GateEvent))}");
             timingWriter.WriteLine($"{typeof(ControlledGateEvent)}, {timeModel.TimeOf(typeof(ControlledGateEvent))}");
             timingWriter.WriteLine($"Other, {timeModel.TimeOf(typeof(object))}");
+            timingWriter.Flush();
     
             // Iterate over all circuits and run experiments
             for (var i = 0; i < circuits.Length; i++) {
-                // Update progress
-                Console.Write($"{(i + 1).ToString().PadLeft(circuitCount.ToString().Length, ' ')}/{circuitCount} ");
-                var progress = new ProgressBar(2 + hardware.Length);
-                var stage = 0;
-
                 // Init variables / names
                 var circuit = circuits[i];
                 var circuit_name = Path.GetFileNameWithoutExtension(circuit.Name);
@@ -169,6 +169,15 @@ public class Experiment1 {
                 var circuit_diagram = file_name_prefix + ".svg";
                 circuit.Name = file_name_prefix;
                 scheduling.Use(new VirtualFile(circuit.Name, string.Empty)); // For naming of generated LDPG & PDPT files
+
+                // Update progress
+                Console.Write($"{(i + 1).ToString().PadLeft(circuitCount.ToString().Length, ' ')}/{circuitCount} ");
+                if (skipLongCircuits && circuit.GateSchedule.EventCount > longCircuitLength) {
+                    Console.WriteLine("Skipped");
+                    continue;
+                }
+                var progress = new ProgressBar(2 + hardware.Length);
+                var stage = 0;
 
                 // Print rows
                 optTimeMtxWriter.Write(circuit_id);
@@ -192,14 +201,17 @@ public class Experiment1 {
                     // Compute events
                     var number_of_events = circuit.GateSchedule.EventCount;
                     eventCountWriter.WriteLine  ($", {number_of_events}");
+                    eventCountWriter.Flush();
 
                     // Compute qubits
                     qubitCountWriter.Write      ($", {circuit.QubitCount}");
                     qubitCountWriter.WriteLine  ($", {circuit.BitCount}");
+                    qubitCountWriter.Flush();
 
                     //Estimate time if instructions performed sequentially
                     estimated_linear_time = circuit.GateSchedule.Select((evt) => timeModel.TimeOf(evt)).Aggregate((t1, t2) => t1 + t2);
                     estimatedRuntimeBeforeWriter.WriteLine($", {estimated_linear_time}");
+                    estimatedRuntimeBeforeWriter.Flush();
 
                     // Emit circuit diagram
                     var emitter = new DotQasm.IO.Svg.SvgEmitter();
@@ -346,7 +358,7 @@ public class Experiment1 {
                 // Clean up garbage to give better performance next algorithm (in-case lots of objects got created)
                 System.GC.Collect();
                 System.GC.WaitForPendingFinalizers();
-                progress.Update(++stage);
+                Console.WriteLine();
             }
             Console.WriteLine();
         }

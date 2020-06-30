@@ -57,6 +57,7 @@ class SwapSearchColouring : ISearchable {
 
     public IEnumerable<ISearchable> Neighbours() {
         //Console.WriteLine(string.Join(',', this.colours) + " " + AreAllColoursAdjacent());
+        List<ISearchable> next = new List<ISearchable>();
         foreach (var edge in graph.Edges) {
             // Get elements
             var inId = Array.IndexOf(this.qubits, edge.Startpoint);
@@ -64,28 +65,36 @@ class SwapSearchColouring : ISearchable {
 
             // Return next element
             if (inId != outId) {
-                yield return new SwapSearchColouring(this.graph, this.qubits, this.colours, (inId, outId));
+                next.Add(new SwapSearchColouring(this.graph, this.qubits, this.colours, (inId, outId)));
             }
         }
+        return next;
     }
 
     public bool AreAllColoursAdjacent() {
-        var colourCount = this.colours.GroupBy(colour => colour).ToDictionary(grp => grp.Key, grp => grp.Count());
         for (var index = 0; index < this.colours.Length; index++) {
             var colour = this.colours[index];
             if (colour == default(int))
                 continue; // uncolored
 
             var qubit = this.qubits[index];
+            var adjacencies = 0;
+            var count = 1; // self counts as 1
+            for (var compare = 0; compare < this.colours.Length; compare++) {
+                if (compare == index) 
+                    continue; // checking against self
+                if (this.colours[compare] != colour)
+                    continue; // Not of the same colour
 
-            if (colourCount.ContainsKey(colour) && colourCount[colour] > 1) {
-                // If others of this colour exist
-                // This vertex is the start node of each edge
-                var edges = this.graph.IncidentEdges(qubit);
-                var connected = edges.Where(edge => edge.Endpoint.Colour == colour).Any();
-                if (!connected) {
-                    return false;
-                }
+                var adjacent = this.graph.AreAdjacent(qubit, this.qubits[compare]);
+                if (adjacent)
+                    adjacencies++;
+                count++;
+            }
+            //Console.WriteLine(colour + " has " + count + " with " + adjacencies);
+            if (count > 1 && adjacencies < 1) {
+                // There are more that 1 of this colour, and they are not adjacent
+                return false;
             }
         }
         return true;
@@ -93,22 +102,29 @@ class SwapSearchColouring : ISearchable {
 
     public int DistanceFromAdjacency() {
         var distance = 0;
-        var colourCount = this.colours.GroupBy(colour => colour).ToDictionary(grp => grp.Key, grp => grp.Count());
         for (var index = 0; index < this.colours.Length; index++) {
             var colour = this.colours[index];
             if (colour == default(int))
                 continue; // uncolored
 
             var qubit = this.qubits[index];
+            var adjacencies = 0;
+            var count = 1; // self counts as 1
+            for (var compare = 0; compare < this.colours.Length; compare++) {
+                if (compare == index) 
+                    continue; // checking against self
+                if (this.colours[compare] != colour)
+                    continue; // Not of the same colour
 
-            if (colourCount.ContainsKey(colour) && colourCount[colour] > 1) {
-                // If others of this colour exist
-                // This vertex is the start node of each edge
-                var edges = this.graph.IncidentEdges(qubit);
-                var connected = edges.Where(edge => edge.Endpoint.Colour == colour).Any();
-                if (!connected) {
-                    distance++;
-                }
+                var adjacent = this.graph.AreAdjacent(qubit, this.qubits[compare]);
+                if (adjacent)
+                    adjacencies++;
+                count++;
+            }
+            //Console.WriteLine(colour + " has " + count + " with " + adjacencies);
+            if (count > 1 && adjacencies < 1) {
+                // There are more that 1 of this colour, and they are not adjacent
+                return distance++;
             }
         }
         return distance;
@@ -480,7 +496,10 @@ public class HardwareScheduling :
         var swapPath = AStarSearch.Search<SwapSearchColouring>(
             new SwapSearchColouring(hardware.ConnectivityGraph), 
             (node) => {         // End Condition
-                return node.AreAllColoursAdjacent();
+                var adjacent = node.AreAllColoursAdjacent();
+                //Console.Write(string.Join(',', node.colours));
+                //Console.WriteLine(" " + adjacent);
+                return adjacent;
             },
             (from, to) => {     // Edge Distance Weighting
                 return 1;       // 1 swap added
@@ -563,6 +582,9 @@ public class HardwareScheduling :
         var logicalQubits = schedule.Events.SelectMany(x => x.QuantumDependencies).Distinct().ToList();
         var physicalQubits = hardware.ConnectivityGraph.Vertices.ToList();
         var qubitCount = hardware.PhysicalQubitCount;
+        if (logicalQubits.Count == 0) {
+            throw new ArgumentException("Number of qubits used must be larger than 0");
+        }
         if (logicalQubits.Count > qubitCount) {
             throw new ArgumentOutOfRangeException("Number of logical qubits is greater than the number of physical qubits");
         }
@@ -584,7 +606,11 @@ public class HardwareScheduling :
         // Fill initial logical qubit to physical qubit mapping
         // 1-1, logical maps directly to physical (better way of doing this would be nice)
         var logicalQubitMap = new BijectiveDictionary<Qubit, PhysicalQubit>(qubitCount);
-        foreach (var logical in logicalQubits) {
+        var ancillaQubits = new List<Qubit>();
+        for (var i = logicalQubits.Count; i < physicalQubits.Count; i++) {
+            ancillaQubits.Add(new Qubit(null, i)); // Create new "dummy" logical qubits to pad to the length of the physical qubits
+        }
+        foreach (var logical in logicalQubits.Concat(ancillaQubits)) {
             logicalQubitMap.Add(logical, physicalQubits.ElementAt(logical.QubitId));
         }
 
@@ -598,10 +624,10 @@ public class HardwareScheduling :
 
         // Step 2, schedule each event by priority, add routing if necessary
         // Page 7, No gate will ever depend on a gate with a lower priority so we can use a priority iterator to construct the physical data precedence  table
-        var groups = GroupByPriority(ldpg.Vertices);
+        var groups = GroupByPriority(ldpg.Vertices).ToList();
 
         // Ambiguity resolution
-        var unambiguous_groups = ResolveAmbiguitiesToIterable(groups);
+        var unambiguous_groups = ResolveAmbiguitiesToIterable(groups).ToList();
         foreach (var unambiguous_group in unambiguous_groups) {
             // Routing
             RouteGroup(logicalQubitMap, pdpt, unambiguous_group);

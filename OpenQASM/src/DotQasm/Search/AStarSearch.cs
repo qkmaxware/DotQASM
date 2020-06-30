@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace DotQasm.Search {
@@ -76,13 +77,6 @@ public static class AStarSearch {
         Func<VertexType, VertexType, double> weightFunction,
         Func<VertexType, double> heuristicFunction
     ) where VertexType:ISearchable {
-        // Start is end
-        if (stopCondition.Invoke(start)) {
-            var x = new List<VertexType>(1);
-            x.Add(start);
-            return x;
-        } 
-
         // Already evaluated nodes
         HashSet<SearchNode<VertexType>> closed = new HashSet<SearchNode<VertexType>>();
         
@@ -102,6 +96,11 @@ public static class AStarSearch {
             // Find the node with least F and pop it off the open list
             SearchNode<VertexType> current = open.Dequeue();
 
+            // If this node is the end
+            if (stopCondition.Invoke(current.Current)) {
+                return Backtrack<VertexType>(current);
+            } 
+
             // Generate the successors to current
             var successors = current.Current.Neighbours();
 
@@ -111,10 +110,6 @@ public static class AStarSearch {
                 SearchNode<VertexType> node = new SearchNode<VertexType>();
                 node.Current = (VertexType)successor;
                 node.Parent = current;
-
-                if (stopCondition.Invoke(node.Current)) {
-                    return Backtrack<VertexType>(node);
-                }
 
                 node.G = current.G + weightFunction.Invoke(current.Current, node.Current);
                 node.H = heuristicFunction.Invoke(node.Current);

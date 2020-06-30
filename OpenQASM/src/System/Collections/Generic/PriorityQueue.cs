@@ -4,7 +4,8 @@ namespace System.Collections.Generic {
 /// Priority queue 
 /// </summary>
 /// <typeparam name="T">stored type</typeparam>
-public class PriorityQueue<T> {
+public class PriorityQueue<T> : IEnumerable<T>
+    {
 
     private List<T> data; 
     private IComparer<T> comparer;
@@ -88,6 +89,14 @@ public class PriorityQueue<T> {
             element = data[ind];
             return true;
         }
+    }
+
+    public IEnumerator<T> GetEnumerator() {
+        return data.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() {
+        return data.GetEnumerator();
     }
 }
 

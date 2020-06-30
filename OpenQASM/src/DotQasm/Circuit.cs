@@ -58,7 +58,7 @@ public class Register<T> : IRegister<T> where T:IOwnedBy<Register<T>> {
 /// </summary>
 public class Qubit: IOwnedBy<Register<Qubit>> {      
     public int QubitId {get; private set;}
-    public Circuit ParentCircuit => Owner.Owner;
+    public Circuit ParentCircuit => Owner?.Owner;
     public Register<Qubit> Owner {get; private set;}
 
     public Qubit(Register<Qubit> circuit, int index) {

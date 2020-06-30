@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 public class ProgressBar {
 
@@ -11,6 +12,7 @@ public class ProgressBar {
     private static char space = ' ';
 
     private float max;
+    private int lastLength = 0;
 
     public ProgressBar() {
         this.left = Console.CursorLeft;
@@ -27,7 +29,7 @@ public class ProgressBar {
 
     private void ClearLine() {
         ResetCursor();
-        Console.Write(new String(space, Console.BufferWidth - 1));
+        Console.Write(new String(space, lastLength));
     }
 
     public void Update(float value) {
@@ -36,22 +38,26 @@ public class ProgressBar {
         var percent = value / max;
         percent = percent > 1 ? 1 : (percent < 0 ? 0 : percent); // clamp value
 
+        StringBuilder sb = new StringBuilder();
+
         // Draw bar
-        Console.Write(endcap);
+        sb.Append(endcap);
         var bars = (int)(percent * length); // compute number of bars
         var spaces = length - bars;         // compute number of blanks
         for (var i = 0; i < bars; i++) {
-            Console.Write(bar);
+            sb.Append(bar);
         } 
         for (var i = 0; i < spaces; i++) {
-            Console.Write(space);
+            sb.Append(space);
         }
-        Console.Write(endcap);
-        Console.Write(space);
+        sb.Append(endcap);
+        sb.Append(space);
 
         // Print Percent
-        Console.Write(string.Format( "{0:0.00}", percent ));
-        Console.Write('%');
+        sb.Append(value + "/" + max);
+        lastLength = sb.Length;
+
+        Console.Write(sb.ToString());
     }
 
 }

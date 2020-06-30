@@ -103,7 +103,7 @@ public class Optimize : ICommand {
             if (opt is IUsing<HardwareConfiguration> hardwareOpt) {
                 hardwareOpt.Use(hw);
             }
-            if (opt is IUsing<PhysicalFile> sourceFileOpt) {
+            if (opt is IUsing<IFileHandle> sourceFileOpt) {
                 sourceFileOpt.Use(SourceQasmFile);
             }
 

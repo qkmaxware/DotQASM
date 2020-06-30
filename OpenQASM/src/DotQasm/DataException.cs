@@ -15,7 +15,7 @@ public class DataException<T>: System.Exception {
     }
 
     public override string ToString() {
-        return this.Message + System.Environment.NewLine + (ExceptionData?.ToString() ?? string.Empty) + System.Environment.NewLine + this.StackTrace;
+        return base.ToString() + System.Environment.NewLine + (ExceptionData?.ToString() ?? string.Empty);
     }
 }
 
