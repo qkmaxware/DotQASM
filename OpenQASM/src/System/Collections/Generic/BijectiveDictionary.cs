@@ -68,15 +68,23 @@ public class BijectiveDictionary<T1, T2>: IDictionary<T1, T2> {
     public void Swap(T1 key1, T1 key2) {
         var tmp1 = this[key1];
         var tmp2 = this[key2];
-        this[key1] = tmp2;
-        this[key2] = tmp1;
+
+        this.Remove(key1);
+        this.Remove(key2);
+
+        this.Add(key1, tmp2);
+        this.Add(key2, tmp1);
     }
 
     public void Swap(T2 key1, T2 key2) {
         var tmp1 = this[key1];
         var tmp2 = this[key2];
-        this[key1] = tmp2;
-        this[key2] = tmp1;
+
+        this.Remove(key1);
+        this.Remove(key2);
+
+        this.Add(key1, tmp2);
+        this.Add(key2, tmp1);
     }
 
     public bool Contains(KeyValuePair<T1, T2> item) {

@@ -109,7 +109,7 @@ public class Optimize : ICommand {
 
             // Run the optimizer
             Stopwatch st = Stopwatch.StartNew();
-            circuit.GateSchedule = opt.Transform((LinearSchedule)circuit.GateSchedule);
+            circuit.GateSchedule = opt.Invoke((LinearSchedule)circuit.GateSchedule);
             var stepTime = st.Elapsed;
             totalTime += stepTime;
             Console.WriteLine(string.Format(fmt ,opt.Name + "...", stepTime));

@@ -41,7 +41,7 @@ public class Experiment1 {
             new QftGenerator().Generate(qubits: 4),                                                     // Quantum Fourier Transform with 4 qubits
             new QftGenerator().Generate(qubits: 5),                                                     // Quantum Fourier Transform with 5 qubits
             // Quantum Phase Estimation
-            new ShorsGenerator().Generate((2, 9)),                                                      // Shor's algorithm to factor '9' with a guess of 2
+            //new ShorsGenerator().Generate((2, 9)),                                                      // Shor's algorithm to factor '9' with a guess of 2
             new GroverGenerator().Generate((itemCount: 9, oracle: new PhaseOracle())),                  // Grover's algorithm on a collection of 9 items looking for |101> and |110>
             // Quantum Counting
             // Quantum Key Distribution
@@ -84,47 +84,52 @@ public class Experiment1 {
         var swaps = new Optimization.Strategies.SwapDecompose();
 
         // Create backend provider
-        var apiKey = System.Environment.GetEnvironmentVariable("IBM_KEY");
+        string apiKey = null; // System.Environment.GetEnvironmentVariable("IBM_KEY"); // Set to null to disable IBM access
         var provider = new Backend.IBM.IBMBackendProvider();
 
         // Debug statements
-        Console.WriteLine("Testing:");
+        var circuitCount = circuits.Count();
+        Console.WriteLine($"Testing: {circuits.Count()}");
         foreach (var circ in circuits) {
             Console.WriteLine($"  {circ.Name}");
         }
         Console.WriteLine();
-        Console.WriteLine("Against:");
+        Console.WriteLine($"Against: {hardware.Count()}");
         foreach (var hw in hardware) {
             Console.WriteLine($"  {hw.Name} ({hw.PhysicalQubitCount} qubits)");
         }
         if (apiKey == null) {
-            Console.Error.WriteLine("($IBM_KEY) No IBM Quantum Experience API key found . Circuit running will be disabled.");
+            Console.WriteLine();
+            Console.Error.WriteLine("($IBM_KEY) No IBM Quantum Experience API key found. Circuit running will be disabled.");
         }
         Console.WriteLine();
-        Console.WriteLine("Running; this may take some time...please wait");
-
-        return;
-
+        Console.WriteLine("Running, this may take some time...please wait");
 
         // Actual experiment
         var na = $",N/A";
+        var failed = $",FAIL";
         var directory = Path.Combine(".qasmdata", "experiments", ExperimentNumber.ToString(), DateTime.Now.ToString("yyyy/MM/dd H.mmtt")); 
         Directory.CreateDirectory(directory);
-        
+        scheduling.SetDataDirectory(directory);
+
         using (var summaryWriter = new StreamWriter(Path.Combine(directory, "index.csv"))) 
         using (var timingWriter = new StreamWriter(Path.Combine(directory, "timings.csv"))) 
+        using (var errorLogWriter = new StreamWriter(Path.Combine(directory, "errors.log"))) 
+        using (var qubitCountWriter = new StreamWriter(Path.Combine(directory, "matrix.qubitCountBefore.csv")))
+        using (var eventCountWriter = new StreamWriter(Path.Combine(directory, "matrix.eventCount.csv"))) 
+        using (var estimatedRuntimeBeforeWriter = new StreamWriter(Path.Combine(directory, "matrix.estimatedRuntimeBefore.csv"))) 
         using (var optTimeMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.optimizationTime.csv")))
-        using (var eventChangeMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.deltaEvents.csv")))
-        using (var swapCountMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.swaps.csv")))
+        using (var eventChangeMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.eventCountDelta.csv")))
+        using (var swapCountMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.eventSwapCountAfter.csv")))
         using (var ldpgMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.ldpg.csv")))
         using (var pdptMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.pdpt.csv")))
         using (var runtimeBeforeMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.ibmRuntimeBefore.csv")))
         using (var runtimeAfterMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.ibmRuntimeAfter.csv")))
         using (var estimatedRuntimeAfterMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.estimatedRuntimeAfter.csv")))
-        using (var estimatedRuntimeDeltaMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.deltaEstimatedRuntime.csv")))
+        using (var estimatedRuntimeDeltaMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.estimatedRuntimeDelta.csv")))
         {
             // Write headers
-            summaryWriter.WriteLine($"Circuit Id, Circuit Name, Total Experiment Time, Analysis Time, Average Optimization Time, Estimated Runtime, Circuit Diagram Filename");
+            summaryWriter.WriteLine($"Circuit Id, Circuit Name, Total Experiment Time, Analysis Time, Average Optimization Time");
             var hwHeaderString = "Circuit Id," + string.Join(",", hardware.Select(hw => hw.Name));
             optTimeMtxWriter.WriteLine(hwHeaderString);
             ldpgMtxWriter.WriteLine(hwHeaderString);
@@ -135,6 +140,9 @@ public class Experiment1 {
             estimatedRuntimeAfterMtxWriter.WriteLine(hwHeaderString);
             estimatedRuntimeDeltaMtxWriter.WriteLine(hwHeaderString);
             runtimeAfterMtxWriter.WriteLine(hwHeaderString);
+            eventCountWriter.WriteLine("Circuit Id, Event Count");
+            estimatedRuntimeBeforeWriter.WriteLine("Circuit Id, Estimated Time");
+            qubitCountWriter.WriteLine("Circuit Id, Qubits, Classical Bits");
 
             // Write timing chart
             timingWriter.WriteLine("Type, Timing");
@@ -148,11 +156,19 @@ public class Experiment1 {
     
             // Iterate over all circuits and run experiments
             for (var i = 0; i < circuits.Length; i++) {
+                // Update progress
+                Console.Write($"{(i + 1).ToString().PadLeft(circuitCount.ToString().Length, ' ')}/{circuitCount} ");
+                var progress = new ProgressBar(2 + hardware.Length);
+                var stage = 0;
+
+                // Init variables / names
                 var circuit = circuits[i];
+                var circuit_name = Path.GetFileNameWithoutExtension(circuit.Name);
                 var circuit_id = $"{ExperimentNumber}.{i,00}";
-                var file_name_prefix = $"{circuit_id} {circuit.Name}";
+                var file_name_prefix = $"{circuit_id} {circuit_name}";
                 var circuit_diagram = file_name_prefix + ".svg";
                 circuit.Name = file_name_prefix;
+                scheduling.Use(new VirtualFile(circuit.Name, string.Empty)); // For naming of generated LDPG & PDPT files
 
                 // Print rows
                 optTimeMtxWriter.Write(circuit_id);
@@ -164,6 +180,9 @@ public class Experiment1 {
                 estimatedRuntimeAfterMtxWriter.Write(circuit_id);
                 estimatedRuntimeDeltaMtxWriter.Write(circuit_id);
                 runtimeAfterMtxWriter.Write(circuit_id);
+                eventCountWriter.Write(circuit_id);
+                estimatedRuntimeBeforeWriter.Write(circuit_id);
+                qubitCountWriter.WriteLine(circuit_id);
 
                 // Pre-analysis
                 var complete_timer = Stopwatch.StartNew();
@@ -172,10 +191,16 @@ public class Experiment1 {
                 {   
                     // Compute events
                     var number_of_events = circuit.GateSchedule.EventCount;
+                    eventCountWriter.WriteLine  ($", {number_of_events}");
+
+                    // Compute qubits
+                    qubitCountWriter.Write      ($", {circuit.QubitCount}");
+                    qubitCountWriter.WriteLine  ($", {circuit.BitCount}");
 
                     //Estimate time if instructions performed sequentially
                     estimated_linear_time = circuit.GateSchedule.Select((evt) => timeModel.TimeOf(evt)).Aggregate((t1, t2) => t1 + t2);
-                
+                    estimatedRuntimeBeforeWriter.WriteLine($", {estimated_linear_time}");
+
                     // Emit circuit diagram
                     var emitter = new DotQasm.IO.Svg.SvgEmitter();
                     using (StreamWriter writer = new StreamWriter(Path.Combine(directory, circuit_diagram))) {
@@ -184,15 +209,15 @@ public class Experiment1 {
 
                     // Try run algorithm on all hardware
                     foreach (var hw in hardware) {
-                        var backend = provider.CreateBackendInterface(hw.Name, Math.Max(hw.PhysicalQubitCount, circuit.QubitCount), apiKey);
-                        if (backend != null) {
+                        var backend = provider.CreateBackendInterface(hw.Alias, circuit.QubitCount, apiKey);
+                        if (backend != null && apiKey != null) {
                             var taskRun = backend.Exec(circuit);
                             taskRun.RunSynchronously();
                             var taskRunResult = (IBMJobResults)taskRun.Result;
                             if (taskRunResult.Success) {
                                 runtimeBeforeMtxWriter.Write($",{taskRunResult.ExecutionTime}");
                             } else {
-                                runtimeBeforeMtxWriter.Write(na);
+                                runtimeBeforeMtxWriter.Write(failed);
                             }
                         } else {
                             runtimeBeforeMtxWriter.Write(na);
@@ -200,45 +225,61 @@ public class Experiment1 {
                     }
                 }
                 var pre_analysis_time = timer.Elapsed;
+                progress.Update(++stage);
 
                 // Optimization
-                var results = new ExperimentResultSet[hardware.Length]; 
+                var results = new List<ExperimentResultSet>(hardware.Length); 
                 timer = Stopwatch.StartNew();
                 {
-                    for (var deviceIndex = 0; deviceIndex < hardware.Length; deviceIndex++) {
+                    foreach (var device in hardware) {
                         // Prepare
-                        var device = hardware[deviceIndex];
                         scheduling.Use(device);
+                        var result = new ExperimentResultSet();
+                        results.Add(result);
 
                         // Optimize
                         try {
                             var thisHwTime = Stopwatch.StartNew();
-                            var sched = scheduling.Transform(circuit.GateSchedule, out results[i].Ldpg, out results[i].LdpgFilename, out results[i].Pdpt, out results[i].PdptFilename);
+                            var sched = scheduling.Transform(circuit.GateSchedule, out result.Ldpg, out result.LdpgFilename, out result.Pdpt, out result.PdptFilename);
                                 sched = swaps.Transform(sched);
-                            results[i].Schedule = sched;
+                            result.Schedule = sched;
                             optTimeMtxWriter.Write($",{thisHwTime.Elapsed}");
-                        } catch {
+                        } catch (Exception e) {
                             optTimeMtxWriter.Write(na);
+                            errorLogWriter.WriteLine(e);
+                            errorLogWriter.Flush();
                         }
+                        progress.Update(++stage);
                     }
                 }
                 var optimization_time = timer.Elapsed;
                 var average_optimization_time = optimization_time / hardware.Length;
+                optTimeMtxWriter.Flush();
 
                 // Post-analysis
                 timer = Stopwatch.StartNew();
                 {
-                    for (var resultIndex = 0; resultIndex < results.Length; resultIndex++) {
+                    for (var resultIndex = 0; resultIndex < results.Count; resultIndex++) {
                         var result = results[resultIndex];
                         var hw = hardware[resultIndex];
 
                         if (result.Schedule != null) {
                             // Compute number of added swaps
-                            var swapCount = result.Pdpt.SelectMany(row => row).Where(cell => cell.Item2.Event is SwapEvent).Count();
+                            var swapCount = result.Pdpt.SelectMany(row => row).Where(cell => cell.Item2 != null && cell.Item2.Event is SwapEvent).Count();
                             // Compute the estimated time with parallelisation of the pdpt
                             TimeSpan estimatedTime = new TimeSpan();
-                            for (var column = 0; column < result.Pdpt.ColumnCount; column ++) {
-                                var maxTimeInColumn = result.Pdpt[column].Select(cell => timeModel.TimeOf(cell.Item2.Event)).Max();
+                            // Iterate over columns
+                            for (var column = 0; column < result.Pdpt.ColumnCount; column++) {
+                                // Get max row value in the column
+                                var maxTimeInColumn = TimeSpan.Zero;
+                                for (var row = 0; row < result.Pdpt.RowCount; row++) {
+                                    var pdptRow = result.Pdpt[row];
+                                    if (pdptRow.Count > column) {
+                                        var cell = pdptRow[column];
+                                        var cellTime = cell.Item2 != null && cell.Item2.Event != null ? timeModel.TimeOf(cell.Item2.Event) : TimeSpan.Zero;
+                                        maxTimeInColumn = maxTimeInColumn > cellTime ? maxTimeInColumn : cellTime;
+                                    }
+                                }
                                 estimatedTime += maxTimeInColumn;
                             }
 
@@ -250,15 +291,15 @@ public class Experiment1 {
                             estimatedRuntimeDeltaMtxWriter.Write($",{estimatedTime - estimated_linear_time}");
 
                             // Try run algorithm on hardware
-                            var backend = provider.CreateBackendInterface(hw.Name, Math.Max(hw.PhysicalQubitCount, circuit.QubitCount), apiKey);
-                            if (backend != null) {
+                            var backend = provider.CreateBackendInterface(hw.Alias, circuit.QubitCount, apiKey);
+                            if (backend != null && apiKey != null) {
                                 var taskRun = backend.Exec(circuit);
                                 taskRun.RunSynchronously();
                                 var taskRunResult = (IBMJobResults)taskRun.Result;
                                 if (taskRunResult.Success) {
                                     runtimeAfterMtxWriter.Write($",{taskRunResult.ExecutionTime}");
                                 } else {
-                                    runtimeAfterMtxWriter.Write(na);
+                                    runtimeAfterMtxWriter.Write(failed);
                                 }
                             } else {
                                 runtimeAfterMtxWriter.Write(na);
@@ -276,9 +317,10 @@ public class Experiment1 {
                     }
                 }
                 var post_analysis_time = timer.Elapsed;
+                progress.Update(++stage);
 
                 // Write results / end lines
-                summaryWriter.WriteLine($"{circuit_id}, {circuit.Name}, {complete_timer.Elapsed}, {pre_analysis_time + post_analysis_time}, {average_optimization_time}, {estimated_linear_time}, {circuit_diagram}");
+                summaryWriter.WriteLine($"{circuit_id}, {circuit.Name}, {complete_timer.Elapsed}, {pre_analysis_time + post_analysis_time}, {average_optimization_time}");
                 optTimeMtxWriter.WriteLine();
                 ldpgMtxWriter.WriteLine();
                 pdptMtxWriter.WriteLine();
@@ -288,10 +330,28 @@ public class Experiment1 {
                 estimatedRuntimeAfterMtxWriter.WriteLine();
                 estimatedRuntimeDeltaMtxWriter.WriteLine();
                 runtimeAfterMtxWriter.WriteLine();
+
+                // Flush so that I get at least some data printed out on each iteration
+                summaryWriter.Flush();
+                optTimeMtxWriter.Flush();
+                ldpgMtxWriter.Flush();
+                pdptMtxWriter.Flush();
+                eventChangeMtxWriter.Flush();
+                swapCountMtxWriter.Flush();
+                runtimeBeforeMtxWriter.Flush();
+                estimatedRuntimeAfterMtxWriter.Flush();
+                estimatedRuntimeDeltaMtxWriter.Flush();
+                runtimeAfterMtxWriter.Flush();
+
+                // Clean up garbage to give better performance next algorithm (in-case lots of objects got created)
+                System.GC.Collect();
+                System.GC.WaitForPendingFinalizers();
+                progress.Update(++stage);
             }
+            Console.WriteLine();
         }
 
-        Console.WriteLine($"Experiment Completed...{totalTimer}");
+        Console.WriteLine($"Experiment Completed...{totalTimer.Elapsed}");
         Console.WriteLine($"Files emitted to {directory}");
     }
 

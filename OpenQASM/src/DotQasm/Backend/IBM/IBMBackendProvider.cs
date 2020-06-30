@@ -24,7 +24,7 @@ namespace DotQasm.Backend.IBM {
         /// <param name="apikey">the api key</param>
         /// <returns>Backend</returns>
         public IBackend CreateBackendInterface(string deviceName, int minQubits, string apikey){
-            var deviceLower = deviceName.ToLower();
+            var deviceLower = deviceName?.ToLower() ?? string.Empty;
             return (IBackend)GetBackends(apikey).Where((backend) => backend.BackendName.ToLower() == deviceLower && minQubits <= backend.QubitCount).FirstOrDefault();
         }
 

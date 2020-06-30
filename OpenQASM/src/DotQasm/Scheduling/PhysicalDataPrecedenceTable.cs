@@ -18,6 +18,8 @@ public class PhysicalDataPrecedenceTable: List<List<(PhysicalQubit, DataPreceden
     /// Fetch the row cooresponding to the given logical qubit
     /// </summary>
     public PhysicalDataPrecedenceRow this[Qubit q] => this[q.QubitId];
+    public PhysicalDataPrecedenceCell this[Qubit q, int column] => this[q.QubitId][column];
+    public PhysicalDataPrecedenceCell this[int row, int column] => this[row][column];
 
     /// <summary>
     /// Number of rows in the table
@@ -67,7 +69,7 @@ public class PhysicalDataPrecedenceTable: List<List<(PhysicalQubit, DataPreceden
     /// <param name="writer">writer to write to</param>
     public void Encode(TextWriter writer) {
         // Print Header
-        var columns = this.Select(row => row.Count).Max();
+        var columns = ColumnCount;
         writer.Write(Quote("Qubit Index"));
         for (int i = 1; i <= columns; i++) {
             writer.Write(",");

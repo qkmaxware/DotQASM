@@ -1,4 +1,5 @@
 Name: Simulator
+Alias: ibmq_qasm_simulator
 Manufacturer: IBM
 Technology: Superconducting
 Connectivity: >-

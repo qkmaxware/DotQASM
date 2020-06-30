@@ -22,7 +22,15 @@ public abstract class BaseOptimizationStrategy<From, To>: IOptimization<From, To
     /// <summary>
     /// Directory to store generated data files
     /// </summary>
-    protected string DataDirectoryPath => "./.qasmdata";
+    protected string DataDirectoryPath {get; private set;} = "./.qasmdata";
+
+    /// <summary>
+    /// Change the data-directory for generated files
+    /// </summary>
+    /// <param name="path">directory path</param>
+    public void SetDataDirectory(string path) {
+        DataDirectoryPath = path ?? DataDirectoryPath;
+    }
 
     /// <summary>
     /// Ensure the data file directory exists, create it if it does not
@@ -42,6 +50,10 @@ public abstract class BaseOptimizationStrategy<From, To>: IOptimization<From, To
         MakeDataDirectory();
         var path = Path.Join(DataDirectoryPath, filename);
         return new StreamWriter(path);
+    }
+
+    public To Invoke(From value) {
+        return this.Transform(value);
     }
 }
 

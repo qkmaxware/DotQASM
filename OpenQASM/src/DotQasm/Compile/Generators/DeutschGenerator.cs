@@ -6,7 +6,7 @@ namespace DotQasm.Compile.Generators {
 
 public class DeutschGenerator : ICircuitGenerator<Func<bool, bool>> {
     public Circuit Generate(Func<bool, bool> f) {
-        var Circuit = new Circuit("Deutsch Algorithm");
+        var Circuit = new Circuit("Deutsch Algorithm ");
         
         var qreg = Circuit.AllocateQubits(2);
         var cbit = Circuit.AllocateCbit();
@@ -23,16 +23,20 @@ public class DeutschGenerator : ICircuitGenerator<Func<bool, bool>> {
         switch ( (f(true), f(false)) ) {
             case (true, false): // Identity
                 qreg[0].CX(qreg[1]);
+                Circuit.Name += "Identity";
                 break;
             case (false, true): // Inversion
                 qreg[0].X();
+                Circuit.Name += "Inversion";
                 break;
             case (true, true):  // Constant true
                 qreg[0].X();
                 qreg[1].X();
+                Circuit.Name += "Constant True";
                 break;
             case (false, false):// Constant false
                 // 2x2 Identity, do nothing
+                Circuit.Name += "Constant False";
                 break;
         }
         // ---

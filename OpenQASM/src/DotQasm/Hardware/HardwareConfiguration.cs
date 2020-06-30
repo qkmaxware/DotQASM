@@ -10,6 +10,10 @@ public class HardwareConfiguration {
     /// </summary>
     public string Name {get; set;}
     /// <summary>
+    /// Hardware API alias
+    /// </summary>
+    public string Alias {get; set;}
+    /// <summary>
     /// Physical qubit implementation technology
     /// </summary>
     /// <value>Superconducting, Trapped Ion, etc</value>

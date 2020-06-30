@@ -7,7 +7,7 @@ namespace DotQasm.Optimization {
 /// </summary>
 /// <typeparam name="From"></typeparam>
 /// <typeparam name="To"></typeparam>
-public interface IOptimization<From,To> where From:ISchedule where To:ISchedule {
+public interface IOptimization<From,To> : System.IChainableAction<From,To> where From:ISchedule where To:ISchedule {
     /// <summary>
     /// Optimization name
     /// </summary>
@@ -16,12 +16,6 @@ public interface IOptimization<From,To> where From:ISchedule where To:ISchedule 
     /// Optimization description
     /// </summary>
     string Description {get;}
-    /// <summary>
-    /// Transform from one schedule to an optimized one
-    /// </summary>
-    /// <param name="schedule">schedule to optimize</param>
-    /// <returns>optimized schedule</returns>
-    To Transform(From schedule);
 }
 
 }

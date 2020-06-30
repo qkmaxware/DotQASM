@@ -141,7 +141,7 @@ class SwapSearchColouring : ISearchable {
 public class HardwareScheduling : 
     BaseOptimizationStrategy<LinearSchedule, LinearSchedule>, 
     IUsing<HardwareConfiguration>,
-    IUsing<DotQasm.IO.PhysicalFile>
+    IUsing<DotQasm.IO.IFileHandle>
 {
 
     public override string Name => "Hardware Scheduling";
@@ -349,8 +349,8 @@ public class HardwareScheduling :
             throw new Exception(this.Name + " strategy requires a valid hardware configuration");
         this.hardware = config;
     }
-    private DotQasm.IO.PhysicalFile srcFile;
-    public void Use(DotQasm.IO.PhysicalFile source) {
+    private DotQasm.IO.IFileHandle srcFile;
+    public void Use(DotQasm.IO.IFileHandle source) {
         this.srcFile = source;
     }
 
@@ -423,7 +423,6 @@ public class HardwareScheduling :
         InteractionGraph ig = new InteractionGraph(group);
         // Assign colours to the interactions
         ig.AssignColours();
-        System.Console.WriteLine(ig);
         // Create unambiguous groupings
         var unambiguous_groups = ig.Edges
             .Select(edge => edge.Data)
