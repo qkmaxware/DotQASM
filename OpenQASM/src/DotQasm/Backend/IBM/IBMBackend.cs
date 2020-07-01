@@ -114,6 +114,15 @@ public abstract class IBMBackend : IBackend {
     }
 
     /// <summary>
+    /// Check if the backend supports the given quantum gate
+    /// </summary>
+    /// <param name="gate">quantum gate symbol</param>
+    /// <returns>true if the gate's name is in the supported gates list</returns>
+    public bool SupportsGate(string gate) {
+        return SupportedGates.Contains(gate);
+    }
+
+    /// <summary>
     /// Check if two qubits are physically adjacent
     /// </summary>
     /// <param name="from">starting qubit</param>
@@ -201,6 +210,16 @@ public abstract class IBMBackend : IBackend {
                     List<IBMQObjInstruction> insts = new List<IBMQObjInstruction>();
                     foreach (var qubit in ge.QuantumDependencies) {
                         var inst = new IBMQObjGateInstruction(ge.Operator.Symbol);
+                        inst.qubits = new int[]{ qubit.QubitId };
+                        inst.@params = new double[]{ ge.Operator.Parametres.Item1, ge.Operator.Parametres.Item2, ge.Operator.Parametres.Item3 };
+                        insts.Add(inst);
+                    }
+                    return insts;
+                }
+                else if (SupportsGate("u3")) {
+                    List<IBMQObjInstruction> insts = new List<IBMQObjInstruction>();
+                    foreach (var qubit in ge.QuantumDependencies) {
+                        var inst = new IBMQObjGateInstruction("u3");
                         inst.qubits = new int[]{ qubit.QubitId };
                         inst.@params = new double[]{ ge.Operator.Parametres.Item1, ge.Operator.Parametres.Item2, ge.Operator.Parametres.Item3 };
                         insts.Add(inst);
