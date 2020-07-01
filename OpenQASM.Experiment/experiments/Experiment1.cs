@@ -21,6 +21,15 @@ public class Experiment1 {
     public static readonly int ExperimentNumber = 1;
 
     public static void Run() {
+        // -- Run configuration -----------------------------------------------------------------------------
+        var runCircuits = true;        // Run circuits against IBM
+        var skipLongCircuits = true;
+        var longCircuitLength = 48;     // Skip all circuits with more than 'x' operations
+        var skipLargeHardware = false;
+        var largeHardwareSize = 32;     // Skip all hardware that has more than 'x' qubits
+
+        // --------------------------------------------------------------------------------------------------
+
         var totalTimer = Stopwatch.StartNew();
 
         // Circuits to test
@@ -68,8 +77,6 @@ public class Experiment1 {
             });
 
         var circuits = generated_circuits.Concat(prebuilt_circuits).ToArray();
-        var skipLongCircuits = true;
-        var longCircuitLength = 25; // Skip all circuits with more than 'x' operations
 
         // Hardware to compile against
         var hardware = Directory
@@ -77,7 +84,7 @@ public class Experiment1 {
             .Select(filename => {
                 return ParseYaml<HardwareConfiguration>(filename);
             }).Where( hw => {
-                return hw.PhysicalQubitCount < 32; // Skip large hardware to avoid stack overflows
+                return !skipLargeHardware || hw.PhysicalQubitCount < largeHardwareSize; // Skip large hardware to avoid stack overflows
             }).ToArray();
         
         // Create timing model
@@ -88,7 +95,7 @@ public class Experiment1 {
         var swaps = new Optimization.Strategies.SwapDecompose();
 
         // Create backend provider
-        string apiKey = null; // System.Environment.GetEnvironmentVariable("IBM_KEY"); // Set to null to disable IBM access
+        string apiKey = runCircuits ? System.Environment.GetEnvironmentVariable("IBM_KEY") : null; // Set to null to disable IBM access
         var provider = new Backend.IBM.IBMBackendProvider();
 
         // Debug statements
@@ -378,7 +385,7 @@ public class Experiment1 {
         }
     }
 
-    private struct ExperimentResultSet {
+    private class ExperimentResultSet {
         public LinearSchedule Schedule;
         public string LdpgFilename;
         public LogicalDataPrecedenceGraph Ldpg;

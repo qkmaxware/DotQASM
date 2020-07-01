@@ -610,8 +610,9 @@ public class HardwareScheduling :
         for (var i = logicalQubits.Count; i < physicalQubits.Count; i++) {
             ancillaQubits.Add(new Qubit(null, i)); // Create new "dummy" logical qubits to pad to the length of the physical qubits
         }
+        var qubitAssignmentIndex = 0;
         foreach (var logical in logicalQubits.Concat(ancillaQubits)) {
-            logicalQubitMap.Add(logical, physicalQubits.ElementAt(logical.QubitId));
+            logicalQubitMap.Add(logical, physicalQubits[ qubitAssignmentIndex++ ]);
         }
 
         // Step 1, arrange data in the logical data precedence graph, assign priorities along longest line
