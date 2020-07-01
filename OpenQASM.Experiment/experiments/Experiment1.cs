@@ -23,7 +23,7 @@ public class Experiment1 {
     public static void Run() {
         // -- Run configuration -----------------------------------------------------------------------------
         var runCircuits = true;        // Run circuits against IBM
-        var skipLongCircuits = true;
+        var skipLongCircuits = false;
         var longCircuitLength = 48;     // Skip all circuits with more than 'x' operations
         var skipLargeHardware = false;
         var largeHardwareSize = 32;     // Skip all hardware that has more than 'x' qubits
@@ -230,13 +230,17 @@ public class Experiment1 {
                     foreach (var hw in hardware) {
                         var backend = provider.CreateBackendInterface(hw.Alias, circuit.QubitCount, apiKey);
                         if (backend != null && apiKey != null) {
-                            var taskRun = backend.Exec(circuit);
-                            taskRun.RunSynchronously();
-                            var taskRunResult = (IBMJobResults)taskRun.Result;
-                            if (taskRunResult.Success) {
-                                runtimeBeforeMtxWriter.Write($",{taskRunResult.ExecutionTime}");
-                            } else {
-                                runtimeBeforeMtxWriter.Write(failed);
+                            try {
+                                var taskRun = backend.Exec(circuit);
+                                taskRun.RunSynchronously();
+                                var taskRunResult = (IBMJobResults)taskRun.Result;
+                                if (taskRunResult.Success) {
+                                    runtimeBeforeMtxWriter.Write($",{taskRunResult.ExecutionTime}");
+                                } else {
+                                    runtimeBeforeMtxWriter.Write(failed);
+                                }
+                            } catch (Exception e) {
+                                runtimeBeforeMtxWriter.Write(na);
                             }
                         } else {
                             runtimeBeforeMtxWriter.Write(na);
@@ -312,13 +316,17 @@ public class Experiment1 {
                             // Try run algorithm on hardware
                             var backend = provider.CreateBackendInterface(hw.Alias, circuit.QubitCount, apiKey);
                             if (backend != null && apiKey != null) {
-                                var taskRun = backend.Exec(circuit);
-                                taskRun.RunSynchronously();
-                                var taskRunResult = (IBMJobResults)taskRun.Result;
-                                if (taskRunResult.Success) {
-                                    runtimeAfterMtxWriter.Write($",{taskRunResult.ExecutionTime}");
-                                } else {
-                                    runtimeAfterMtxWriter.Write(failed);
+                                try {
+                                    var taskRun = backend.Exec(circuit);
+                                    taskRun.RunSynchronously();
+                                    var taskRunResult = (IBMJobResults)taskRun.Result;
+                                    if (taskRunResult.Success) {
+                                        runtimeAfterMtxWriter.Write($",{taskRunResult.ExecutionTime}");
+                                    } else {
+                                        runtimeAfterMtxWriter.Write(failed);
+                                    }
+                                } catch (Exception e) {
+                                    runtimeBeforeMtxWriter.Write(na);
                                 }
                             } else {
                                 runtimeAfterMtxWriter.Write(na);
