@@ -23,7 +23,7 @@ public class Experiment1 {
     public static void Run() {
         // -- Run configuration -----------------------------------------------------------------------------
         var runCircuits = false;        // Run circuits against IBM
-        var skipLongCircuits = true;
+        var skipLongCircuits = false;
         var longCircuitLength = 100;     // Skip all circuits with more than 'x' operations
         var skipLargeHardware = false;
         var largeHardwareSize = 32;     // Skip all hardware that has more than 'x' qubits
