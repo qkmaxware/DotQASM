@@ -29,6 +29,7 @@ public class Experiment1 {
         var largeHardwareSize = 32;     // Skip all hardware that has more than 'x' qubits
         var offset = true;
         var offsetValue = 24;           // Skipt the first 'x' algorithm
+        var offsetEndValue = 38;        // Stop at the 'x' algorithm
 
         // --------------------------------------------------------------------------------------------------
 
@@ -170,7 +171,11 @@ public class Experiment1 {
     
             // Iterate over all circuits and run experiments
             for (var i = 0; i < circuits.Length; i++) {
+                // Skip before offset or after offset
                 if (offset && i < offsetValue) {
+                    continue;
+                }
+                if (offset && i > offsetEndValue) {
                     continue;
                 }
 
