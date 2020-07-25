@@ -1,0 +1,7 @@
+"Qubit Index","Priority 1","Priority 2","Priority 3","Priority 4","Priority 5","Priority 6","Priority 7","Priority 8","Priority 9"
+"0","q0::u3 (24E6F0B)","q0::cx* (2D122AC)",,,,,,,"q0::measurement (14C3915)"
+"1",,,,"q1::u3 (C1E768)","q1::cx* (18BBD45)",,"q1::u3 (136E2EE)","q1::cx* (25DCD74)","q1::measurement (3AE01BE)"
+"2",,"q2::cx (2D122AC)","q2::u3 (15A3810)","q2::u3 (2BF895)","q2::cx (18BBD45)","q2::u3 (1E9A76F)","q2::u3 (2EDFA62)","q2::cx (25DCD74)","q2::measurement (11E0FB0)"
+"3"
+"4"
+"5"

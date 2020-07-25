@@ -1,0 +1,7 @@
+"Qubit Index","Priority 1","Priority 2","Priority 3","Priority 4","Priority 5","Priority 6"
+"0","q0::h (14B2C3B)","q0::cx* (3A48E15)","q0::x (C8FEBE)","q0::cx* (310F4AF)","q0::h (3989A29)","q0::measurement (5D6B75)"
+"1",,"q1::cx (3A48E15)",,"q1::cx (310F4AF)",,"q1::measurement (348C725)"
+"2"
+"3"
+"4"
+"5"

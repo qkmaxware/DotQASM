@@ -1,9 +1,0 @@
-_site
-.sass-cache
-.jekyll-metadata
-
-# Ignore documentation.
-# documentation/
-
-# Ignore doxygen build intermediates
-doxygen_*.tmp

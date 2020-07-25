@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     
-    <PackageId>dotQASM</PackageId>
+    <PackageId>Qkmaxware.QASM</PackageId>
     <Version>1.0.0</Version>
     <Authors>Colin Halseth</Authors>
     <PackageTags>quantum circuit</PackageTags>
@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Pidgin" Version="2.3.0" />
     <PackageReference Include="System.Text.Json" Version="4.7.0" />
   </ItemGroup>
 

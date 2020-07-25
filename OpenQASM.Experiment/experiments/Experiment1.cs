@@ -24,8 +24,8 @@ public class Experiment1 {
         // -- Run configuration -----------------------------------------------------------------------------
         var runCircuits = true;        // Run circuits against IBM
         var skipLongCircuits = false;
-        var longCircuitLength = 48;     // Skip all circuits with more than 'x' operations
-        var skipLargeHardware = false;
+        var longCircuitLength = 42;     // Skip all circuits with more than 'x' operations
+        var skipLargeHardware = true;
         var largeHardwareSize = 32;     // Skip all hardware that has more than 'x' qubits
 
         // --------------------------------------------------------------------------------------------------
@@ -198,7 +198,7 @@ public class Experiment1 {
                 runtimeAfterMtxWriter.Write(circuit_id);
                 eventCountWriter.Write(circuit_id);
                 estimatedRuntimeBeforeWriter.Write(circuit_id);
-                qubitCountWriter.WriteLine(circuit_id);
+                qubitCountWriter.Write(circuit_id);
 
                 // Pre-analysis
                 var complete_timer = Stopwatch.StartNew();
@@ -239,7 +239,7 @@ public class Experiment1 {
                                 } else {
                                     runtimeBeforeMtxWriter.Write(failed);
                                 }
-                            } catch (Exception e) {
+                            } catch {
                                 runtimeBeforeMtxWriter.Write(na);
                             }
                         } else {
@@ -325,7 +325,7 @@ public class Experiment1 {
                                     } else {
                                         runtimeAfterMtxWriter.Write(failed);
                                     }
-                                } catch (Exception e) {
+                                } catch {
                                     runtimeBeforeMtxWriter.Write(na);
                                 }
                             } else {

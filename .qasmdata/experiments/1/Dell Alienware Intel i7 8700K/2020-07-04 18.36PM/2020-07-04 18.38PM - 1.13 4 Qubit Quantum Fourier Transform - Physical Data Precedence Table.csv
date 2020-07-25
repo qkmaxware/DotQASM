@@ -1,0 +1,7 @@
+"Qubit Index","Priority 1","Priority 2","Priority 3","Priority 4","Priority 5","Priority 6","Priority 7","Priority 8","Priority 9","Priority 10","Priority 11","Priority 12","Priority 13","Priority 14","Priority 15","Priority 16","Priority 17","Priority 18","Priority 19","Priority 20","Priority 21","Priority 22","Priority 23"
+"0","q0::h (116F450)","q0::cx (434D68)","q0::u1 (25DB8A9)","q0::cx (14B7DF8)","q0::u1 (3A76DBD)","q0::cx (3F9B8F5)","q0::u1 (3C780A2)","q0::cx (20385BA)","q0::u1 (21FB38C)","q0::swap (750BD1)","q2::cx (7CF8F)","q2::u1 (464C09)","q2::cx (278AC52)",,"q2::swap (1D6A60)",,,,,,,,"q3::u1 (23E0EE3)"
+"1","q1::u1 (1CE96D2)","q1::cx* (434D68)",,"q1::cx* (14B7DF8)",,,,,"q1::h (2E85FD)",,"q1::cx (2B86539)","q1::u1 (7B8F05)","q1::cx (58072D)","q1::u1 (318409C)",,"q1::cx (2AC7198)","q1::u1 (FFE60)","q1::cx (8FF161)",,,,,"q1::u1 (10F7C6E)"
+"2",,,,,"q2::u1 (E2DBA9)","q2::cx* (3F9B8F5)",,"q2::cx* (20385BA)","q2::u1 (1A2B5E9)","q2::swap (750BD1)","q0::cx* (2B86539)",,"q0::cx* (58072D)",,,,,,"q0::h (18B5FDE)","q0::cx (1195578)","q0::u1 (1E4013B)","q0::cx (1040B16)","q0::u1 (12463CA)"
+"3",,,,,,,,,"q3::u1 (31D4FF3)",,"q3::cx* (7CF8F)",,"q3::cx* (278AC52)","q3::u1 (3DA4582)","q3::swap (1D6A60)","q2::cx* (2AC7198)",,"q2::cx* (8FF161)","q2::u1 (1E65ED4)","q2::cx* (1195578)",,"q2::cx* (1040B16)","q2::h (2478221)"
+"4"
+"5"

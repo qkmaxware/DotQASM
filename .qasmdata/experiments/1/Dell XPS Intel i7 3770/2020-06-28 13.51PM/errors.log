@@ -1,0 +1,640 @@
+System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Number of logical qubits is greater than the number of physical qubits')
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 570
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Number of logical qubits is greater than the number of physical qubits')
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 570
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Number of logical qubits is greater than the number of physical qubits')
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 570
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Number of logical qubits is greater than the number of physical qubits')
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 570
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Number of logical qubits is greater than the number of physical qubits')
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 570
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Number of logical qubits is greater than the number of physical qubits')
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 570
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Number of logical qubits is greater than the number of physical qubits')
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 570
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Number of logical qubits is greater than the number of physical qubits')
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 570
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Number of logical qubits is greater than the number of physical qubits')
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 570
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.ArgumentOutOfRangeException: Specified argument was out of the range of valid values. (Parameter 'Number of logical qubits is greater than the number of physical qubits')
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 570
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.Collections.Generic.KeyNotFoundException: The given key 'DotQasm.Hardware.PhysicalQubit' was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at System.Collections.Generic.BijectiveDictionary`2.get_Item(T2 key) in D:\C# Projects\OpenQASM\OpenQASM\src\System\Collections\Generic\BijectiveDictionary.cs:line 19
+   at DotQasm.Optimization.Strategies.HardwareScheduling.RouteGroup(BijectiveDictionary`2 logicalQubitMap, PhysicalDataPrecedenceTable pdpt, IGrouping`2 group) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 511
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 607
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.Collections.Generic.KeyNotFoundException: The given key 'DotQasm.Hardware.PhysicalQubit' was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at System.Collections.Generic.BijectiveDictionary`2.get_Item(T2 key) in D:\C# Projects\OpenQASM\OpenQASM\src\System\Collections\Generic\BijectiveDictionary.cs:line 19
+   at DotQasm.Optimization.Strategies.HardwareScheduling.RouteGroup(BijectiveDictionary`2 logicalQubitMap, PhysicalDataPrecedenceTable pdpt, IGrouping`2 group) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 511
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 607
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.Collections.Generic.KeyNotFoundException: The given key 'DotQasm.Hardware.PhysicalQubit' was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at System.Collections.Generic.BijectiveDictionary`2.get_Item(T2 key) in D:\C# Projects\OpenQASM\OpenQASM\src\System\Collections\Generic\BijectiveDictionary.cs:line 19
+   at DotQasm.Optimization.Strategies.HardwareScheduling.RouteGroup(BijectiveDictionary`2 logicalQubitMap, PhysicalDataPrecedenceTable pdpt, IGrouping`2 group) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 511
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 607
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.Collections.Generic.KeyNotFoundException: The given key 'DotQasm.Hardware.PhysicalQubit' was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at System.Collections.Generic.BijectiveDictionary`2.get_Item(T2 key) in D:\C# Projects\OpenQASM\OpenQASM\src\System\Collections\Generic\BijectiveDictionary.cs:line 19
+   at DotQasm.Optimization.Strategies.HardwareScheduling.RouteGroup(BijectiveDictionary`2 logicalQubitMap, PhysicalDataPrecedenceTable pdpt, IGrouping`2 group) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 511
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 607
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.Collections.Generic.KeyNotFoundException: The given key 'DotQasm.Hardware.PhysicalQubit' was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at System.Collections.Generic.BijectiveDictionary`2.get_Item(T2 key) in D:\C# Projects\OpenQASM\OpenQASM\src\System\Collections\Generic\BijectiveDictionary.cs:line 19
+   at DotQasm.Optimization.Strategies.HardwareScheduling.RouteGroup(BijectiveDictionary`2 logicalQubitMap, PhysicalDataPrecedenceTable pdpt, IGrouping`2 group) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 511
+   at DotQasm.Optimization.Strategies.HardwareScheduling.Transform(LinearSchedule schedule, LogicalDataPrecedenceGraph& save_ldpg, String& saved_ldpg_filename, PhysicalDataPrecedenceTable& save_pdpt, String& saved_pdpt_filename) in D:\C# Projects\OpenQASM\OpenQASM\src\DotQasm\Optimization\Strategies\HardwareScheduling.cs:line 607
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240
+System.IndexOutOfRangeException: Index was outside the bounds of the array.
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in D:\C# Projects\OpenQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 240

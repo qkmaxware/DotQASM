@@ -1,0 +1,89 @@
+Testing: 38
+  Quantum Teleportation
+  Superdense coding of 0
+  Superdense coding of 1
+  Superdense coding of 2
+  Superdense coding of 3
+  Deutsch Algorithm Constant True
+  Deutsch Algorithm Constant False
+  Deutsch Algorithm Identity
+  Deutsch Algorithm Inversion
+  Deutsch-Josza with 3 qubits
+  Bernstein Vazrani for value 3 with 3 qubits
+  Simons Algorithm for 11
+  3 Qubit Quantum Fourier Transform
+  4 Qubit Quantum Fourier Transform
+  5 Qubit Quantum Fourier Transform
+  Gover's search with 9 items
+  Quantum Approximate Optimization MaxCut
+  OpenQASM.Examples\OpenQASM\011_3_qubit_grover_50_.qasm
+  OpenQASM.Examples\OpenQASM\adder.qasm
+  OpenQASM.Examples\OpenQASM\bernstein-vazirani.qasm
+  OpenQASM.Examples\OpenQASM\bigadder.qasm
+  OpenQASM.Examples\OpenQASM\Deutsch_Algorithm.qasm
+  OpenQASM.Examples\OpenQASM\inverseqft1.qasm
+  OpenQASM.Examples\OpenQASM\inverseqft2.qasm
+  OpenQASM.Examples\OpenQASM\ipea_3_pi_8.qasm
+  OpenQASM.Examples\OpenQASM\iswap.qasm
+  OpenQASM.Examples\OpenQASM\pea_3_pi_8.qasm
+  OpenQASM.Examples\OpenQASM\qec.qasm
+  OpenQASM.Examples\OpenQASM\qe_qft_3.qasm
+  OpenQASM.Examples\OpenQASM\qe_qft_4.qasm
+  OpenQASM.Examples\OpenQASM\qe_qft_5.qasm
+  OpenQASM.Examples\OpenQASM\qft.qasm
+  OpenQASM.Examples\OpenQASM\qpt.qasm
+  OpenQASM.Examples\OpenQASM\rb.qasm
+  OpenQASM.Examples\OpenQASM\teleport.qasm
+  OpenQASM.Examples\OpenQASM\teleportv2.qasm
+  OpenQASM.Examples\OpenQASM\W-state.qasm
+  OpenQASM.Examples\OpenQASM\W3test.qasm
+
+Against: 10
+  Generic Linear 5 Qubit Machine (5 qubits)
+  Armonk (1 qubits)
+  Burlington (5 qubits)
+  Essex (5 qubits)
+  Simulator (32 qubits)
+  London (5 qubits)
+  Ourense (5 qubits)
+  Rome (5 qubits)
+  Vigo (5 qubits)
+  Yorktown (5 qubits)
+
+($IBM_KEY) No IBM Quantum Experience API key found. Circuit running will be disabled.
+
+Running, this may take some time...please wait
+ 1/38 |--------------------| 12/12
+ 2/38 |--------------------| 12/12
+ 3/38 |--------------------| 12/12
+ 4/38 |--------------------| 12/12
+ 5/38 |--------------------| 12/12
+ 6/38 |--------------------| 12/12
+ 7/38 |--------------------| 12/12
+ 8/38 |--------------------| 12/12
+ 9/38 |--------------------| 12/12
+10/38 |--------------------| 12/12
+11/38 |--------------------| 12/12
+12/38 |--------------------| 12/12
+13/38 |--------------------| 12/12
+14/38 |--------------------| 12/12
+15/38 |--------------------| 12/12
+16/38 Skipped
+17/38 |--------------------| 12/12
+18/38 Skipped
+19/38 Skipped
+20/38 |--------------------| 12/12
+21/38 Skipped
+22/38 |--------------------| 12/12
+23/38 |--------------------| 12/12
+24/38 |--------------------| 12/12
+25/38 |----------          | 6/12Unhandled exception. System.ArgumentOutOfRangeException: The value must be greater than or equal to zero and less than the console's buffer size in that dimension. (Parameter 'top')
+Actual value was 24.
+   at System.ConsolePal.SetCursorPosition(Int32 left, Int32 top)
+   at System.Console.SetCursorPosition(Int32 left, Int32 top)
+   at ProgressBar.ResetCursor() in C:\Users\halse\Documents\Git\DotQASM\OpenQASM.Experiment\ProgressBar.cs:line 27
+   at ProgressBar.ClearLine() in C:\Users\halse\Documents\Git\DotQASM\OpenQASM.Experiment\ProgressBar.cs:line 31
+   at ProgressBar.Update(Single value) in C:\Users\halse\Documents\Git\DotQASM\OpenQASM.Experiment\ProgressBar.cs:line 36
+   at DotQasm.Thesis.Experiments.Experiment1.Run() in C:\Users\halse\Documents\Git\DotQASM\OpenQASM.Experiment\experiments\Experiment1.cs:line 
+275
+   at DotQasm.Thesis.ExperimentRunner.Main(String[] args) in C:\Users\halse\Documents\Git\DotQASM\OpenQASM.Experiment\Program.cs:line 6 

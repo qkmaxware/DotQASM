@@ -2,7 +2,9 @@ bin/
 obj/
 out/
 
-.qasmdata/
+.github
+.qasmdata/*
+!.qasmdata/experiments
 qasmdata/
 .VSCodeCounter/
 

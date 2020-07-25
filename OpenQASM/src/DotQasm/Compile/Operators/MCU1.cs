@@ -5,7 +5,8 @@ using System;
 namespace DotQasm.Compile.Operators {
 
 /// <summary>
-/// Multi-controlled U1 gate
+/// Multi-controlled U1 gate that involves no additional ancilla qubits. 
+/// This algorithm is converted from QisKit's Python implementation described at https://qiskit.org/documentation/locale/de_DE/_modules/qiskit/aqua/circuits/gates/multi_control_u1_gate.html
 /// </summary>
 public class MCU1 : BaseOperator<(IEnumerable<Qubit> controls, Qubit target)> {
     public double Angle {get; private set;}

@@ -1,9 +1,0 @@
----
-layout: post
-title: OpenQASM Support
----
-In order to be able to make it easier to create quantum circuits, I decided to write a parser for the OpenQASM 2.0 syntax which would convert scripts written in that language into my internal quantum circuit representation. There are a large number of OpenQASM scripts thanks in part of the IBM Quantum Experience and their QSIKit project. Additionally, languages like Scaffold and Q# can compile to flattened OpenQASM files which I could then import and freely manipulate. 
-
-The OpenQASM 2.0 specification can be found on github [here](https://github.com/Qiskit/openqasm/blob/master/spec/qasm2.rst) and was followed as closely as I could given my limited experience with writing parsers though I believe my parser is slightly more lenient than the official specification such as allowing identifiers to be named starting with capital letters even though the language specification says that identifiers must start with a lowercase letter. In order to not worry too much about the initial scheduling of quantum operations from OpenQASM scripts, the operations are to be scheduled linearly one after the next regardless of the optimal ordering. 
-
-In order to verify that my parser works as designed I wrote an additional command line tool which allows me to verify the syntax of OpenQASM files as well as a simple simulator with which to run the quantum circuits. The simulator was a C++ code conversion of a project I had done for a previous class. While it is most likely not as fast, accurate, or comprehensive as other commercially available simulators it serves my purposes for my research. 
