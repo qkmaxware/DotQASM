@@ -22,11 +22,13 @@ public class Experiment1 {
 
     public static void Run() {
         // -- Run configuration -----------------------------------------------------------------------------
-        var runCircuits = true;        // Run circuits against IBM
+        var runCircuits = false;        // Run circuits against IBM
         var skipLongCircuits = false;
-        var longCircuitLength = 42;     // Skip all circuits with more than 'x' operations
-        var skipLargeHardware = true;
+        var longCircuitLength = 100;     // Skip all circuits with more than 'x' operations
+        var skipLargeHardware = false;
         var largeHardwareSize = 32;     // Skip all hardware that has more than 'x' qubits
+        var offset = true;
+        var offsetValue = 24;           // Skipt the first 'x' algorithm
 
         // --------------------------------------------------------------------------------------------------
 
@@ -168,6 +170,10 @@ public class Experiment1 {
     
             // Iterate over all circuits and run experiments
             for (var i = 0; i < circuits.Length; i++) {
+                if (offset && i < offsetValue) {
+                    continue;
+                }
+
                 // Init variables / names
                 var circuit = circuits[i];
                 var circuit_name = Path.GetFileNameWithoutExtension(circuit.Name);

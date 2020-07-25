@@ -24,7 +24,9 @@ public class ProgressBar {
     }
 
     private void ResetCursor() {
+        try {
         Console.SetCursorPosition(this.left, this.top);
+        } catch {}
     }
 
     private void ClearLine() {
