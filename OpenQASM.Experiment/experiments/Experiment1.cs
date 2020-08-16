@@ -23,12 +23,12 @@ public class Experiment1 {
     public static void Run() {
         // -- Run configuration -----------------------------------------------------------------------------
         var runCircuits = false;        // Run circuits against IBM
-        var skipLongCircuits = false;
-        var longCircuitLength = 100;     // Skip all circuits with more than 'x' operations
+        var skipLongCircuits = true;
+        var longCircuitLength = 48;     // Skip all circuits with more than 'x' operations
         var skipLargeHardware = false;
         var largeHardwareSize = 32;     // Skip all hardware that has more than 'x' qubits
         var offset = true;
-        var offsetValue = 24;           // Skipt the first 'x' algorithm
+        var offsetValue = 0;           // Skipt the first 'x' algorithm
         var offsetEndValue = 38;        // Stop at the 'x' algorithm
 
         // --------------------------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ public class Experiment1 {
         // Actual experiment
         var na = $",N/A";
         var failed = $",FAIL";
-        var directory = Path.Combine(".qasmdata", "experiments", ExperimentNumber.ToString(), DateTime.Now.ToString("yyyy/MM/dd H.mmtt")); 
+        var directory = Path.Combine(".qasmdata", "experiments", ExperimentNumber.ToString(), DateTime.Now.ToString("yyyy-MM-dd H.mmtt")); 
         Directory.CreateDirectory(directory);
         scheduling.SetDataDirectory(directory);
 
@@ -141,6 +141,7 @@ public class Experiment1 {
         using (var runtimeAfterMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.ibmRuntimeAfter.csv")))
         using (var estimatedRuntimeAfterMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.estimatedRuntimeAfter.csv")))
         using (var estimatedRuntimeDeltaMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.estimatedRuntimeDelta.csv")))
+        using (var pdptSizeCount = new StreamWriter(Path.Combine(directory, "matrix.pdptElementCount.csv")))
         {
             // Write headers
             summaryWriter.WriteLine($"Circuit Id, Circuit Name, Total Experiment Time, Analysis Time, Average Optimization Time");
@@ -154,6 +155,7 @@ public class Experiment1 {
             estimatedRuntimeAfterMtxWriter.WriteLine(hwHeaderString);
             estimatedRuntimeDeltaMtxWriter.WriteLine(hwHeaderString);
             runtimeAfterMtxWriter.WriteLine(hwHeaderString);
+            pdptSizeCount.WriteLine(hwHeaderString);
             eventCountWriter.WriteLine("Circuit Id, Event Count");
             estimatedRuntimeBeforeWriter.WriteLine("Circuit Id, Estimated Time");
             qubitCountWriter.WriteLine("Circuit Id, Qubits, Classical Bits");
@@ -210,6 +212,7 @@ public class Experiment1 {
                 eventCountWriter.Write(circuit_id);
                 estimatedRuntimeBeforeWriter.Write(circuit_id);
                 qubitCountWriter.Write(circuit_id);
+                pdptSizeCount.Write(circuit_id);
 
                 // Pre-analysis
                 var complete_timer = Stopwatch.StartNew();
@@ -323,6 +326,7 @@ public class Experiment1 {
                             swapCountMtxWriter.Write($",{swapCount}");
                             estimatedRuntimeAfterMtxWriter.Write($",{estimatedTime}");
                             estimatedRuntimeDeltaMtxWriter.Write($",{estimatedTime - estimated_linear_time}");
+                            pdptSizeCount.Write($",{result.Pdpt.RowCount};{result.Pdpt.ColumnCount}");
 
                             // Try run algorithm on hardware
                             var backend = provider.CreateBackendInterface(hw.Alias, circuit.QubitCount, apiKey);
@@ -351,6 +355,7 @@ public class Experiment1 {
                             estimatedRuntimeAfterMtxWriter.Write(na);
                             estimatedRuntimeDeltaMtxWriter.Write(na);
                             runtimeAfterMtxWriter.Write(na);
+                            pdptSizeCount.Write(na);
                         }
                     }
                 }
@@ -368,6 +373,7 @@ public class Experiment1 {
                 estimatedRuntimeAfterMtxWriter.WriteLine();
                 estimatedRuntimeDeltaMtxWriter.WriteLine();
                 runtimeAfterMtxWriter.WriteLine();
+                pdptSizeCount.WriteLine();
 
                 // Flush so that I get at least some data printed out on each iteration
                 summaryWriter.Flush();
@@ -380,6 +386,7 @@ public class Experiment1 {
                 estimatedRuntimeAfterMtxWriter.Flush();
                 estimatedRuntimeDeltaMtxWriter.Flush();
                 runtimeAfterMtxWriter.Flush();
+                pdptSizeCount.Flush();
 
                 // Clean up garbage to give better performance next algorithm (in-case lots of objects got created)
                 System.GC.Collect();

@@ -589,7 +589,7 @@ public class HardwareScheduling :
             throw new ArgumentOutOfRangeException("Number of logical qubits is greater than the number of physical qubits");
         }
 
-        var now = DateTime.Now.ToString("yyyy/MM/dd H.mmtt");
+        var now = DateTime.Now.ToString("yyyy-MM-dd H.mmtt");
         var filename = srcFile?.Name ?? string.Empty;
 
         // Obtain operation latencies (maybe get this from the hardware config?)
