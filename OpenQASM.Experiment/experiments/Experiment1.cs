@@ -13,25 +13,45 @@ using DotQasm.Compile.Templates;
 using DotQasm.Scheduling;
 using DotQasm.Backend;
 using DotQasm.Backend.IBM;
+using System.Text.Json;
 
 namespace DotQasm.Thesis.Experiments {
 
 public class Experiment1 {
 
-    public static readonly int ExperimentNumber = 1;
+    public static readonly int ExperimentNumber = 2;
 
     public static void Run() {
         // -- Run configuration -----------------------------------------------------------------------------
+
         var runCircuits = false;        // Run circuits against IBM
-        var skipLongCircuits = true;
+        var skipLongCircuits = false;
         var longCircuitLength = 48;     // Skip all circuits with more than 'x' operations
         var skipLargeHardware = false;
         var largeHardwareSize = 32;     // Skip all hardware that has more than 'x' qubits
         var offset = true;
-        var offsetValue = 0;           // Skipt the first 'x' algorithm
-        var offsetEndValue = 38;        // Stop at the 'x' algorithm
+        var offsetValue = 0;           // Skip the first 'x' algorithm
+        var offsetEndValue = 4;        // Stop at the 'x' algorithm
 
         // --------------------------------------------------------------------------------------------------
+
+        var rootDirectory = Path.Combine(".qasmdata", "experiments", ExperimentNumber.ToString());
+        var now = DateTime.Now;
+        var directory = Path.Combine(rootDirectory, now.ToString("yyyy-MM-dd H.mmtt")); 
+        Directory.CreateDirectory(directory);
+
+        // Update metadata
+        var counts = readCounts();
+        var indexFile = Path.Combine(rootDirectory, "index.csv");
+        if (!File.Exists(indexFile))
+            File.WriteAllText(indexFile, $"Trial,Execution,Skipping,Hardware,Circuits{Environment.NewLine}");
+        using (StreamWriter w = File.AppendText(indexFile)) {
+            w.Write(now.ToString("yyyy-MM-dd H.mmtt"));
+            w.Write("," + (runCircuits ? "Run on IBM Quantum" : "Do not run"));
+            w.Write("," + (skipLongCircuits ? $"Skipping circuits longer than {longCircuitLength}" : "No skipping"));
+            w.Write("," + (skipLargeHardware ? $"Skip hardware larger than than {largeHardwareSize} qubits" : "All hardware"));
+            w.WriteLine("," + (offset ? $"Circuits between {ExperimentNumber}.{offsetValue} and {ExperimentNumber}.{offsetEndValue}" : "All circuits"));
+        }
 
         var totalTimer = Stopwatch.StartNew();
 
@@ -95,6 +115,7 @@ public class Experiment1 {
 
         // Create optimizers
         var scheduling = new Optimization.Strategies.HardwareScheduling();
+        scheduling.SetDataDirectory(directory);
         var swaps = new Optimization.Strategies.SwapDecompose();
 
         // Create backend provider
@@ -122,9 +143,6 @@ public class Experiment1 {
         // Actual experiment
         var na = $",N/A";
         var failed = $",FAIL";
-        var directory = Path.Combine(".qasmdata", "experiments", ExperimentNumber.ToString(), DateTime.Now.ToString("yyyy-MM-dd H.mmtt")); 
-        Directory.CreateDirectory(directory);
-        scheduling.SetDataDirectory(directory);
 
         using (var summaryWriter = new StreamWriter(Path.Combine(directory, "index.csv"))) 
         using (var timingWriter = new StreamWriter(Path.Combine(directory, "timings.csv"))) 
@@ -191,7 +209,7 @@ public class Experiment1 {
                 scheduling.Use(new VirtualFile(circuit.Name, string.Empty)); // For naming of generated LDPG & PDPT files
 
                 // Update progress
-                Console.Write($"{(i + 1).ToString().PadLeft(circuitCount.ToString().Length, ' ')}/{circuitCount} ");
+                Console.Write($"{(i + 1).ToString().PadLeft(circuitCount.ToString().Length, ' ')}/{circuitCount} ({circuit_id}) ");
                 if (skipLongCircuits && circuit.GateSchedule.EventCount > longCircuitLength) {
                     Console.WriteLine("Skipped");
                     continue;
@@ -231,7 +249,7 @@ public class Experiment1 {
 
                     //Estimate time if instructions performed sequentially
                     estimated_linear_time = circuit.GateSchedule.Select((evt) => timeModel.TimeOf(evt)).Aggregate((t1, t2) => t1 + t2);
-                    estimatedRuntimeBeforeWriter.WriteLine($", {estimated_linear_time}");
+                    estimatedRuntimeBeforeWriter.WriteLine($", {estimated_linear_time.TotalSeconds}");
                     estimatedRuntimeBeforeWriter.Flush();
 
                     // Emit circuit diagram
@@ -249,7 +267,7 @@ public class Experiment1 {
                                 taskRun.RunSynchronously();
                                 var taskRunResult = (IBMJobResults)taskRun.Result;
                                 if (taskRunResult.Success) {
-                                    runtimeBeforeMtxWriter.Write($",{taskRunResult.ExecutionTime}");
+                                    runtimeBeforeMtxWriter.Write($",{taskRunResult.ExecutionTime.TotalSeconds}");
                                 } else {
                                     runtimeBeforeMtxWriter.Write(failed);
                                 }
@@ -269,6 +287,19 @@ public class Experiment1 {
                 timer = Stopwatch.StartNew();
                 {
                     foreach (var device in hardware) {
+                        // Update count
+                        if (counts.ContainsKey(circuit_id)) {
+                            var devices = counts[circuit_id];
+                            if (devices.ContainsKey(device.Name)) {
+                                devices[device.Name] += 1;
+                            } else {
+                                devices[device.Name] = 1;
+                            }
+                        } else {
+                            counts[circuit_id] = new Dictionary<string, int>{
+                                {device.Name, 1}
+                            };
+                        }
                         // Prepare
                         scheduling.Use(device);
                         var result = new ExperimentResultSet();
@@ -280,13 +311,16 @@ public class Experiment1 {
                             var sched = scheduling.Transform(circuit.GateSchedule, out result.Ldpg, out result.LdpgFilename, out result.Pdpt, out result.PdptFilename);
                                 sched = swaps.Transform(sched);
                             result.Schedule = sched;
-                            optTimeMtxWriter.Write($",{thisHwTime.Elapsed}");
+                            optTimeMtxWriter.Write($",{thisHwTime.Elapsed.TotalSeconds}");
                         } catch (Exception e) {
                             optTimeMtxWriter.Write(na);
                             errorLogWriter.WriteLine(e);
                             errorLogWriter.Flush();
                         }
                         progress.Update(++stage);
+
+                        // Clean up garbage to give better performance next algorithm (in-case lots of objects got created)
+                        ForceGC();
                     }
                 }
                 var optimization_time = timer.Elapsed;
@@ -324,8 +358,8 @@ public class Experiment1 {
                             pdptMtxWriter.Write($",{result.PdptFilename}");
                             eventChangeMtxWriter.Write($",{result.Schedule.EventCount - circuit.GateSchedule.EventCount}");
                             swapCountMtxWriter.Write($",{swapCount}");
-                            estimatedRuntimeAfterMtxWriter.Write($",{estimatedTime}");
-                            estimatedRuntimeDeltaMtxWriter.Write($",{estimatedTime - estimated_linear_time}");
+                            estimatedRuntimeAfterMtxWriter.Write($",{estimatedTime.TotalSeconds}");
+                            estimatedRuntimeDeltaMtxWriter.Write($",{(estimatedTime - estimated_linear_time).TotalSeconds}");
                             pdptSizeCount.Write($",{result.Pdpt.RowCount};{result.Pdpt.ColumnCount}");
 
                             // Try run algorithm on hardware
@@ -336,7 +370,7 @@ public class Experiment1 {
                                     taskRun.RunSynchronously();
                                     var taskRunResult = (IBMJobResults)taskRun.Result;
                                     if (taskRunResult.Success) {
-                                        runtimeAfterMtxWriter.Write($",{taskRunResult.ExecutionTime}");
+                                        runtimeAfterMtxWriter.Write($",{taskRunResult.ExecutionTime.TotalSeconds}");
                                     } else {
                                         runtimeAfterMtxWriter.Write(failed);
                                     }
@@ -363,7 +397,7 @@ public class Experiment1 {
                 progress.Update(++stage);
 
                 // Write results / end lines
-                summaryWriter.WriteLine($"{circuit_id}, {circuit.Name}, {complete_timer.Elapsed}, {pre_analysis_time + post_analysis_time}, {average_optimization_time}");
+                summaryWriter.WriteLine($"{circuit_id}, {circuit.Name}, {complete_timer.Elapsed.TotalSeconds}, {(pre_analysis_time + post_analysis_time).TotalSeconds}, {average_optimization_time.TotalSeconds}");
                 optTimeMtxWriter.WriteLine();
                 ldpgMtxWriter.WriteLine();
                 pdptMtxWriter.WriteLine();
@@ -389,14 +423,18 @@ public class Experiment1 {
                 pdptSizeCount.Flush();
 
                 // Clean up garbage to give better performance next algorithm (in-case lots of objects got created)
-                System.GC.Collect();
-                System.GC.WaitForPendingFinalizers();
+                ForceGC();
+
                 Console.WriteLine();
             }
             Console.WriteLine();
         }
 
-        Console.WriteLine($"Experiment Completed...{totalTimer.Elapsed}");
+        var end = DateTime.Now;
+        var elapsed = totalTimer.Elapsed;   
+        Console.WriteLine($"Experiment Completed...{elapsed}");
+        writeCounts(counts);
+        File.WriteAllText(Path.Combine(directory, "duration.txt"), $"Started at: {now}\nEnded at: {end}\nTotal Duration: {elapsed}");
         Console.WriteLine($"Files emitted to {directory}");
     }
 
@@ -409,6 +447,25 @@ public class Experiment1 {
         } else {
             return default(T);
         }
+    }
+
+    private static void ForceGC() {
+        System.GC.Collect();
+        System.GC.WaitForPendingFinalizers();
+    }
+
+    private static Dictionary<string, Dictionary<string, int>> readCounts() {
+        var file = Path.Combine(".qasmdata", "experiments", ExperimentNumber.ToString(), "counts.json");
+        if (File.Exists(file)) {
+            return JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, int>>>(File.ReadAllText(file));
+        } else {
+            return new Dictionary<string, Dictionary<string, int>>();
+        }
+    }
+
+    private static void writeCounts(Dictionary<string, Dictionary<string, int>> counts) {
+        var file = Path.Combine(".qasmdata", "experiments", ExperimentNumber.ToString(), "counts.json");
+        File.WriteAllText(file, JsonSerializer.Serialize(counts));
     }
 
     private class ExperimentResultSet {

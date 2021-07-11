@@ -123,8 +123,8 @@ class SwapSearchColouring : ISearchable {
             }
             //Console.WriteLine(colour + " has " + count + " with " + adjacencies);
             if (count > 1 && adjacencies < 1) {
-                // There are more that 1 of this colour, and they are not adjacent
-                return distance++;
+                // There are more that 1 of this colour, and they are not adjacent 
+                distance++;
             }
         }
         return distance;
