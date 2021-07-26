@@ -12,6 +12,8 @@ public class PhysicalQubit {
     public PhysicalQubit(PhysicalQubit other) {
         this.Colour = other.Colour;
     }
+
+    public override string ToString() => Name;
 }
 
 public class Channel {

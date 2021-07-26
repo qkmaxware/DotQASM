@@ -1,13 +1,18 @@
+using System.IO;
 using System.Linq;
 
 namespace System.Collections.Generic {
+
+public interface IAttributedVertex {
+    IEnumerable<KeyValuePair<string,string>> GetAttributes();
+}
 
 /// <summary>
 /// Graph data structure represented by an edge list
 /// </summary>
 /// <typeparam name="VertexType">Type of data stored in each vertex</typeparam>
 /// <typeparam name="EdgeType">Type of data stored in each edge</typeparam>
-public class EdgeListGraph<VertexType, EdgeType> : IGraph<VertexType, EdgeType> {
+public class EdgeListGraph<VertexType, EdgeType> : IGraph<VertexType, EdgeType>{
 
     private List<VertexType> _vertices = new List<VertexType>();
     private List<List<IGraphEdge<VertexType,EdgeType>>> _edges = new List<List<IGraphEdge<VertexType,EdgeType>>>();
@@ -139,6 +144,21 @@ public class EdgeListGraph<VertexType, EdgeType> : IGraph<VertexType, EdgeType> 
         _edges[b].Add(edgeBA);
 
         return (edgeAB, edgeBA);
+    }
+
+    /// <summary>
+    /// Convert the graph to GraphVIZ DOT graph description language format
+    /// </summary>
+    public void ToDOT(TextWriter writer) {
+        writer.WriteLine("digraph {");
+        foreach (var node in this.Vertices) {
+            var attrs = node is IAttributedVertex ? string.Join(' ', ((IAttributedVertex)node).GetAttributes().Select(kv => kv.Key + "=\"" + kv.Value + "\"")) : string.Empty;
+            writer.WriteLine($"    node_{node.ToString()} [{attrs}];");
+        }
+        foreach (var edge in this.Edges) {
+            writer.WriteLine($"    node_{edge.Startpoint.ToString()} -> node_{edge.Endpoint.ToString()};");
+        }
+        writer.WriteLine("}");
     }
 }
 

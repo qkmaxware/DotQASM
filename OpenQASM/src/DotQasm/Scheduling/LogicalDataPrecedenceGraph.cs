@@ -17,7 +17,7 @@ public class DataPrecedenceEdgeData: IWeightedEdgeData {
 /// <summary>
 /// Vertex data for logical data precedence graphs
 /// </summary>
-public class DataPrecedenceNode {
+public class DataPrecedenceNode : IAttributedVertex {
     // Computed by LDPG
     public int EventIndex {get; set;}
     public IEvent Event {get; set;}
@@ -26,7 +26,17 @@ public class DataPrecedenceNode {
 
     // Computed manually
     public TimeSpan Latency {get; set;}
-    public double Priority {get; set;}
+    public double? Priority {get; set;}
+
+    public override string ToString() => "event_" + EventIndex;
+    public IEnumerable<KeyValuePair<string,string>> GetAttributes() {
+        yield return new KeyValuePair<string, string>("EventIndex", this.EventIndex.ToString());
+        yield return new KeyValuePair<string, string>("EventType", Event.GetType().ToString());
+        yield return new KeyValuePair<string, string>("Depth", this.Depth.ToString());
+        yield return new KeyValuePair<string, string>("Dependencies", this.DependencyCount.ToString());
+        yield return new KeyValuePair<string, string>("Latency", this.Latency.ToString());
+        yield return new KeyValuePair<string, string>("Priority", this.Priority.ToString());
+    }
 
 }
 
@@ -163,7 +173,7 @@ public class LogicalDataPrecedenceGraph: EdgeListGraph<DataPrecedenceNode, DataP
             
             pi = Max ( Sum(tj) for each in paths to node from leaf generation)
         */
-        var visitor = new AccumulatorGraphVisitor<double, DataPrecedenceNode, DataPrecedenceEdgeData>();
+        /*var visitor = new AccumulatorGraphVisitor<double, DataPrecedenceNode, DataPrecedenceEdgeData>();
         visitor.Accumulator = (old, @new) => {
             return Math.Max(old, @new);
         };
@@ -177,7 +187,30 @@ public class LogicalDataPrecedenceGraph: EdgeListGraph<DataPrecedenceNode, DataP
 
             return current.Priority;
         };
-        visitor.Traverse(this);
+        visitor.Traverse(this);*/
+        
+        var flattenedTree = this.Vertices.OrderByDescending(vert => vert.Depth).ToList();
+        foreach (var node in flattenedTree) {
+            recursivelyComputePI(node); // Should almost never recurse because nodes at lower depth are already computed
+        }
+
+        
+       // var roots = this.RootNodes.ToList();
+        //foreach (var node in roots) {
+          //  recursivelyComputePI(node);
+        //}
+    }
+
+    private void recursivelyComputePI(DataPrecedenceNode node) {
+        if (node.Priority.HasValue)
+            return;
+
+        var child_max = 0.0d;
+        foreach (var link in this.IncidentEdges(node)) {
+            recursivelyComputePI(link.Endpoint);
+            child_max = Math.Max(child_max, link.Endpoint.Priority.Value);
+        }
+        node.Priority = child_max + node.Latency.TotalSeconds;
     }
 
     private bool CommutesWith(IEvent evt1, IEvent evt2) {

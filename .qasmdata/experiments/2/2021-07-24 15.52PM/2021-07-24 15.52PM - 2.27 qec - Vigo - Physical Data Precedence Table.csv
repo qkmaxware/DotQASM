@@ -1,0 +1,7 @@
+"Qubit Index","Priority 1","Priority 2","Priority 3","Priority 4","Priority 5","Priority 6","Priority 7","Priority 8","Priority 9","Priority 10","Priority 11","Priority 12","Priority 13","Priority 14","Priority 15","Priority 16","Priority 17"
+"0","q0::u3 (38A71A5)","q0::barrier (3DDFED0)","q0::swap (1376E0F)","q1::cx* (2CDF554)","q1::swap (2F2DE8A)",,,,,,,,"q0::if 1 then u3 (6124B6)",,,"q0::swap (289D2DD)","q1::measurement (A18A47)"
+"1",,"q1::barrier (3DDFED0)","q1::swap (1376E0F)",,"q0::swap (2F2DE8A)","q1::cx* (13D9FFB)","q1::swap (2D869C9)","q3::cx* (32A9FD4)","q3::swap (19BB818)",,,,,,"q4::if 3 then u3 (2BC9D96)","q4::swap (27978D9)","q3::measurement (A18A47)"
+"2",,"q2::barrier (3DDFED0)",,,,,,,"q2::swap (2453FA7)","q1::cx* (7F9E7A)","q1::swap (6F3CE2)",,,"q2::if 2 then u3 (36A4A66)",,,"q2::measurement (A18A47)"
+"3",,,,"q3::cx (2CDF554)",,"q3::cx (13D9FFB)","q3::swap (2D869C9)",,"q1::swap (2453FA7)",,"q2::swap (6F3CE2)","q1::measurement (7C924D)",,,,"q1::swap (289D2DD)"
+"4",,,,,,,,"q4::cx (32A9FD4)","q4::swap (19BB818)","q3::cx (7F9E7A)",,"q3::measurement (7C924D)",,,,"q3::swap (27978D9)"
+"5"

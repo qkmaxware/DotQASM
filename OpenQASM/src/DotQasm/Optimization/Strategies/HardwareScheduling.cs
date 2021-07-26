@@ -8,6 +8,7 @@ using DotQasm.IO.Svg;
 using DotQasm.Hardware;
 using DotQasm.Search;
 using System.Collections;
+using System.Diagnostics;
 
 namespace DotQasm.Optimization.Strategies {
 
@@ -415,7 +416,7 @@ public class HardwareScheduling :
     }
 
     private IEnumerable<IGrouping<double, DataPrecedenceNode>> GroupByPriority(IEnumerable<DataPrecedenceNode> vertices){
-        return vertices.GroupBy((vert) => vert.Priority).OrderByDescending((group) => group.Key);
+        return vertices.GroupBy((vert) => vert.Priority.Value).OrderByDescending((group) => group.Key);
     }
 
     private bool DoAmbiguitiesExist(IGrouping<double, DataPrecedenceNode> group) {
@@ -579,6 +580,7 @@ public class HardwareScheduling :
         if (hardware == null) {
             throw new ArgumentException(this.Name + " strategy requires a valid hardware configuration");
         }
+        //var temp = Stopwatch.StartNew();
         var logicalQubits = schedule.Events.SelectMany(x => x.QuantumDependencies).Distinct().ToList();
         var physicalQubits = hardware.ConnectivityGraph.Vertices.ToList();
         var qubitCount = hardware.PhysicalQubitCount;
@@ -588,16 +590,21 @@ public class HardwareScheduling :
         if (logicalQubits.Count > qubitCount) {
             throw new ArgumentOutOfRangeException("Number of logical qubits is greater than the number of physical qubits");
         }
+        //Console.WriteLine("Created Logical Bits " + temp.Elapsed);
 
         var now = DateTime.Now.ToString("yyyy-MM-dd H.mmtt");
-        var filename = srcFile?.Name ?? string.Empty;
+        var filename = (srcFile?.Name ?? string.Empty) + " - " + this.hardware.Name;
 
         // Obtain operation latencies (maybe get this from the hardware config?)
         ILatencyEstimator TimeEstimator = new IntegerLatencyEstimator();
 
         // Create scheduling constructs
+        //temp = Stopwatch.StartNew();
         var ldpg = new LogicalDataPrecedenceGraph(schedule);
+        //Console.WriteLine("Created LDPG " + temp.Elapsed);
+        //temp = Stopwatch.StartNew();
         var pdpt = new PhysicalDataPrecedenceTable(qubitCount); // Row, Column Format
+        //Console.WriteLine("Created PDPT " + temp.Elapsed);
 
         // Save these references
         save_ldpg = ldpg;
@@ -605,6 +612,7 @@ public class HardwareScheduling :
 
         // Fill initial logical qubit to physical qubit mapping
         // 1-1, logical maps directly to physical (better way of doing this would be nice)
+        //temp = Stopwatch.StartNew();
         var logicalQubitMap = new BijectiveDictionary<Qubit, PhysicalQubit>(qubitCount);
         var ancillaQubits = new List<Qubit>();
         for (var i = logicalQubits.Count; i < physicalQubits.Count; i++) {
@@ -614,25 +622,36 @@ public class HardwareScheduling :
         foreach (var logical in logicalQubits.Concat(ancillaQubits)) {
             logicalQubitMap.Add(logical, physicalQubits[ qubitAssignmentIndex++ ]);
         }
+        //Console.WriteLine("Created Qubit Map " + temp.Elapsed);
 
         // Step 1, arrange data in the logical data precedence graph, assign priorities along longest line
         // Page 6, tj is the latency for an event
+        //temp = Stopwatch.StartNew();
         ComputeLatencies(ldpg, TimeEstimator);
+        //Console.WriteLine("Computed Latencies " + temp.Elapsed);
         // Page 7. the depth of a node ni corresponds to the maximum number of nodes traversed along any directed path from ni to any gate in the last generation
         // Page 7, pi = Max ( Sum(tj) for each in paths to node from leaf generation)
+        //temp = Stopwatch.StartNew();
         ComputePriorities(ldpg);
+        //Console.WriteLine("Computed Priorities " + temp.Elapsed);
         saved_ldpg_filename = EmitLdpg(now, filename, ldpg);
 
         // Step 2, schedule each event by priority, add routing if necessary
         // Page 7, No gate will ever depend on a gate with a lower priority so we can use a priority iterator to construct the physical data precedence  table
+        //temp = Stopwatch.StartNew();
         var groups = GroupByPriority(ldpg.Vertices).ToList();
+        //Console.WriteLine("Initial Groupings " + temp.Elapsed);
 
         // Ambiguity resolution
+        //temp = Stopwatch.StartNew();
         var unambiguous_groups = ResolveAmbiguitiesToIterable(groups).ToList();
+        //Console.WriteLine("Unambiguious Groupings " + temp.Elapsed);
+        //temp = Stopwatch.StartNew();
         foreach (var unambiguous_group in unambiguous_groups) {
             // Routing
             RouteGroup(logicalQubitMap, pdpt, unambiguous_group);
         }
+        //Console.WriteLine("Routing Complete " + temp.Elapsed);
 
         // Step 3, output all data
         saved_pdpt_filename = EmitPdpt(now, filename, pdpt);
@@ -654,9 +673,9 @@ public class HardwareScheduling :
 
     private string EmitLdpg(string timestamp, string filename, LogicalDataPrecedenceGraph ldpg) {
         // Emit logical data precedence graph
-        var name = timestamp + " - " + filename + " - Logical Data Precedence Graph.csv";
+        var name = timestamp + " - " + filename + " - Logical Data Precedence Graph.dot";
         using (var writer = MakeDataFile(name)) {
-            ldpg.Encode(writer);
+            ldpg.ToDOT(writer);
         }
         return name;
     }

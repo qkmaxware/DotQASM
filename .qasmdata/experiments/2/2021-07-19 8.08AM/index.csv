@@ -1,0 +1,20 @@
+Circuit Id, Circuit Name, Total Experiment Time, Analysis Time, Average Optimization Time
+2.0, 2.0 Quantum Teleportation, 0.2010831, 0.0188089, 0.0180825
+2.1, 2.1 Superdense coding of 0, 0.1002039, 0.0016633, 0.0098186
+2.2, 2.2 Superdense coding of 1, 0.0975387, 0.0016773, 0.0095153
+2.3, 2.3 Superdense coding of 2, 0.0976086, 0.001586, 0.0095448
+2.4, 2.4 Superdense coding of 3, 0.1052628, 0.00192, 0.0102887
+2.5, 2.5 Deutsch Algorithm Constant True, 0.1047908, 0.0023163, 0.0101823
+2.6, 2.6 Deutsch Algorithm Constant False, 0.1100461, 0.0020466, 0.010765
+2.7, 2.7 Deutsch Algorithm Identity, 0.0964196, 0.0016508, 0.0094188
+2.8, 2.8 Deutsch Algorithm Inversion, 0.1033384, 0.0013646, 0.0101386
+2.9, 2.9 Deutsch-Josza with 3 qubits, 0.1042123, 0.00213, 0.0101482
+2.10, 2.10 Bernstein Vazrani for value 3 with 3 qubits, 0.1000274, 0.0015062, 0.0098146
+2.11, 2.11 Simons Algorithm for 11, 0.0996923, 0.0018372, 0.0097313
+2.12, 2.12 3 Qubit Quantum Fourier Transform, 0.0967813, 0.0015426, 0.0094595
+2.13, 2.13 4 Qubit Quantum Fourier Transform, 0.1082544, 0.0020764, 0.0105716
+2.14, 2.14 5 Qubit Quantum Fourier Transform, 0.111329, 0.0022214, 0.0108541
+2.15, 2.15 Gover's search with 9 items, 0.1302093, 0.0028337, 0.0126775
+2.16, 2.16 Quantum Approximate Optimization MaxCut, 0.1000167, 0.0020275, 0.0097241
+2.17, 2.17 011_3_qubit_grover_50_, 0.1294493, 0.0037843, 0.0125131
+2.18, 2.18 adder, 0.0637828, 0.003266, 0.0060125

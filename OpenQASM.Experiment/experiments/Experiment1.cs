@@ -29,9 +29,9 @@ public class Experiment1 {
         var longCircuitLength = 48;     // Skip all circuits with more than 'x' operations
         var skipLargeHardware = false;
         var largeHardwareSize = 32;     // Skip all hardware that has more than 'x' qubits
-        var offset = true;
-        var offsetValue = 0;           // Skip the first 'x' algorithm
-        var offsetEndValue = 4;        // Stop at the 'x' algorithm
+        var offset = false;
+        var offsetValue = 17;           // Skip the first 'x' algorithm
+        var offsetEndValue = 17;        // Stop at the 'x' algorithm
 
         // --------------------------------------------------------------------------------------------------
 
@@ -73,7 +73,6 @@ public class Experiment1 {
         /*14*/    new QftGenerator().Generate(qubits: 4),                                                     // Quantum Fourier Transform with 4 qubits
         /*15*/    new QftGenerator().Generate(qubits: 5),                                                     // Quantum Fourier Transform with 5 qubits
             // Quantum Phase Estimation
-            //new ShorsGenerator().Generate((2, 9)),                                                      // Shor's algorithm to factor '9' with a guess of 2
         /*16*/    new GroverGenerator().Generate((itemCount: 9, oracle: new PhaseOracle())),                  // Grover's algorithm on a collection of 9 items looking for |101> and |110>
             // Quantum Counting
             // Quantum Key Distribution
@@ -98,8 +97,11 @@ public class Experiment1 {
                     throw;
                 }
             });
+        IEnumerable<Circuit> bonus_circuits = new Circuit[]{ // Extra circuits to test if time allows
+                  new ShorsGenerator().Generate((2, 9)),                                                      // Shor's algorithm to factor '9' with a guess of 2
+        };
 
-        var circuits = generated_circuits.Concat(prebuilt_circuits).ToArray();
+        var circuits = generated_circuits.Concat(prebuilt_circuits).Concat(bonus_circuits).ToArray();
 
         // Hardware to compile against
         var hardware = Directory
