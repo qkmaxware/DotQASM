@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenQASM.Desktop", "OpenQAS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenQASM.Experiment", "OpenQASM.Experiment\OpenQASM.Experiment.csproj", "{8883BF5E-2BED-4F71-890C-B6C29D581C22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenQASM.Experiment.Summary", "OpenQASM.Experiment.Summary\OpenQASM.Experiment.Summary.csproj", "{41ABE064-7297-41B8-AB8B-20DD87C25789}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,5 +88,17 @@ Global
 		{8883BF5E-2BED-4F71-890C-B6C29D581C22}.Release|x64.Build.0 = Release|Any CPU
 		{8883BF5E-2BED-4F71-890C-B6C29D581C22}.Release|x86.ActiveCfg = Release|Any CPU
 		{8883BF5E-2BED-4F71-890C-B6C29D581C22}.Release|x86.Build.0 = Release|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Debug|x64.Build.0 = Debug|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Debug|x86.Build.0 = Debug|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Release|x64.ActiveCfg = Release|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Release|x64.Build.0 = Release|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Release|x86.ActiveCfg = Release|Any CPU
+		{41ABE064-7297-41B8-AB8B-20DD87C25789}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

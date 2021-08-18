@@ -19,6 +19,7 @@ public class BernsteinVazraniGenerator : ICircuitGenerator<(int qubits, int valu
         }
 
         // Barrier?
+        inputs.Barrier();
 
         // Query the "inner-product" oracle
         for (var i = 0; i < args.qubits; i++) {
@@ -33,6 +34,7 @@ public class BernsteinVazraniGenerator : ICircuitGenerator<(int qubits, int valu
         }
 
         // Barrier?
+        inputs.Barrier();
 
         // Apply hadamard gates to the input register
         foreach (var input in inputs) {
