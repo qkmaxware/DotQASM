@@ -1,0 +1,14 @@
+digraph {
+    node_event_0_1 [EventIndex="0" EventType="DotQasm.Scheduling.GateEvent" Depth="1" Dependencies="0" Latency="00:00:00.0010000" Priority="0.003"];
+    node_event_1_1 [EventIndex="1" EventType="DotQasm.Scheduling.GateEvent" Depth="1" Dependencies="0" Latency="00:00:00.0010000" Priority="0.006"];
+    node_event_2_2 [EventIndex="2" EventType="DotQasm.Scheduling.GateEvent" Depth="2" Dependencies="1" Latency="00:00:00.0010000" Priority="0.002"];
+    node_event_3_2 [EventIndex="3" EventType="DotQasm.Scheduling.GateEvent" Depth="2" Dependencies="1" Latency="00:00:00.0010000" Priority="0.005"];
+    node_event_4_3 [EventIndex="4" EventType="DotQasm.Scheduling.GateEvent" Depth="3" Dependencies="2" Latency="00:00:00.0010000" Priority="0.001"];
+    node_event_5_3 [EventIndex="5" EventType="DotQasm.Scheduling.GateEvent" Depth="3" Dependencies="2" Latency="00:00:00.0010000" Priority="0.004"];
+    node_event_6_4 [EventIndex="6" EventType="DotQasm.Scheduling.MeasurementEvent" Depth="4" Dependencies="3" Latency="00:00:00.0030000" Priority="0.003"];
+    node_event_0_1 -> node_event_2_2;
+    node_event_1_1 -> node_event_3_2;
+    node_event_2_2 -> node_event_4_3;
+    node_event_3_2 -> node_event_5_3;
+    node_event_5_3 -> node_event_6_4;
+}

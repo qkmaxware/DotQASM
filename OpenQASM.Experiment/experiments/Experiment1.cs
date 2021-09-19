@@ -19,7 +19,7 @@ namespace DotQasm.Thesis.Experiments {
 
 public class Experiment1 {
 
-    public static readonly int ExperimentNumber = 2;
+    public static readonly int ExperimentNumber = 3;
 
     public static void Run() {
         // -- Run configuration -----------------------------------------------------------------------------
