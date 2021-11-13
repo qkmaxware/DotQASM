@@ -1,4 +1,5 @@
 {
     "csv-preview.formatValues": "never",
-    "csv-preview.lineNumbers": "source"
+    "csv-preview.lineNumbers": "source",
+    "git.ignoreLimitWarning": true
 }

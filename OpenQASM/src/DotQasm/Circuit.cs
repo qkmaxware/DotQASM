@@ -51,6 +51,10 @@ public class Register<T> : IRegister<T> where T:IOwnedBy<Register<T>> {
     IEnumerator IEnumerable.GetEnumerator() {
         return Elements.GetEnumerator();
     }
+
+    public override string ToString() {
+        return "register" + RegisterId.ToString();
+    }
 }
 
 /// <summary>
@@ -77,6 +81,10 @@ public class Qubit: IOwnedBy<Register<Qubit>> {
 
     public override int GetHashCode() {
         return HashCode.Combine(QubitId, ParentCircuit);
+    }
+
+    public override string ToString() {
+        return (Owner != null ? Owner.ToString() : "null") + "[" + QubitId + "]";
     }
 }
 

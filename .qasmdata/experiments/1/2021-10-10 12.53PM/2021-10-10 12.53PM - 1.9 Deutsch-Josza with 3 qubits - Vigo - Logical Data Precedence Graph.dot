@@ -1,0 +1,37 @@
+digraph {
+    node_[0.1] h register0[0] [EventIndex="0" EventType="DotQasm.Scheduling.GateEvent" Depth="1" Dependencies="0" Latency="00:00:00.0010000" Priority="0.013000000000000001"];
+    node_[1.1] h register0[1] [EventIndex="1" EventType="DotQasm.Scheduling.GateEvent" Depth="1" Dependencies="0" Latency="00:00:00.0010000" Priority="0.010000000000000002"];
+    node_[2.1] h register0[2] [EventIndex="2" EventType="DotQasm.Scheduling.GateEvent" Depth="1" Dependencies="0" Latency="00:00:00.0010000" Priority="0.009000000000000001"];
+    node_[3.1] x register1[3] [EventIndex="3" EventType="DotQasm.Scheduling.GateEvent" Depth="1" Dependencies="0" Latency="00:00:00.0010000" Priority="0.013000000000000001"];
+    node_[4.2] h register1[3] [EventIndex="4" EventType="DotQasm.Scheduling.GateEvent" Depth="2" Dependencies="1" Latency="00:00:00.0010000" Priority="0.012"];
+    node_[5.2] x register0[0] [EventIndex="5" EventType="DotQasm.Scheduling.GateEvent" Depth="2" Dependencies="1" Latency="00:00:00.0010000" Priority="0.012"];
+    node_[6.2] x register0[2] [EventIndex="6" EventType="DotQasm.Scheduling.GateEvent" Depth="2" Dependencies="1" Latency="00:00:00.0010000" Priority="0.008"];
+    node_[7.3] cx register0[0] register1[3] [EventIndex="7" EventType="DotQasm.Scheduling.ControlledGateEvent" Depth="3" Dependencies="4" Latency="00:00:00.0020000" Priority="0.011000000000000001"];
+    node_[8.4] cx register0[1] register1[3] [EventIndex="8" EventType="DotQasm.Scheduling.ControlledGateEvent" Depth="4" Dependencies="6" Latency="00:00:00.0020000" Priority="0.009000000000000001"];
+    node_[9.5] cx register0[2] register1[3] [EventIndex="9" EventType="DotQasm.Scheduling.ControlledGateEvent" Depth="5" Dependencies="9" Latency="00:00:00.0020000" Priority="0.007"];
+    node_[10.4] x register0[0] [EventIndex="10" EventType="DotQasm.Scheduling.GateEvent" Depth="4" Dependencies="5" Latency="00:00:00.0010000" Priority="0.005"];
+    node_[11.6] x register0[2] [EventIndex="11" EventType="DotQasm.Scheduling.GateEvent" Depth="6" Dependencies="10" Latency="00:00:00.0010000" Priority="0.005"];
+    node_[12.5] h register0[0] [EventIndex="12" EventType="DotQasm.Scheduling.GateEvent" Depth="5" Dependencies="6" Latency="00:00:00.0010000" Priority="0.004"];
+    node_[13.5] h register0[1] [EventIndex="13" EventType="DotQasm.Scheduling.GateEvent" Depth="5" Dependencies="7" Latency="00:00:00.0010000" Priority="0.004"];
+    node_[14.7] h register0[2] [EventIndex="14" EventType="DotQasm.Scheduling.GateEvent" Depth="7" Dependencies="11" Latency="00:00:00.0010000" Priority="0.004"];
+    node_[15.6] measurement register0[0] [EventIndex="15" EventType="DotQasm.Scheduling.MeasurementEvent" Depth="6" Dependencies="7" Latency="00:00:00.0030000" Priority="0.003"];
+    node_[16.6] measurement register0[1] [EventIndex="16" EventType="DotQasm.Scheduling.MeasurementEvent" Depth="6" Dependencies="8" Latency="00:00:00.0030000" Priority="0.003"];
+    node_[17.8] measurement register0[2] [EventIndex="17" EventType="DotQasm.Scheduling.MeasurementEvent" Depth="8" Dependencies="12" Latency="00:00:00.0030000" Priority="0.003"];
+    node_[0.1] h register0[0] -> node_[5.2] x register0[0];
+    node_[1.1] h register0[1] -> node_[8.4] cx register0[1] register1[3];
+    node_[2.1] h register0[2] -> node_[6.2] x register0[2];
+    node_[3.1] x register1[3] -> node_[4.2] h register1[3];
+    node_[4.2] h register1[3] -> node_[7.3] cx register0[0] register1[3];
+    node_[5.2] x register0[0] -> node_[7.3] cx register0[0] register1[3];
+    node_[6.2] x register0[2] -> node_[9.5] cx register0[2] register1[3];
+    node_[7.3] cx register0[0] register1[3] -> node_[8.4] cx register0[1] register1[3];
+    node_[7.3] cx register0[0] register1[3] -> node_[10.4] x register0[0];
+    node_[8.4] cx register0[1] register1[3] -> node_[9.5] cx register0[2] register1[3];
+    node_[8.4] cx register0[1] register1[3] -> node_[13.5] h register0[1];
+    node_[9.5] cx register0[2] register1[3] -> node_[11.6] x register0[2];
+    node_[10.4] x register0[0] -> node_[12.5] h register0[0];
+    node_[11.6] x register0[2] -> node_[14.7] h register0[2];
+    node_[12.5] h register0[0] -> node_[15.6] measurement register0[0];
+    node_[13.5] h register0[1] -> node_[16.6] measurement register0[1];
+    node_[14.7] h register0[2] -> node_[17.8] measurement register0[2];
+}

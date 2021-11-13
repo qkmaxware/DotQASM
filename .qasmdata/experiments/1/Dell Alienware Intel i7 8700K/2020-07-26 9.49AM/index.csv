@@ -1,5 +1,0 @@
-Circuit Id, Circuit Name, Total Experiment Time, Analysis Time, Average Optimization Time
-1.14, 1.14 5 Qubit Quantum Fourier Transform, 00:00:00.1617236, 00:00:00.0147716, 00:00:00.0145633
-1.15, 1.15 Gover's search with 9 items, 00:54:21.3832881, 00:00:00.0027581, 00:05:26.1379957
-1.16, 1.16 Quantum Approximate Optimization MaxCut, 00:00:00.0507596, 00:00:00.0017963, 00:00:00.0048424
-1.17, 1.17 011_3_qubit_grover_50_, 01:28:16.1464317, 00:00:00.0024529, 00:08:49.6143090

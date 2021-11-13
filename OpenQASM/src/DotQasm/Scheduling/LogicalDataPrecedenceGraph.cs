@@ -28,7 +28,7 @@ public class DataPrecedenceNode : IAttributedVertex {
     public TimeSpan Latency {get; set;}
     public double? Priority {get; set;}
 
-    public override string ToString() => "event_" + EventIndex + "_" + Depth;
+    public override string ToString() => "[" + EventIndex + "." + Depth + "] " + Event.Name + " " + string.Join(' ', Event.QuantumDependencies?.Select(q => q.ToString()) ?? Enumerable.Empty<string>() );
     public IEnumerable<KeyValuePair<string,string>> GetAttributes() {
         yield return new KeyValuePair<string, string>("EventIndex", this.EventIndex.ToString());
         yield return new KeyValuePair<string, string>("EventType", Event.GetType().ToString());

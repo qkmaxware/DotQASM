@@ -1,5 +1,0 @@
-"Operation Index","Operation Name","Latency","Priority"
-0,"barrier (3C97814)","00:00:00.0010000","6"
-1,"u3 (21538BB)","00:00:00.0010000","5"
-2,"barrier (2BEFE99)","00:00:00.0010000","4"
-3,"measurement (B6F367)","00:00:00.0030000","3"

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="1090" height="128" xmlns="http://www.w3.org/2000/svg">
+<line x1="34" y1="112" x2="1090" y2="112" stroke="#D3D3D3" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<line x1="34" y1="80" x2="1090" y2="80" stroke="#D3D3D3" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<line x1="34" y1="48" x2="1090" y2="48" stroke="#D3D3D3" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<line x1="34" y1="16" x2="1090" y2="16" stroke="#D3D3D3" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<text text-anchor="start" alignment-baseline="middle" x="0" y="16" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">|0〉</text>
+<text text-anchor="start" alignment-baseline="middle" x="0" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">|0〉</text>
+<text text-anchor="start" alignment-baseline="middle" x="0" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">|0〉</text>
+<rect x="0" y="96" width="32" height="32" stroke="#FFFFFF" stroke-opacity="0" stroke-width="1" fill="#FFFFFF" fill-opacity="0"/>
+<text text-anchor="start" alignment-baseline="middle" x="0" y="112" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">c [3]</text>
+<rect x="34" y="2" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="50" y="16" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="66" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="82" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="98" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="114" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<circle cx="144" cy="16" r="4" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<line x1="144" y1="16" x2="144" y2="48" stroke="#008080" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="130" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="146" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">x</text>
+<rect x="162" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="178" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="194" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="210" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<circle cx="240" cy="16" r="4" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<line x1="240" y1="16" x2="240" y2="48" stroke="#008080" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="226" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="242" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">x</text>
+<rect x="258" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="274" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="290" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="306" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="322" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="338" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="354" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="370" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="386" y="2" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="402" y="16" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="418" y="66" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="434" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<circle cx="464" cy="48" r="4" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<line x1="464" y1="48" x2="464" y2="80" stroke="#008080" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="450" y="66" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="466" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">x</text>
+<rect x="482" y="66" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="498" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<circle cx="528" cy="16" r="4" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<line x1="528" y1="16" x2="528" y2="80" stroke="#008080" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="514" y="66" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="530" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">x</text>
+<rect x="546" y="66" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="562" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<circle cx="592" cy="48" r="4" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<line x1="592" y1="48" x2="592" y2="80" stroke="#008080" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="578" y="66" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="594" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">x</text>
+<rect x="610" y="66" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="626" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<circle cx="656" cy="16" r="4" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<line x1="656" y1="16" x2="656" y2="80" stroke="#008080" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="642" y="66" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="658" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">x</text>
+<rect x="674" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="690" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="706" y="66" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="722" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="738" y="66" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="754" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<circle cx="784" cy="16" r="4" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<line x1="784" y1="16" x2="784" y2="48" stroke="#008080" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="770" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="786" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">x</text>
+<rect x="802" y="2" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="818" y="16" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="834" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="850" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<circle cx="880" cy="16" r="4" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<line x1="880" y1="16" x2="880" y2="48" stroke="#008080" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="866" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="882" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">x</text>
+<rect x="898" y="2" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="914" y="16" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<rect x="930" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFC0CB" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="946" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">u3</text>
+<circle cx="976" cy="16" r="4" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<line x1="976" y1="16" x2="976" y2="48" stroke="#008080" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="962" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#008080" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="978" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">x</text>
+<line x1="1010" y1="16" x2="1010" y2="112" stroke="#000000" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="994" y="2" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#A9A9A9" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="1010" y="16" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">∡</text>
+<circle cx="1010" cy="112" r="2" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#000000" fill-opacity="255"/>
+<line x1="1042" y1="48" x2="1042" y2="112" stroke="#000000" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="1026" y="34" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#A9A9A9" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="1042" y="48" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">∡</text>
+<circle cx="1042" cy="112" r="2" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#000000" fill-opacity="255"/>
+<line x1="1074" y1="80" x2="1074" y2="112" stroke="#000000" stroke-width="1" stroke-opacity="255" marker-start="none" marker-end="none"/>
+<rect x="1058" y="66" width="30" height="30" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#A9A9A9" fill-opacity="255"/>
+<text text-anchor="middle" alignment-baseline="middle" x="1074" y="80" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#FFFFFF" fill-opacity="255" rotation="0">∡</text>
+<circle cx="1074" cy="112" r="2" stroke="#000000" stroke-opacity="255" stroke-width="1" fill="#000000" fill-opacity="255"/>
+</svg>

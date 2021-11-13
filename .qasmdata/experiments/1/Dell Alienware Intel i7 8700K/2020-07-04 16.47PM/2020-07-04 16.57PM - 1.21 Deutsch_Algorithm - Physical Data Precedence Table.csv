@@ -1,7 +1,0 @@
-"Qubit Index","Priority 1","Priority 2","Priority 3","Priority 4","Priority 5"
-"0"
-"1"
-"2"
-"3",,"q1::u3 (1BC1C53)","q1::cx* (84F643)","q1::u3 (ACA85C)","q1::measurement (211EB3F)"
-"4","q0::u3 (34DCA42)","q0::u3 (39CFEEB)","q0::cx (84F643)"
-"5"

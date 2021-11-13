@@ -1,7 +1,0 @@
-"Qubit Index","Priority 1","Priority 2","Priority 3","Priority 4","Priority 5","Priority 6"
-"0","q0::h (27A2811)","q0::cx* (24B689F)","q0::z (A6AD9A)","q0::cx* (1DC1A6B)","q0::h (BCEDC3)","q0::measurement (2A45BDB)"
-"1",,"q1::cx (24B689F)",,"q1::cx (1DC1A6B)",,"q1::measurement (3C73AB4)"
-"2"
-"3"
-"4"
-"5"

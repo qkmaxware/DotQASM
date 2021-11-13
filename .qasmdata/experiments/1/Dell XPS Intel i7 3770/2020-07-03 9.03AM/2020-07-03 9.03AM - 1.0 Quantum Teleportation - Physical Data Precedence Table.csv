@@ -1,7 +1,0 @@
-"Qubit Index","Priority 1","Priority 2","Priority 3","Priority 4","Priority 5","Priority 6","Priority 7","Priority 8"
-"0",,,"q2::cx* (30495D1)","q2::h (329445B)","q2::measurement (73673B)"
-"1","q0::h (25BB5FF)","q0::cx* (13965FA)","q0::cx (30495D1)",,,"q0::measurement (EA119)"
-"2",,"q1::cx (13965FA)",,,,,"q1::if 1 then x (83A9E6)","q1::if 1 then z (A0F91B)"
-"3"
-"4"
-"5"

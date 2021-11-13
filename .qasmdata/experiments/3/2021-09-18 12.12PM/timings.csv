@@ -1,8 +1,0 @@
-Type, Timing
-DotQasm.Scheduling.BarrierEvent, 00:00:00
-DotQasm.Scheduling.MeasurementEvent, 00:00:00.0010000
-DotQasm.Scheduling.ResetEvent, 00:00:00.0010001
-DotQasm.Scheduling.IfEvent, 00:00:00.0010001
-DotQasm.Scheduling.GateEvent, 00:00:00.0000001
-DotQasm.Scheduling.ControlledGateEvent, 00:00:00.0000002
-Other, 00:00:00

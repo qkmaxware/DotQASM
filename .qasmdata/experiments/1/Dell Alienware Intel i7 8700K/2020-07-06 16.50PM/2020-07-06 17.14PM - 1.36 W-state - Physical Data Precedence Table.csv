@@ -1,7 +1,0 @@
-"Qubit Index","Priority 1","Priority 2","Priority 3","Priority 4","Priority 5","Priority 6","Priority 7","Priority 8","Priority 9","Priority 10","Priority 11","Priority 12","Priority 13","Priority 14","Priority 15","Priority 16","Priority 17","Priority 18","Priority 19","Priority 20","Priority 21","Priority 22","Priority 23","Priority 24","Priority 25"
-"0",,"q0::u3 (2E87571)","q0::cx* (3F6704D)",,,"q0::cx* (C5CD47)",,,,,,"q0::u3 (1024E52)","q0::cx* (194C07)",,,,"q0::cx* (558FDE)",,"q0::cx* (DC4118)","q0::u3 (3BE49DA)","q0::cx* (3355E1B)","q0::u3 (E04EF3)","q0::cx* (2F8FB11)",,"q0::measurement (2C0D3A1)"
-"1","q1::u3 (22C20FD)","q1::u3 (38D28EC)","q1::cx (3F6704D)","q1::u3 (3A9F2BB)","q1::u3 (F98896)","q1::cx (C5CD47)","q1::u3 (2F4377F)","q1::u3 (295F377)","q1::u3 (3458F30)","q1::u3 (17208B3)","q1::cx* (1BAC80C)",,,,"q1::cx* (10E6B)",,,"q1::u3 (3020ED6)","q1::cx (DC4118)","q1::u3 (1B098AD)","q1::cx (3355E1B)","q1::u3 (3E2C690)","q1::cx (2F8FB11)",,"q1::measurement (C770B0)"
-"2",,,,,,,,,,"q2::u3 (114C0E4)","q2::cx (1BAC80C)","q2::u3 (3910872)","q2::cx (194C07)","q2::u3 (E3AC44)","q2::cx (10E6B)","q2::u3 (981C3)","q2::cx (558FDE)",,,,,,"q2::u3 (312858B)","q2::u3 (3A6B1E6)","q2::measurement (302F638)"
-"3"
-"4"
-"5"

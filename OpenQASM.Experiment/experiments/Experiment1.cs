@@ -19,7 +19,7 @@ namespace DotQasm.Thesis.Experiments {
 
 public class Experiment1 {
 
-    public static readonly int ExperimentNumber = 3;
+    public static readonly int ExperimentNumber = 1;
 
     public static void Run() {
         // -- Run configuration -----------------------------------------------------------------------------
@@ -150,18 +150,21 @@ public class Experiment1 {
         using (var timingWriter = new StreamWriter(Path.Combine(directory, "timings.csv"))) 
         using (var errorLogWriter = new StreamWriter(Path.Combine(directory, "errors.log"))) 
         using (var qubitCountWriter = new StreamWriter(Path.Combine(directory, "matrix.qubitCountBefore.csv")))
-        using (var eventCountWriter = new StreamWriter(Path.Combine(directory, "matrix.eventCount.csv"))) 
+        using (var eventCountWriter = new StreamWriter(Path.Combine(directory, "matrix.eventCountBefore.csv"))) 
         using (var estimatedRuntimeBeforeWriter = new StreamWriter(Path.Combine(directory, "matrix.estimatedRuntimeBefore.csv"))) 
         using (var optTimeMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.optimizationTime.csv")))
         using (var eventChangeMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.eventCountDelta.csv")))
+        using (var eventCountAfterMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.eventCountAfter.csv")))
+        using (var stepChangeMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.stepsDelta.csv")))
         using (var swapCountMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.eventSwapCountAfter.csv")))
-        using (var ldpgMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.ldpg.csv")))
-        using (var pdptMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.pdpt.csv")))
+        using (var ldpgMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.ldpgFilenames.csv")))
+        using (var pdptMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.pdptFilenames.csv")))
         using (var runtimeBeforeMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.ibmRuntimeBefore.csv")))
         using (var runtimeAfterMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.ibmRuntimeAfter.csv")))
         using (var estimatedRuntimeAfterMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.estimatedRuntimeAfter.csv")))
         using (var estimatedRuntimeDeltaMtxWriter = new StreamWriter(Path.Combine(directory, "matrix.estimatedRuntimeDelta.csv")))
-        using (var pdptSizeCount = new StreamWriter(Path.Combine(directory, "matrix.pdptElementCount.csv")))
+        using (var pdptRowCount = new StreamWriter(Path.Combine(directory, "matrix.pdptRowCount.csv")))
+        using (var pdptColumnCount = new StreamWriter(Path.Combine(directory, "matrix.pdptColumnCount.csv")))
         {
             // Write headers
             summaryWriter.WriteLine($"Circuit Id, Circuit Name, Total Experiment Time, Analysis Time, Average Optimization Time");
@@ -170,12 +173,15 @@ public class Experiment1 {
             ldpgMtxWriter.WriteLine(hwHeaderString);
             pdptMtxWriter.WriteLine(hwHeaderString);
             eventChangeMtxWriter.WriteLine(hwHeaderString);
+            eventCountAfterMtxWriter.WriteLine(hwHeaderString);
+            stepChangeMtxWriter.WriteLine(hwHeaderString);
             swapCountMtxWriter.WriteLine(hwHeaderString);
             runtimeBeforeMtxWriter.WriteLine(hwHeaderString);
             estimatedRuntimeAfterMtxWriter.WriteLine(hwHeaderString);
             estimatedRuntimeDeltaMtxWriter.WriteLine(hwHeaderString);
             runtimeAfterMtxWriter.WriteLine(hwHeaderString);
-            pdptSizeCount.WriteLine(hwHeaderString);
+            pdptRowCount.WriteLine(hwHeaderString);
+            pdptColumnCount.WriteLine(hwHeaderString);
             eventCountWriter.WriteLine("Circuit Id, Event Count");
             estimatedRuntimeBeforeWriter.WriteLine("Circuit Id, Estimated Time");
             qubitCountWriter.WriteLine("Circuit Id, Qubits, Classical Bits");
@@ -223,6 +229,8 @@ public class Experiment1 {
                 optTimeMtxWriter.Write(circuit_id);
                 ldpgMtxWriter.Write(circuit_id);
                 eventChangeMtxWriter.Write(circuit_id);
+                eventCountAfterMtxWriter.Write(circuit_id);
+                stepChangeMtxWriter     .Write(circuit_id);
                 runtimeBeforeMtxWriter.Write(circuit_id);
                 pdptMtxWriter.Write(circuit_id);
                 swapCountMtxWriter.Write(circuit_id);
@@ -232,7 +240,8 @@ public class Experiment1 {
                 eventCountWriter.Write(circuit_id);
                 estimatedRuntimeBeforeWriter.Write(circuit_id);
                 qubitCountWriter.Write(circuit_id);
-                pdptSizeCount.Write(circuit_id);
+                pdptRowCount.Write(circuit_id);
+                pdptColumnCount.Write(circuit_id);
 
                 // Pre-analysis
                 var complete_timer = Stopwatch.StartNew();
@@ -358,11 +367,14 @@ public class Experiment1 {
 
                             ldpgMtxWriter.Write($",{result.LdpgFilename}");
                             pdptMtxWriter.Write($",{result.PdptFilename}");
+                            eventCountAfterMtxWriter.Write($",{result.Schedule.EventCount}");
+                            stepChangeMtxWriter     .Write($",{result.Pdpt.ColumnCount - circuit.GateSchedule.EventCount}");
                             eventChangeMtxWriter.Write($",{result.Schedule.EventCount - circuit.GateSchedule.EventCount}");
                             swapCountMtxWriter.Write($",{swapCount}");
                             estimatedRuntimeAfterMtxWriter.Write($",{estimatedTime.TotalSeconds}");
                             estimatedRuntimeDeltaMtxWriter.Write($",{(estimatedTime - estimated_linear_time).TotalSeconds}");
-                            pdptSizeCount.Write($",{result.Pdpt.RowCount};{result.Pdpt.ColumnCount}");
+                            pdptRowCount.Write($",{result.Pdpt.RowCount}");
+                            pdptColumnCount.Write($",{result.Pdpt.ColumnCount}");
 
                             // Try run algorithm on hardware
                             var backend = provider.CreateBackendInterface(hw.Alias, circuit.QubitCount, apiKey);
@@ -387,11 +399,14 @@ public class Experiment1 {
                             ldpgMtxWriter.Write(na);
                             pdptMtxWriter.Write(na);
                             eventChangeMtxWriter.Write(na);
+                            eventCountAfterMtxWriter.Write(na);
+                            stepChangeMtxWriter     .Write(na);
                             swapCountMtxWriter.Write(na);
                             estimatedRuntimeAfterMtxWriter.Write(na);
                             estimatedRuntimeDeltaMtxWriter.Write(na);
                             runtimeAfterMtxWriter.Write(na);
-                            pdptSizeCount.Write(na);
+                            pdptRowCount.Write(na);
+                            pdptColumnCount.Write(na);
                         }
                     }
                 }
@@ -404,12 +419,15 @@ public class Experiment1 {
                 ldpgMtxWriter.WriteLine();
                 pdptMtxWriter.WriteLine();
                 eventChangeMtxWriter.WriteLine();
+                eventCountAfterMtxWriter.WriteLine();
+                stepChangeMtxWriter     .WriteLine();
                 swapCountMtxWriter.WriteLine();
                 runtimeBeforeMtxWriter.WriteLine();
                 estimatedRuntimeAfterMtxWriter.WriteLine();
                 estimatedRuntimeDeltaMtxWriter.WriteLine();
                 runtimeAfterMtxWriter.WriteLine();
-                pdptSizeCount.WriteLine();
+                pdptRowCount.WriteLine();
+                pdptColumnCount.WriteLine();
 
                 // Flush so that I get at least some data printed out on each iteration
                 summaryWriter.Flush();
@@ -417,12 +435,15 @@ public class Experiment1 {
                 ldpgMtxWriter.Flush();
                 pdptMtxWriter.Flush();
                 eventChangeMtxWriter.Flush();
+                eventCountAfterMtxWriter.Flush();
+                stepChangeMtxWriter     .Flush();
                 swapCountMtxWriter.Flush();
                 runtimeBeforeMtxWriter.Flush();
                 estimatedRuntimeAfterMtxWriter.Flush();
                 estimatedRuntimeDeltaMtxWriter.Flush();
                 runtimeAfterMtxWriter.Flush();
-                pdptSizeCount.Flush();
+                pdptRowCount.Flush();
+                pdptColumnCount.Flush();
 
                 // Clean up garbage to give better performance next algorithm (in-case lots of objects got created)
                 ForceGC();

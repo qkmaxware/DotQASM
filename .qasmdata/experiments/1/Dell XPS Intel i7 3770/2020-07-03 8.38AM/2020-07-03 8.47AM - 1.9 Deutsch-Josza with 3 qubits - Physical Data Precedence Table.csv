@@ -1,7 +1,0 @@
-"Qubit Index","Priority 1","Priority 2","Priority 3","Priority 4","Priority 5","Priority 6","Priority 7","Priority 8","Priority 9","Priority 10","Priority 11","Priority 12"
-"0","q0::h (1DD78FE)","q0::x (1E929C1)","q0::swap (2B7BF41)","q2::cx* (2C6361F)",,"q2::swap (75B94E)",,,,"q3::x (2701E81)","q3::h (179A6EF)","q3::measurement (36C601B)"
-"1",,,,,"q1::h (C940EE)",,"q1::cx* (F7E717)",,,,"q1::h (146DE6B)","q1::measurement (2CF60F9)"
-"2",,,"q2::swap (2B7BF41)",,,,"q0::h (3134865)","q0::x (13277CA)","q0::cx* (B71FD5)","q0::x (1F1128C)","q0::h (37DD1CA)","q0::measurement (14A68C4)"
-"3","q3::x (3AD8B93)","q3::h (119E831)",,"q3::cx (2C6361F)",,"q3::swap (75B94E)","q2::cx (F7E717)",,"q2::cx (B71FD5)"
-"4"
-"5"

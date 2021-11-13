@@ -1,5 +1,0 @@
-"Operation Index","Operation Name","Latency","Priority"
-0,"barrier (8F4675)","00:00:00.0010000","6"
-1,"u3 (1097A22)","00:00:00.0010000","5"
-2,"barrier (1554B35)","00:00:00.0010000","4"
-3,"measurement (3FFA4DF)","00:00:00.0030000","3"
