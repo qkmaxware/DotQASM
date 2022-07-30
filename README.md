@@ -2,8 +2,7 @@
   <img width="120" height="120" src="docs/logo.svg">
 </p>
 
-# .QASM
-.QASM is a .Net standard library for creating and manipulating quantum circuits. 
+Source code and experimental data for MSc. Computer Science thesis. 
 
 ## License
 See [License](LICENSE.md) for license details.
